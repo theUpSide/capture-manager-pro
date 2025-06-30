@@ -322,16 +322,6 @@
             margin-bottom: 1rem;
         }
 
-        .next-action-item {
-            background: rgba(255,255,255,0.1);
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         .templates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -900,6 +890,82 @@
                 </div>
                 <button type="submit" class="btn">Save Opportunity</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Add Action Modal -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeActionModal()">&times;</span>
+            <h2>Add Action Item</h2>
+            <form id="actionForm" onsubmit="saveAction(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionTitle">Action Title *</label>
+                        <input type="text" id="actionTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionOpportunity">Opportunity *</label>
+                        <select id="actionOpportunity" required>
+                            <option value="">Select Opportunity</option>
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionDueDate">Due Date *</label>
+                        <input type="date" id="actionDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionPriority">Priority</label>
+                        <select id="actionPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionPhase">Phase</label>
+                        <select id="actionPhase">
+                            <option value="identification">Identification</option>
+                            <option value="qualification">Qualification</option>
+                            <option value="planning">Planning</option>
+                            <option value="engagement">Engagement</option>
+                            <option value="intelligence">Intelligence</option>
+                            <option value="preparation">Preparation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionCategory">Category</label>
+                        <select id="actionCategory">
+                            <option value="research">Research</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="analysis">Analysis</option>
+                            <option value="documentation">Documentation</option>
+                            <option value="coordination">Coordination</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="actionDescription">Description</label>
+                    <textarea id="actionDescription" placeholder="Additional details about this action..."></textarea>
+                </div>
+                <button type="submit" class="btn">Save Action</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Opportunity Detail Modal -->
+    <div id="opportunityDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOpportunityDetailModal()">&times;</span>
+            <div id="opportunity-detail-content">
+                <!-- Opportunity details will be populated here -->
+            </div>
         </div>
     </div>
 
@@ -1583,7 +1649,12 @@
         }
 
         function openNewActionModal() {
-            alert('Add Action functionality coming soon!');
+            document.getElementById('actionModal').style.display = 'block';
+            document.getElementById('actionForm').reset();
+        }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').style.display = 'none';
         }
 
         function openNewTemplateModal() {
@@ -1785,4 +1856,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
