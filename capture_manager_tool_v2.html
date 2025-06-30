@@ -1649,8 +1649,19 @@
         }
 
         function openNewActionModal() {
-            document.getElementById('actionModal').style.display = 'block';
-            document.getElementById('actionForm').reset();
+        document.getElementById('actionModal').style.display = 'block';
+        document.getElementById('actionForm').reset();
+    
+        // Populate opportunity dropdown
+        const opportunitySelect = document.getElementById('actionOpportunity');
+        opportunitySelect.innerHTML = '<option value="">Select Opportunity</option>';
+    
+        opportunities.forEach(opp => {
+            const option = document.createElement('option');
+            option.value = opp.id;
+            option.textContent = opp.name;
+            opportunitySelect.appendChild(option);
+            });
         }
 
         function closeActionModal() {
@@ -1739,6 +1750,32 @@
             
             alert('Opportunity added successfully!');
         }
+
+    function saveAction(event) {
+            event.preventDefault();
+    
+            const newAction = {
+                id: Date.now(),
+                opportunityId: parseInt(document.getElementById('actionOpportunity').value),
+                title: document.getElementById('actionTitle').value,
+                dueDate: document.getElementById('actionDueDate').value,
+                priority: document.getElementById('actionPriority').value,
+                phase: document.getElementById('actionPhase').value,
+                category: document.getElementById('actionCategory').value,
+                description: document.getElementById('actionDescription').value,
+                completed: false
+            };
+    
+        actions.push(newAction);
+        closeActionModal();
+        refreshDashboard();
+    
+        if (document.getElementById('actions-view').style.display !== 'none') {
+            renderAllActions();
+        }
+    
+        alert('Action item added successfully!');
+    }
 
         // Actions management
         function renderAllActions() {
