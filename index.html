@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9">
+    <title>Capture Manager Pro</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>🎯 Capture Manager Pro</h1>
+            <nav>
+                <a href="#" class="active" onclick="Navigation.showDashboard()">Dashboard</a>
+                <a href="#" onclick="Navigation.showOpportunities()">Opportunities</a>
+                <a href="#" onclick="Navigation.showRoadmap()">Roadmap</a>
+                <a href="#" onclick="Navigation.showActions()">Action Items</a>
+                <a href="#" onclick="Navigation.showTemplates()">Templates</a>
+                <a href="#" onclick="Navigation.showReports()">Reports</a>
+            </nav>
+        </div>
+        <div>
+            <img src="logo1.png" alt="Company Logo" class="header-logo">
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard View -->
+        <div id="dashboard-view">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Pipeline</h3>
+                    <div class="metric-value" id="total-pipeline">$0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Weighted Pipeline</h3>
+                    <div class="metric-value" id="weighted-pipeline">$0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Active Opportunities</h3>
+                    <div class="metric-value" id="active-count">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Average Progress</h3>
+                    <div class="metric-value" id="avg-progress">0%</div>
+                </div>
+            </div>
+
+            <div class="next-actions-widget">
+                <h3>🚀 Smart Recommendations</h3>
+                <div id="smart-recommendations">
+                    <!-- AI-powered recommendations will appear here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>Active Opportunities</h2>
+                    <button class="btn" onclick="Opportunities.openNewModal()">+ Add Opportunity</button>
+                </div>
+                <div class="opportunity-list" id="opportunity-list">
+                    <!-- Opportunities will be populated here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>Urgent Action Items</h2>
+                    <button class="btn btn-secondary" onclick="Navigation.showActions()">View All</button>
+                </div>
+                <div class="actions-section" id="urgent-actions">
+                    <!-- Urgent actions will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Opportunities View -->
+        <div id="opportunities-view" style="display:none;">
+            <div class="section">
+                <div class="section-header">
+                    <h2>All Opportunities</h2>
+                    <button class="btn" onclick="Opportunities.openNewModal()">+ Add Opportunity</button>
+                </div>
+                <div class="opportunity-list" id="all-opportunities">
+                    <!-- All opportunities will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Roadmap View -->
+        <div id="roadmap-view" style="display:none;">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Capture Management Roadmap</h2>
+                    <div class="roadmap-controls">
+                        <button class="btn" onclick="Roadmap.refresh()">🔄 Refresh</button>
+                        <button class="btn btn-secondary" onclick="Roadmap.export()">📊 Export</button>
+                    </div>
+                </div>
+                
+                <div class="roadmap-timeline">
+                    <div class="timeline-header">
+                        <div class="opportunity-column-header">Opportunities</div>
+                        <div class="phase-columns-header">
+                            <div class="phase-header-item">Identification</div>
+                            <div class="phase-header-item">Qualification</div>
+                            <div class="phase-header-item">Planning</div>
+                            <div class="phase-header-item">Engagement</div>
+                            <div class="phase-header-item">Intelligence</div>
+                            <div class="phase-header-item">Preparation</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-rows" id="roadmap-timeline-rows">
+                        <!-- Timeline rows will be populated here -->
+                    </div>
+
+                    <div class="timeline-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-completed"></div>
+                            <span>✅ Completed</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-current"></div>
+                            <span>🔄 Current Phase</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-upcoming"></div>
+                            <span>⏳ Upcoming</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-attention"></div>
+                            <span>🎯 Needs Attention</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions View -->
+        <div id="actions-view" style="display:none;">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Action Items</h2>
+                    <button class="btn" onclick="Actions.openNewModal()">+ Add Action</button>
+                </div>
+                <div class="actions-section" id="all-actions">
+                    <!-- All actions will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Templates View -->
+        <div id="templates-view" style="display:none;">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Capture Management Templates</h2>
+                </div>
+                <div class="templates-grid" id="templates-grid">
+                    <!-- Templates will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Templates View -->
+        <div id="saved-templates-view" style="display:none;">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Saved Templates</h2>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="Navigation.showTemplates()">Back to Templates</button>
+                    </div>
+                </div>
+                <div class="templates-grid" id="saved-templates-grid">
+                    <!-- Saved templates will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="opportunityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="Opportunities.closeModal()">&times;</span>
+            <h2>Add New Opportunity</h2>
+            <form id="opportunityForm" onsubmit="Opportunities.save(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oppName">Opportunity Name *</label>
+                        <input type="text" id="oppName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="oppCustomer">Customer *</label>
+                        <input type="text" id="oppCustomer" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oppValue">Contract Value ($)</label>
+                        <input type="number" id="oppValue" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="oppType">Opportunity Type</label>
+                        <select id="oppType">
+                            <option value="RFP">RFP - Request for Proposal</option>
+                            <option value="IDIQ">IDIQ - Indefinite Delivery</option>
+                            <option value="SBIR">SBIR - Small Business Innovation</option>
+                            <option value="Sole Source">Sole Source</option>
+                            <option value="GSA Schedule">GSA Schedule</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oppRfpDate">Expected RFP Date</label>
+                        <input type="date" id="oppRfpDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="oppPwin">Probability of Win (%)</label>
+                        <input type="number" id="oppPwin" min="0" max="100" value="50">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oppRole">Our Role</label>
+                        <select id="oppRole">
+                            <option value="Prime">Prime Contractor</option>
+                            <option value="Sub">Subcontractor</option>
+                            <option value="Partner">Teaming Partner</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="oppIncumbent">Incumbent</label>
+                        <input type="text" id="oppIncumbent" placeholder="Current contractor (if recompete)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="oppDescription">Description</label>
+                    <textarea id="oppDescription"></textarea>
+                </div>
+                <button type="submit" class="btn">Save Opportunity</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Action Modal -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="Actions.closeModal()">&times;</span>
+            <h2>Add Action Item</h2>
+            <form id="actionForm" onsubmit="Actions.save(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionTitle">Action Title *</label>
+                        <input type="text" id="actionTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionOpportunity">Opportunity *</label>
+                        <select id="actionOpportunity" required>
+                            <option value="">Select Opportunity</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionDueDate">Due Date *</label>
+                        <input type="date" id="actionDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionPriority">Priority</label>
+                        <select id="actionPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="actionPhase">Phase</label>
+                        <select id="actionPhase">
+                            <option value="identification">Identification</option>
+                            <option value="qualification">Qualification</option>
+                            <option value="planning">Planning</option>
+                            <option value="engagement">Engagement</option>
+                            <option value="intelligence">Intelligence</option>
+                            <option value="preparation">Preparation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionCategory">Category</label>
+                        <select id="actionCategory">
+                            <option value="research">Research</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="analysis">Analysis</option>
+                            <option value="documentation">Documentation</option>
+                            <option value="coordination">Coordination</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="actionDescription">Description</label>
+                    <textarea id="actionDescription" placeholder="Additional details about this action..."></textarea>
+                </div>
+                <button type="submit" class="btn">Save Action</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Phase Detail Modal -->
+    <div id="phaseDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="Roadmap.closePhaseModal()">&times;</span>
+            <div id="phase-detail-content">
+                <!-- Phase details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Detail Modal -->
+    <div id="templateDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="Templates.closeModal()">&times;</span>
+            <div id="template-detail-content">
+                <!-- Template form will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/opportunities.js"></script>
+    <script src="js/roadmap.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/actions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
