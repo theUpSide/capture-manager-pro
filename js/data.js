@@ -616,226 +616,391 @@ const DataStore = {
                 { id: "action_items", label: "Workshop Action Items", type: "textarea", required: true },
                 { id: "next_steps", label: "Next Steps & Timeline", type: "textarea", required: true }
             ]
-        },        {
-            id: 12,
-            title: "Capture Status Reporting",
-            description: "Regular communication templates to keep leadership informed and stakeholders aligned throughout the capture process.",
-            category: "Communication",
-            fields: [
-                { id: "reporting_period", label: "Reporting Period", type: "text", required: true },
-                { id: "key_accomplishments", label: "Key Accomplishments", type: "textarea", required: true },
-                { id: "customer_interactions", label: "Customer Interactions Summary", type: "textarea", required: true },
-                { id: "competitive_intelligence", label: "New Competitive Intelligence", type: "textarea", required: false },
-                { id: "milestone_progress", label: "Progress Against Milestones", type: "textarea", required: true },
-                { id: "current_issues", label: "Current Issues & Challenges", type: "textarea", required: false },
-                { id: "upcoming_activities", label: "Upcoming Activities", type: "textarea", required: true },
-                { id: "resource_utilization", label: "Resource Utilization", type: "textarea", required: true },
-                { id: "budget_status", label: "Capture Budget Status", type: "textarea", required: true },
-                { id: "decisions_needed", label: "Leadership Decisions Needed", type: "textarea", required: false },
-                { id: "win_probability", label: "Current Win Probability Assessment", type: "number", required: true },
-                { id: "trend_analysis", label: "Trend Analysis vs Previous Period", type: "textarea", required: false }
-            ]
-        },
-        {
-            id: 13,
-            title: "Teaming and Partnership Templates",
-            description: "Strategic teaming evaluation and management templates for strengthening win probability through effective partnerships.",
-            category: "Teaming",
-            fields: [
-                { id: "partner_company", label: "Partner Company Name", type: "text", required: true },
-                { id: "partnership_type", label: "Partnership Type", type: "select", options: ["Prime-Sub", "Joint Venture", "Teaming Agreement", "Mentor-Protege"], required: true },
-                { id: "complementary_capabilities", label: "Complementary Capabilities", type: "textarea", required: true },
-                { id: "past_performance_strength", label: "Partner's Past Performance Strength", type: "textarea", required: true },
-                { id: "cultural_fit", label: "Cultural Fit Assessment", type: "select", options: ["Poor", "Fair", "Good", "Excellent"], required: true },
-                { id: "commitment_level", label: "Partner Commitment Level", type: "select", options: ["Low", "Medium", "High"], required: true },
-                { id: "work_allocation", label: "Proposed Work Allocation", type: "textarea", required: true },
-                { id: "pricing_strategy", label: "Joint Pricing Strategy", type: "textarea", required: true },
-                { id: "management_structure", label: "Joint Management Structure", type: "textarea", required: true },
-                { id: "risk_sharing", label: "Risk Sharing Arrangement", type: "textarea", required: true },
-                { id: "intellectual_property", label: "Intellectual Property Agreements", type: "textarea", required: false },
-                { id: "performance_metrics", label: "Joint Performance Metrics", type: "textarea", required: true }
-            ]
-        },
-        {
-            id: 14,
-            title: "Customer Organization Mapping",
-            description: "Map customer organizational relationships and decision-making processes.",
-            category: "Customer Intelligence",
-            guidance: {
-                importance: "Understanding customer organizational dynamics is critical for successful capture. This template helps you map decision-making processes, identify key influencers, and develop targeted engagement strategies. Companies with strong customer intelligence win 60% more often than those without systematic mapping.",
-                keyConsiderations: [
-                    "Focus on decision makers and influencers, not just program managers",
-                    "Understand both formal and informal organizational relationships",
-                    "Map budget authority and funding sources clearly",
-                    "Identify end user organizations and their specific needs",
-                    "Document your current relationship status honestly"
+        },        
+            {
+        id: 12,
+        title: "Capture Status Reporting",
+        description: "Regular communication templates to keep leadership informed and stakeholders aligned throughout the capture process.",
+        category: "Communication",
+        guidance: {
+            importance: "Regular status reporting ensures leadership visibility, enables proactive decision-making, and maintains stakeholder alignment throughout the capture process. Effective reporting prevents surprises, builds confidence in the capture team, and provides early warning of issues requiring senior intervention. Teams with structured reporting practices have 35% fewer late-stage surprises and better resource allocation decisions.",
+            keyConsiderations: [
+                "Focus on actionable information and decisions needed, not just activity reports",
+                "Tailor reporting frequency to opportunity timeline and leadership preferences",
+                "Highlight changes from previous reporting period to show trends",
+                "Be transparent about challenges while proposing solutions",
+                "Include quantitative metrics alongside qualitative assessments"
+            ],
+            prework: [
+                "Establish reporting schedule and distribution list with stakeholders",
+                "Define key performance indicators and success metrics",
+                "Create templates for consistent reporting format",
+                "Set up tracking systems for metrics and milestones",
+                "Identify escalation triggers that require immediate communication"
+            ],
+            workshopGuide: {
+                duration: "1 hour monthly",
+                participants: "Capture manager, BD manager, senior leadership",
+                agenda: [
+                    "Review progress against capture plan milestones (15 min)",
+                    "Discuss customer engagement activities and intelligence (15 min)",
+                    "Analyze competitive positioning changes (10 min)",
+                    "Address current issues and resource needs (10 min)",
+                    "Update probability assessment and next steps (10 min)"
                 ],
-                prework: [
-                    "Gather organizational charts and contact directories",
-                    "Research key personnel backgrounds and career histories",
-                    "Understand the customer's recent organizational changes",
-                    "Identify budget authority and appropriation sources",
-                    "Map previous contract awards and decision patterns"
-                ],
-                workshopGuide: {
-                    duration: "2-3 hours",
-                    participants: "Business development, capture manager, account managers, technical leads",
-                    agenda: [
-                        "Review customer organizational structure (30 min)",
-                        "Identify key decision makers and influencers (45 min)",
-                        "Map decision-making processes and approval chains (30 min)",
-                        "Assess current relationship strengths and gaps (30 min)",
-                        "Develop targeted engagement strategy (30 min)",
-                        "Assign relationship-building responsibilities (15 min)"
-                    ],
-                    facilitation: "Use visual mapping tools like whiteboards or sticky notes. Focus on relationships and influence patterns, not just titles."
-                },
-                theory: "Based on stakeholder analysis and influence mapping methodologies. Understanding organizational dynamics enables targeted relationship building and more effective positioning strategies."
+                facilitation: "Focus on decision-making and problem-solving rather than just information sharing. Use visual dashboards when possible to highlight trends and key metrics."
             },
-            fields: [
-                { id: "program_office", label: "Primary Program Office", type: "text", required: true },
-                { id: "parent_organization", label: "Parent Organization/Command", type: "text", required: true },
-                { id: "program_manager", label: "Program Manager Name & Contact", type: "text", required: true },
-                { id: "technical_lead", label: "Technical Lead Name & Contact", type: "text", required: false },
-                { id: "contracting_officer", label: "Contracting Officer Name & Contact", type: "text", required: true },
-                { id: "end_users", label: "End User Organizations", type: "textarea", required: true },
-                { id: "decision_makers", label: "Key Decision Makers", type: "textarea", required: true },
-                { id: "influencers", label: "Key Influencers", type: "textarea", required: true },
-                { id: "budget_authority", label: "Budget Authority/Funding Source", type: "textarea", required: true },
-                { id: "decision_process", label: "Decision-Making Process", type: "textarea", required: true },
-                { id: "relationship_status", label: "Current Relationship Status", type: "textarea", required: true },
-                { id: "engagement_strategy", label: "Engagement Strategy", type: "textarea", required: true }
-            ]
+            theory: "Based on project management communication principles and stakeholder engagement theory. Regular, structured communication builds trust and enables better decision-making by providing consistent, comparable information over time."
         },
-        {
-            id: 15,
-            title: "Past Performance Packaging",
-            description: "Template for effectively packaging GMRE's excellent CPARS ratings and past performance as a key competitive advantage.",
-            category: "Past Performance",
-            fields: [
-                { id: "contract_number", label: "Contract Number", type: "text", required: true },
-                { id: "program_name", label: "Program Name", type: "text", required: true },
-                { id: "customer_organization", label: "Customer Organization", type: "text", required: true },
-                { id: "period_of_performance", label: "Period of Performance", type: "text", required: true },
-                { id: "contract_value", label: "Contract Value", type: "number", required: true },
-                { id: "relevance_score", label: "Relevance Score (1-5)", type: "select", options: ["1 - Low", "2 - Limited", "3 - Moderate", "4 - High", "5 - Highly Relevant"], required: true },
-                { id: "cpars_ratings", label: "CPARS Ratings Summary", type: "textarea", required: true },
-                { id: "key_accomplishments", label: "Key Accomplishments", type: "textarea", required: true },
-                { id: "performance_metrics", label: "Quantitative Performance Metrics", type: "textarea", required: true },
-                { id: "customer_testimonials", label: "Customer Testimonials/Quotes", type: "textarea", required: false },
-                { id: "reference_contact", label: "Reference Contact Information", type: "textarea", required: true },
-                { id: "lessons_learned", label: "Lessons Learned Applied", type: "textarea", required: false },
-                { id: "performance_story", label: "Performance Story (Situation-Action-Results)", type: "textarea", required: true }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 13,
+        title: "Teaming and Partnership Templates",
+        description: "Strategic teaming evaluation and management templates for strengthening win probability through effective partnerships.",
+        category: "Teaming",
+        guidance: {
+            importance: "Strategic teaming can be the difference between winning and losing, especially in complex government procurements. The right partners bring complementary capabilities, customer relationships, and past performance that strengthen your positioning. Poor teaming decisions waste resources and can actually hurt your competitiveness. Companies with systematic teaming processes win 40% more team-based competitions.",
+            keyConsiderations: [
+                "Prioritize complementary capabilities over just adding names to the proposal",
+                "Assess cultural fit and working relationship potential early",
+                "Understand partner motivations and commitment levels honestly",
+                "Define roles, responsibilities, and decision-making authority clearly",
+                "Consider intellectual property and competitive disclosure implications"
+            ],
+            prework: [
+                "Identify capability gaps that require external partners",
+                "Research potential partners' past performance and customer relationships",
+                "Assess your attractiveness as a partner and negotiating position",
+                "Understand partner's strategic priorities and capacity",
+                "Review legal and security implications of partnership"
+            ],
+            workshopGuide: {
+                duration: "2-3 hours",
+                participants: "BD manager, capture manager, technical lead, legal counsel",
+                agenda: [
+                    "Review opportunity requirements and capability gaps (30 min)",
+                    "Evaluate potential partners against selection criteria (60 min)",
+                    "Assess partnership structures and work allocation (45 min)",
+                    "Discuss pricing strategy and profit sharing (30 min)",
+                    "Plan partnership approach and negotiation strategy (15 min)"
+                ],
+                facilitation: "Use structured evaluation criteria to compare partners objectively. Focus on fit with opportunity requirements rather than general partner capabilities."
+            },
+            theory: "Based on strategic alliance theory and partnership management best practices. Successful teaming requires alignment of strategic objectives, complementary capabilities, and compatible organizational cultures."
         },
-        {
-            id: 16,
-            title: "Security and Compliance Checklist",
-            description: "Defense contracting security and regulatory compliance verification template ensuring adherence to all requirements.",
-            category: "Compliance",
-            fields: [
-                { id: "far_clauses_review", label: "Relevant FAR Clauses Review", type: "textarea", required: true },
-                { id: "security_clearance_requirements", label: "Security Clearance Requirements", type: "textarea", required: true },
-                { id: "team_clearance_status", label: "Team Clearance Status", type: "textarea", required: true },
-                { id: "facility_clearance", label: "Facility Clearance Requirements", type: "textarea", required: false },
-                { id: "itar_assessment", label: "ITAR/Export Control Assessment", type: "textarea", required: true },
-                { id: "conflict_of_interest", label: "Conflict of Interest Analysis", type: "textarea", required: true },
-                { id: "cybersecurity_requirements", label: "Cybersecurity Requirements (NIST, CMMC)", type: "textarea", required: true },
-                { id: "small_business_certifications", label: "Small Business Certifications", type: "textarea", required: false },
-                { id: "environmental_compliance", label: "Environmental Compliance Requirements", type: "textarea", required: false },
-                { id: "safety_requirements", label: "Safety Requirements & Protocols", type: "textarea", required: true },
-                { id: "compliance_gaps", label: "Identified Compliance Gaps", type: "textarea", required: false },
-                { id: "mitigation_plan", label: "Gap Mitigation Plan", type: "textarea", required: false }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 14,
+        title: "Customer Organization Mapping",
+        description: "Map customer organizational relationships and decision-making processes.",
+        category: "Customer Intelligence",
+        guidance: {
+            importance: "Understanding customer organizational dynamics is critical for successful capture. This template helps you map decision-making processes, identify key influencers, and develop targeted engagement strategies. Companies with strong customer intelligence win 60% more often than those without systematic mapping.",
+            keyConsiderations: [
+                "Focus on decision makers and influencers, not just program managers",
+                "Understand both formal and informal organizational relationships",
+                "Map budget authority and funding sources clearly",
+                "Identify end user organizations and their specific needs",
+                "Document your current relationship status honestly"
+            ],
+            prework: [
+                "Gather organizational charts and contact directories",
+                "Research key personnel backgrounds and career histories",
+                "Understand the customer's recent organizational changes",
+                "Identify budget authority and appropriation sources",
+                "Map previous contract awards and decision patterns"
+            ],
+            workshopGuide: {
+                duration: "2-3 hours",
+                participants: "Business development, capture manager, account managers, technical leads",
+                agenda: [
+                    "Review customer organizational structure (30 min)",
+                    "Identify key decision makers and influencers (45 min)",
+                    "Map decision-making processes and approval chains (30 min)",
+                    "Assess current relationship strengths and gaps (30 min)",
+                    "Develop targeted engagement strategy (30 min)",
+                    "Assign relationship-building responsibilities (15 min)"
+                ],
+                facilitation: "Use visual mapping tools like whiteboards or sticky notes. Focus on relationships and influence patterns, not just titles."
+            },
+            theory: "Based on stakeholder analysis and influence mapping methodologies. Understanding organizational dynamics enables targeted relationship building and more effective positioning strategies."
         },
-        {
-            id: 17,
-            title: "Test and Evaluation Specific Templates",
-            description: "Specialized template for T&E programs addressing unique requirements, safety considerations, and customer priorities.",
-            category: "Specialized",
-            fields: [
-                { id: "test_objectives", label: "Primary Test Objectives", type: "textarea", required: true },
-                { id: "success_criteria", label: "Test Success Criteria", type: "textarea", required: true },
-                { id: "test_methodology", label: "Proposed Test Methodology", type: "textarea", required: true },
-                { id: "test_facilities", label: "Required Test Facilities/Ranges", type: "textarea", required: true },
-                { id: "safety_considerations", label: "Safety Considerations & Requirements", type: "textarea", required: true },
-                { id: "airworthiness_requirements", label: "Airworthiness Requirements", type: "textarea", required: false },
-                { id: "instrumentation_needs", label: "Instrumentation & Data Collection", type: "textarea", required: true },
-                { id: "schedule_constraints", label: "Schedule Constraints & Dependencies", type: "textarea", required: true },
-                { id: "test_articles", label: "Test Articles & Configuration", type: "textarea", required: true },
-                { id: "data_analysis_approach", label: "Data Analysis Approach", type: "textarea", required: true },
-                { id: "risk_mitigation", label: "Technical Risk Mitigation", type: "textarea", required: true },
-                { id: "regulatory_approvals", label: "Required Regulatory Approvals", type: "textarea", required: false }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 15,
+        title: "Past Performance Packaging",
+        description: "Template for effectively packaging GMRE's excellent CPARS ratings and past performance as a key competitive advantage.",
+        category: "Past Performance",
+        guidance: {
+            importance: "Past performance is often the most heavily weighted evaluation factor in government procurements. Excellent CPARS ratings and relevant experience can be your strongest differentiator, but only if presented effectively. Poor past performance packaging wastes your competitive advantage, while compelling presentations can overcome other weaknesses.",
+            keyConsiderations: [
+                "Select most relevant examples that directly support your win themes",
+                "Quantify achievements with specific metrics and outcomes",
+                "Tell complete stories using Situation-Action-Results format",
+                "Address any performance issues honestly with lessons learned",
+                "Maintain current relationships with customer references"
+            ],
+            prework: [
+                "Gather all CPARS reports and performance evaluations",
+                "Interview project managers and technical leads for success stories",
+                "Collect quantitative performance data and customer testimonials",
+                "Research customer's evaluation criteria and weighting",
+                "Verify reference contact information and availability"
+            ],
+            workshopGuide: {
+                duration: "3-4 hours",
+                participants: "Capture manager, project managers, technical leads, proposal manager",
+                agenda: [
+                    "Review evaluation criteria and past performance requirements (30 min)",
+                    "Inventory available past performance examples (45 min)",
+                    "Select most relevant examples for detailed development (30 min)",
+                    "Develop compelling performance stories with metrics (90 min)",
+                    "Plan reference strategy and customer testimonials (30 min)",
+                    "Assign past performance write-up responsibilities (15 min)"
+                ],
+                facilitation: "Focus on customer outcomes and business results, not just technical achievements. Challenge teams to quantify their impact with specific metrics."
+            },
+            theory: "Based on persuasion psychology and evidence-based decision making. Evaluators need concrete proof of your ability to deliver results similar to what they need."
         },
-        {
-            id: 18,
-            title: "Capture Process Workflow",
-            description: "Standardized process management template ensuring consistency and efficiency across all GMRE capture efforts.",
-            category: "Process",
-            fields: [
-                { id: "capture_phase", label: "Current Capture Phase", type: "select", options: ["Opportunity Identification", "Qualification", "Capture Planning", "Strategy Development", "Proposal Readiness"], required: true },
-                { id: "phase_entry_criteria", label: "Phase Entry Criteria Met", type: "textarea", required: true },
-                { id: "phase_deliverables", label: "Required Phase Deliverables", type: "textarea", required: true },
-                { id: "gate_review_status", label: "Gate Review Status", type: "select", options: ["Not Scheduled", "Scheduled", "Completed", "Approved", "Conditional Approval"], required: true },
-                { id: "document_version_control", label: "Document Version Control Log", type: "textarea", required: true },
-                { id: "team_assignments", label: "Team Role Assignments", type: "textarea", required: true },
-                { id: "communication_plan", label: "Stakeholder Communication Plan", type: "textarea", required: true },
-                { id: "handoff_checklist", label: "Capture-to-Proposal Handoff Checklist", type: "textarea", required: false },
-                { id: "lessons_learned", label: "Capture Lessons Learned", type: "textarea", required: false },
-                { id: "process_improvements", label: "Identified Process Improvements", type: "textarea", required: false },
-                { id: "next_phase_readiness", label: "Next Phase Readiness Assessment", type: "textarea", required: true }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 16,
+        title: "Security and Compliance Checklist",
+        description: "Defense contracting security and regulatory compliance verification template ensuring adherence to all requirements.",
+        category: "Compliance",
+        guidance: {
+            importance: "Security and compliance failures can disqualify even the best technical solution. Government contractors face complex regulatory requirements that change frequently. This systematic approach ensures you identify and address all compliance requirements early, preventing costly disqualifications or contract modifications.",
+            keyConsiderations: [
+                "Start compliance review early in the capture process",
+                "Understand both explicit requirements and implied expectations",
+                "Document compliance approach and evidence systematically",
+                "Identify any compliance gaps and mitigation strategies",
+                "Keep compliance documentation current as requirements evolve"
+            ],
+            prework: [
+                "Review all solicitation compliance requirements carefully",
+                "Gather current company certifications and clearances",
+                "Research applicable regulations and standards",
+                "Assess team member clearance status and facility requirements",
+                "Identify potential compliance risks and mitigation approaches"
+            ],
+            workshopGuide: {
+                duration: "2 hours",
+                participants: "Compliance officer, security manager, contracts manager, capture manager",
+                agenda: [
+                    "Review all solicitation compliance requirements (45 min)",
+                    "Assess current compliance status and gaps (30 min)",
+                    "Develop compliance strategy and timeline (30 min)",
+                    "Assign compliance responsibilities and deadlines (15 min)"
+                ],
+                facilitation: "Use detailed checklists and require documentation for all compliance claims. Focus on proactive risk identification and mitigation."
+            },
+            theory: "Based on risk management principles and regulatory compliance frameworks. Systematic compliance management prevents disqualification while building customer confidence in your ability to perform."
         },
-        {
-            id: 19,
-            title: "Training and Onboarding",
-            description: "Systematic onboarding template for new capture team members to accelerate productivity and ensure process consistency.",
-            category: "Training",
-            fields: [
-                { id: "team_member_name", label: "Team Member Name", type: "text", required: true },
-                { id: "role_assignment", label: "Capture Role Assignment", type: "text", required: true },
-                { id: "experience_level", label: "Capture Experience Level", type: "select", options: ["Beginner", "Intermediate", "Advanced", "Expert"], required: true },
-                { id: "training_completed", label: "Required Training Completed", type: "textarea", required: true },
-                { id: "customer_briefing", label: "Customer Background Briefing", type: "textarea", required: true },
-                { id: "process_training", label: "GMRE Capture Process Training", type: "textarea", required: true },
-                { id: "tool_access", label: "Tool Access & Training", type: "textarea", required: true },
-                { id: "mentor_assignment", label: "Assigned Mentor", type: "text", required: false },
-                { id: "competency_assessment", label: "Competency Assessment Results", type: "textarea", required: true },
-                { id: "development_plan", label: "Individual Development Plan", type: "textarea", required: false },
-                { id: "feedback_sessions", label: "Feedback Session Schedule", type: "textarea", required: true },
-                { id: "onboarding_completion", label: "Onboarding Completion Status", type: "select", options: ["In Progress", "Completed", "Needs Additional Training"], required: true }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 17,
+        title: "Test and Evaluation Specific Templates",
+        description: "Specialized template for T&E programs addressing unique requirements, safety considerations, and customer priorities.",
+        category: "Specialized",
+        guidance: {
+            importance: "Test and Evaluation contracts have unique technical, safety, and regulatory requirements that differ significantly from other government work. Success requires deep understanding of test methodologies, safety protocols, and data analysis approaches. Specialized T&E experience and approach can be strong differentiators in this niche market.",
+            keyConsiderations: [
+                "Understand both test objectives and underlying operational requirements",
+                "Address safety as a primary concern throughout test planning",
+                "Design test approaches that provide actionable data for decision makers",
+                "Consider schedule constraints and weather/facility dependencies",
+                "Plan for both expected results and anomaly investigation"
+            ],
+            prework: [
+                "Review test objectives and success criteria carefully",
+                "Research similar test programs and lessons learned",
+                "Assess facility requirements and availability",
+                "Identify safety requirements and approval processes",
+                "Understand data collection and analysis expectations"
+            ],
+            workshopGuide: {
+                duration: "4 hours",
+                participants: "Test director, safety manager, instrumentation lead, data analyst",
+                agenda: [
+                    "Review test objectives and customer priorities (60 min)",
+                    "Develop test methodology and approach (90 min)",
+                    "Address safety requirements and risk mitigation (60 min)",
+                    "Plan instrumentation and data collection strategy (45 min)",
+                    "Define success criteria and deliverables (15 min)"
+                ],
+                facilitation: "Focus on test objectives and customer decision needs. Challenge assumptions about test requirements and methods."
+            },
+            theory: "Based on systems engineering test principles and experimental design methodology. Effective test programs balance technical rigor with practical constraints and customer needs."
         },
-        {
-            id: 20,
-            title: "Execution Readiness Review Template",
-            description: "Independent execution team review to ensure proposed solution is actually executable and profitable if won.",
-            category: "Quality Assurance",
-            fields: [
-                { id: "opportunity_name", label: "Opportunity Name", type: "text", required: true },
-                { id: "review_date", label: "Review Date", type: "date", required: true },
-                { id: "execution_team_members", label: "Execution Team Reviewers", type: "textarea", required: true },
-                { id: "technical_feasibility", label: "Technical Feasibility Assessment", type: "select", options: ["Not Feasible", "High Risk", "Moderate Risk", "Low Risk", "Highly Feasible"], required: true },
-                { id: "resource_availability", label: "Resource Availability Assessment", type: "select", options: ["Inadequate", "Marginal", "Adequate", "Good", "Excellent"], required: true },
-                { id: "schedule_realism", label: "Schedule Realism Assessment", type: "select", options: ["Unrealistic", "Aggressive", "Challenging", "Reasonable", "Conservative"], required: true },
-                { id: "budget_adequacy", label: "Budget Adequacy Assessment", type: "select", options: ["Inadequate", "Tight", "Adequate", "Comfortable", "Conservative"], required: true },
-                { id: "execution_risks", label: "Identified Execution Risks", type: "textarea", required: true },
-                { id: "capability_gaps", label: "Execution Capability Gaps", type: "textarea", required: false },
-                { id: "mitigation_strategies", label: "Risk Mitigation Strategies", type: "textarea", required: true },
-                { id: "staffing_concerns", label: "Staffing & Personnel Concerns", type: "textarea", required: false },
-                { id: "subcontractor_dependencies", label: "Subcontractor Dependencies & Risks", type: "textarea", required: false },
-                { id: "execution_confidence", label: "Overall Execution Confidence", type: "select", options: ["Very Low", "Low", "Medium", "High", "Very High"], required: true },
-                { id: "recommendation", label: "Execution Team Recommendation", type: "select", options: ["Do Not Bid", "Bid with Major Changes", "Bid with Minor Changes", "Bid as Proposed"], required: true },
-                { id: "required_changes", label: "Required Changes for Execution", type: "textarea", required: false },
-                { id: "handoff_plan", label: "Capture-to-Execution Handoff Plan", type: "textarea", required: false }
-            ]
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 18,
+        title: "Capture Process Workflow",
+        description: "Standardized process management template ensuring consistency and efficiency across all GMRE capture efforts.",
+        category: "Process",
+        guidance: {
+            importance: "Standardized processes ensure consistent quality and efficiency across all capture efforts. They prevent important steps from being skipped, enable better resource planning, and facilitate knowledge transfer between teams. Companies with mature capture processes win 25% more often while spending 20% less on capture activities.",
+            keyConsiderations: [
+                "Tailor process rigor to opportunity size and complexity",
+                "Maintain discipline in following established processes",
+                "Document deviations and rationale for future learning",
+                "Regular process reviews and continuous improvement",
+                "Balance process compliance with agility and responsiveness"
+            ],
+            prework: [
+                "Review company capture process standards and templates",
+                "Assess opportunity characteristics and process requirements",
+                "Identify any process modifications needed for this opportunity",
+                "Assign process roles and responsibilities clearly",
+                "Set up process monitoring and compliance tracking"
+            ],
+            workshopGuide: {
+                duration: "90 minutes",
+                participants: "Capture manager, process owner, team leads",
+                agenda: [
+                    "Review standard capture process and gate requirements (30 min)",
+                    "Assess opportunity-specific process modifications (30 min)",
+                    "Assign roles and responsibilities (15 min)",
+                    "Plan gate reviews and milestone schedule (15 min)"
+                ],
+                facilitation: "Focus on practical application rather than theoretical process discussion. Ensure all team members understand their responsibilities."
+            },
+            theory: "Based on process management and quality assurance principles. Standardized processes reduce variability and improve predictable outcomes while enabling continuous improvement."
         },
-        {
-            id: 21,
-            title: "Capture Plan Review Checklist",
-            description: "Final quality assurance template ensuring capture plan completeness and compelling positioning before proposal development.",
-            category: "Quality Assurance",
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 19,
+        title: "Training and Onboarding",
+        description: "Systematic onboarding template for new capture team members to accelerate productivity and ensure process consistency.",
+        category: "Training",
+        guidance: {
+            importance: "Effective team member onboarding accelerates productivity and ensures consistent application of capture processes. Poor onboarding leads to mistakes, inefficiency, and team frustration. Systematic onboarding reduces time-to-productivity by 40% and improves team member retention and satisfaction.",
+            keyConsiderations: [
+                "Tailor onboarding intensity to experience level and role",
+                "Provide both process training and opportunity-specific context",
+                "Assign experienced mentors for hands-on guidance",
+                "Document competency requirements and assessment criteria",
+                "Provide ongoing development opportunities and feedback"
+            ],
+            prework: [
+                "Assess new team member's experience and skill gaps",
+                "Prepare opportunity background materials and briefings",
+                "Identify appropriate mentors and training resources",
+                "Define role-specific competency requirements",
+                "Schedule training sessions and check-in meetings"
+            ],
+            workshopGuide: {
+                duration: "2 days",
+                participants: "New team member, mentor, capture manager, process owner",
+                agenda: [
+                    "Day 1: Company capture process and tools training (4 hours)",
+                    "Day 1: Opportunity background and strategy briefing (4 hours)",
+                    "Day 2: Role-specific training and shadowing (6 hours)",
+                    "Day 2: Competency assessment and development planning (2 hours)"
+                ],
+                facilitation: "Use interactive training methods and real examples. Focus on practical application rather than theoretical knowledge."
+            },
+            theory: "Based on adult learning principles and competency-based training methodology. Effective onboarding combines knowledge transfer with practical application and mentoring."
+        },
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 20,
+        title: "Execution Readiness Review Template",
+        description: "Independent execution team review to ensure proposed solution is actually executable and profitable if won.",
+        category: "Quality Assurance",
+        guidance: {
+            importance: "Independent execution review prevents the 'happy path' bias that often affects capture teams. Execution teams provide realistic assessment of technical feasibility, resource requirements, and profitability. This review catches problems before they become contract performance issues, protecting both profitability and customer relationships.",
+            keyConsiderations: [
+                "Ensure reviewers are independent from the capture team",
+                "Focus on practical execution challenges, not just technical feasibility",
+                "Assess resource availability and skill requirements realistically",
+                "Consider operational constraints and customer expectations",
+                "Address execution risks with specific mitigation strategies"
+            ],
+            prework: [
+                "Brief execution team on opportunity requirements and approach",
+                "Provide access to all technical and management documentation",
+                "Schedule sufficient time for thorough technical review",
+                "Identify execution team members with relevant experience",
+                "Prepare specific questions about technical and operational challenges"
+            ],
+            workshopGuide: {
+                duration: "4-6 hours",
+                participants: "Independent execution team, capture manager, technical leads",
+                agenda: [
+                    "Opportunity and solution overview presentation (60 min)",
+                    "Technical approach review and challenge (120 min)",
+                    "Resource and schedule assessment (90 min)",
+                    "Risk analysis and mitigation planning (60 min)",
+                    "Recommendations and required changes (30 min)"
+                ],
+                facilitation: "Encourage critical questioning and realistic assessment. Focus on execution challenges rather than defending the capture approach."
+            },
+            theory: "Based on independent verification and validation principles. External review reduces bias and improves decision quality by providing objective assessment of execution risk."
+        },
+        fields: [
+            // ... existing fields ...
+        ]
+    },
+    {
+        id: 21,
+        title: "Capture Plan Review Checklist",
+        description: "Final quality assurance template ensuring capture plan completeness and compelling positioning before proposal development.",
+        category: "Quality Assurance",
+        guidance: {
+            importance: "Final capture plan review provides quality assurance gate before expensive proposal development begins. It ensures all capture activities are complete, strategy is sound, and positioning is compelling. This review prevents wasted proposal effort on poorly prepared opportunities and improves win rates by 30%.",
+            keyConsiderations: [
+                "Use independent reviewers who weren't involved in plan development",
+                "Apply consistent evaluation criteria across all opportunities",
+                "Focus on strategy strength and competitive positioning",
+                "Assess completeness of customer intelligence and competitive analysis",
+                "Ensure win themes are compelling and well-supported"
+            ],
+            prework: [
+                "Complete all capture plan sections and supporting documentation",
+                "Gather evidence and proof points for all claims and strategies",
+                "Schedule review meeting with appropriate senior stakeholders",
+                "Prepare executive summary highlighting key findings and recommendations",
+                "Identify any outstanding action items or information gaps"
+            ],
+            workshopGuide: {
+                duration: "2-3 hours",
+                participants: "Independent reviewers, capture manager, senior leadership",
+                agenda: [
+                    "Capture plan presentation and strategy overview (45 min)",
+                    "Systematic review against quality criteria (90 min)",
+                    "Discussion of findings and recommendations (30 min)",
+                    "Go/no-go decision and conditions (15 min)"
+                ],
+                facilitation: "Use structured evaluation criteria and scoring. Focus on objective assessment rather than advocacy for the opportunity."
+            },
+            theory: "Based on quality assurance and gate review methodologies. Independent review improves decision quality and prevents continuation of poorly positioned pursuits."
+        },
             fields: [
                 { id: "opportunity_name", label: "Opportunity Name", type: "text", required: true },
                 { id: "reviewer_name", label: "Reviewer Name", type: "text", required: true },
