@@ -59,7 +59,7 @@ nav a:hover, nav a.active {
 }
 
 .container {
-    max-width: 95%;
+    max-width: 100%;    /* Change from 95% to 100% */
     margin: 0 auto;
     padding: 2rem;
 }
