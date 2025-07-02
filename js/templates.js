@@ -7,28 +7,7 @@ const Templates = {
             DataStore.savedTemplates = JSON.parse(localStorage.getItem('savedTemplates')) || [];
         }
         
-        container.innerHTML = DataStore.templates.map(template => `
-            <div class="template-card">
-                <h4>${template.title}</h4>
-                <p>${template.description}</p>
-                <div style="margin: 1rem 0; font-size: 0.8rem; color: #666;">
-                    ${template.fields ? template.fields.length : 0} fields
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">
-                        ${template.category}
-                    </span>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="Templates.use(${template.id})">
-                            Fill Out
-                        </button>
-                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="Templates.download(${template.id})">
-                            Download
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('') + `
+        container.innerHTML = DataStore.templates.map(template => this.renderTemplateCard(template)).join('') + `
             <div class="template-card" style="border: 2px dashed #ddd; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #666;">
                 <div style="margin-bottom: 1rem;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
@@ -38,6 +17,27 @@ const Templates = {
                 <button class="btn" onclick="Templates.showSaved()">
                     View Saved (${DataStore.savedTemplates.length})
                 </button>
+            </div>
+        `;
+    },
+
+    renderTemplateCard(template) {
+        const categoryClass = template.category ? template.category.toLowerCase() : 'planning';
+        const categoryDisplay = template.category || 'Planning';
+        
+        return `
+            <div class="template-card" data-category="${categoryClass}">
+                <div class="template-category ${categoryClass}">${categoryDisplay}</div>
+                <h4>${template.title}</h4>
+                <p>${template.description}</p>
+                <div class="template-actions">
+                    <button class="btn" onclick="Templates.useTemplate('${template.id}')">
+                        Use Template
+                    </button>
+                    <button class="btn btn-secondary" onclick="Templates.viewTemplate('${template.id}')">
+                        View Details
+                    </button>
+                </div>
             </div>
         `;
     },
@@ -101,7 +101,7 @@ const Templates = {
                 return `
                     <div class="form-group">
                         <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="number" id="${fieldId}" name="${field.id}" ${min} ${max} ${required}>
+                        <input type="number" id="${fieldId}" name="${field.id}" value="${field.defaultValue}" ${min} ${max} ${required}>
                     </div>
                 `;
             case 'date':
@@ -115,7 +115,7 @@ const Templates = {
                 return `
                     <div class="form-group">
                         <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <textarea id="${fieldId}" name="${field.id}" rows="4" ${required}></textarea>
+                        <textarea id="${fieldId}" name="${field.id}" rows="4" ${required}>${field.defaultValue || ''}</textarea>
                     </div>
                 `;
             case 'select':
@@ -197,6 +197,7 @@ const Templates = {
                     <p style="color: #666; font-size: 0.9rem;">${template ? template.title : 'Unknown Template'}</p>
                     <div style="margin: 0.5rem 0; font-size: 0.8rem; color: #999;">
                         Saved: ${Utils.formatDate(saved.savedDate)}
+                        ${saved.lastModified ? ` • Last Modified: ${Utils.formatDate(saved.lastModified)}` : ''}
                         ${saved.opportunityName ? ` • ${saved.opportunityName}` : ''}
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
@@ -471,5 +472,82 @@ const Templates = {
 
     openNewModal() {
         alert('Add Template functionality coming soon!');
+    },
+
+    useTemplate(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) return;
+        
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        // Generate form HTML
+        const formHTML = `
+            <h2>${template.title}</h2>
+            <p style="color: #666; margin-bottom: 2rem;">${template.description}</p>
+            
+            <form id="templateForm" onsubmit="Templates.saveForm(event, ${templateId})">
+                <div class="form-group">
+                    <label for="template_title">Template Title *</label>
+                    <input type="text" id="template_title" value="${template.title} - ${new Date().toLocaleDateString()}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="template_opportunity">Related Opportunity (Optional)</label>
+                    <select id="template_opportunity">
+                        <option value="">Select Opportunity</option>
+                        ${DataStore.opportunities.map(opp => `<option value="${opp.id}">${opp.name}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <hr style="margin: 2rem 0;">
+                
+                ${template.fields.map(field => this.generateFormField(field)).join('')}
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Template</button>
+                </div>
+            </form>
+        `;
+        
+        content.innerHTML = formHTML;
+        modal.style.display = 'block';
+    },
+
+    viewTemplate(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) return;
+        
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        // Generate read-only view
+        const viewHTML = `
+            <h2>${template.title}</h2>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <strong>Category:</strong> ${template.category}<br>
+                <strong>Description:</strong> ${template.description}<br>
+            </div>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                ${template.fields.map(field => {
+                    return `
+                        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
+                            <h4 style="color: #333; margin-bottom: 0.5rem;">${field.label}</h4>
+                            <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 4px; white-space: pre-wrap;">${field.type}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="Templates.closeModal()">Close</button>
+                <button class="btn" onclick="Templates.useTemplate('${templateId}')">Use Template</button>
+            </div>
+        `;
+        
+        content.innerHTML = viewHTML;
+        modal.style.display = 'block';
     },
 };

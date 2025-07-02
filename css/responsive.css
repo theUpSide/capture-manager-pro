@@ -26,6 +26,11 @@
     .opportunity-info-cell {
         padding: 1.2rem;
     }
+    
+    .timeline-rows {
+        gap: 0.8rem; /* Slightly smaller gap on medium screens */
+        padding: 0.8rem 0;
+    }
 }
 
 @media (max-width: 768px) {
@@ -108,26 +113,21 @@
         font-size: 1.1rem;
     }
     
-    /* Forms responsive */
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
-    }
-    
-    .modal-content {
-        width: 95%;
-        margin: 5% auto;
-        padding: 1.5rem;
-        max-height: 85vh;
-    }
-    
     /* Roadmap responsive */
     .timeline-header {
         grid-template-columns: 200px 1fr;
+        border-radius: 8px 8px 0 0; /* Match row radius */
     }
     
     .timeline-row {
         grid-template-columns: 200px 1fr;
+        border-radius: 8px; /* Slightly smaller radius on mobile */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Lighter shadow on mobile */
+    }
+    
+    .timeline-row:hover {
+        transform: none; /* Disable hover transform on mobile */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Keep same shadow on mobile */
     }
     
     .opportunity-column-header {
@@ -137,6 +137,11 @@
     
     .opportunity-info-cell {
         padding: 1rem 0.5rem;
+        border-radius: 8px 0 0 8px; /* Match row radius */
+    }
+    
+    .phase-blocks-container {
+        border-radius: 0 8px 8px 0; /* Match row radius */
     }
     
     .opp-name {
@@ -196,6 +201,7 @@
         gap: 0.5rem;
         align-items: center;
         padding: 1rem;
+        border-radius: 8px; /* Match row radius */
     }
     
     .legend-item {

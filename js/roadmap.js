@@ -14,22 +14,29 @@ const Roadmap = {
         });
         
         container.innerHTML = activeOpportunities.map(opp => {
-            const daysToRfp = opp.rfpDate ? Utils.calculateDaysUntilDate(opp.rfpDate) : null;
+            const daysToRfp = opp.rfpDate ? Utils.calculateDaysUntilDate(opp.rfpDate) : 
+                              opp.closeDate ? Utils.calculateDaysUntilDate(opp.closeDate) : null;
+            
+            // Use the correct field names and provide fallbacks for undefined values
+            const customer = opp.client || opp.customer || 'Customer TBD';
+            const contractType = opp.type || 'Contract Type TBD';
+            const role = opp.role || 'Role TBD';
+            const incumbent = opp.incumbent ? ` • vs ${opp.incumbent}` : '';
             
             return `
                 <div class="timeline-row">
                     <div class="opportunity-info-cell">
                         <div class="opp-name">${opp.name}</div>
                         <div class="opp-details">
-                            <strong>${opp.customer}</strong><br>
-                            ${opp.type} • ${opp.role}${opp.incumbent ? ` • vs ${opp.incumbent}` : ''}
+                            <strong>${customer}</strong><br>
+                            ${contractType} • ${role}${incumbent}
                         </div>
                         <div class="opp-metrics">
                             <div class="metric-badge value">
                                 💰 ${Utils.formatCurrency(opp.value)}
                             </div>
-                            <div class="metric-badge pwin-${this.getPwinClass(opp.pwin)}">
-                                🎯 ${opp.pwin}%
+                            <div class="metric-badge pwin-${this.getPwinClass(opp.probability || opp.pwin || 0)}">
+                                🎯 ${opp.probability || opp.pwin || 0}%
                             </div>
                             <div class="metric-badge">
                                 📅 ${daysToRfp ? `${daysToRfp}d to RFP` : 'TBD'}
@@ -184,7 +191,12 @@ const Roadmap = {
                         <div class="step-item ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}" style="margin-bottom: 1rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                                 <h4>${isCompleted ? '✅' : isCurrent ? '🔄' : '⏳'} ${step.title}</h4>
-                                ${!isCompleted ? `<button class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Roadmap.markStepComplete('${opportunityId}', '${step.id}')">Mark Complete</button>` : ''}
+                                <div style="display: flex; gap: 0.5rem;">
+                                    ${isCompleted ? 
+                                        `<button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Roadmap.markStepIncomplete('${opportunityId}', '${step.id}')">Mark Incomplete</button>` :
+                                        `<button class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Roadmap.markStepComplete('${opportunityId}', '${step.id}')">Mark Complete</button>`
+                                    }
+                                </div>
                             </div>
                             <p style="color: #666; margin-bottom: 0.5rem;">${step.description}</p>
                             <small style="color: #999;">Duration: ${step.duration} days • Start: Day ${step.daysFromStart}</small>
@@ -246,13 +258,37 @@ const Roadmap = {
         // Update opportunity progress
         this.updateOpportunityProgress(opportunityId);
         
-        // Refresh views
-        this.render();
-        Dashboard.refresh();
+        // Save data
+        DataStore.saveData();
         
-        // Close and reopen modal to refresh
-        this.closePhaseModal();
-        setTimeout(() => this.openPhaseDetail(opportunityId, this.getCurrentPhaseForStep(stepId)), 100);
+        // Refresh the main roadmap view
+        this.render();
+        
+        // Refresh the current modal content without closing it
+        const currentPhase = this.getCurrentPhaseForStep(stepId);
+        this.openPhaseDetail(opportunityId, currentPhase);
+    },
+
+    markStepIncomplete(opportunityId, stepId) {
+        // Find the action and mark it incomplete
+        const action = DataStore.actions.find(a => a.opportunityId == opportunityId && a.stepId === stepId);
+        
+        if (action) {
+            action.completed = false;
+            
+            // Update opportunity progress
+            this.updateOpportunityProgress(opportunityId);
+            
+            // Save data
+            DataStore.saveData();
+            
+            // Refresh the main roadmap view
+            this.render();
+            
+            // Refresh the current modal content without closing it
+            const currentPhase = this.getCurrentPhaseForStep(stepId);
+            this.openPhaseDetail(opportunityId, currentPhase);
+        }
     },
 
     findStepInfo(stepId) {
@@ -358,5 +394,64 @@ const Roadmap = {
         a.download = 'capture_roadmap.csv';
         a.click();
         URL.revokeObjectURL(url);
+    },
+
+    calculatePhaseStatus(opportunity, phase) {
+        const actions = DataStore.actions.filter(action => 
+            action.opportunityId == opportunity.id && action.phase === phase
+        );
+        
+        if (actions.length === 0) {
+            // No actions for this phase
+            const phaseOrder = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
+            const currentPhaseIndex = phaseOrder.indexOf(opportunity.currentPhase);
+            const thisPhaseIndex = phaseOrder.indexOf(phase);
+            
+            if (thisPhaseIndex < currentPhaseIndex) {
+                return { status: 'completed', progress: 100, icon: '✅' };
+            } else if (thisPhaseIndex === currentPhaseIndex) {
+                return { status: 'current', progress: opportunity.progress || 0, icon: '🔄' };
+            } else {
+                return { status: 'upcoming', progress: 0, icon: '⏳' };
+            }
+        }
+        
+        const completedActions = actions.filter(action => action.completed);
+        const progress = Math.round((completedActions.length / actions.length) * 100);
+        
+        // Check if ALL actions in this phase are complete
+        const allActionsComplete = completedActions.length === actions.length && actions.length > 0;
+        
+        if (allActionsComplete) {
+            return { status: 'completed', progress: 100, icon: '✅' };
+        }
+        
+        // Check if this is the current phase based on opportunity progress
+        const phaseOrder = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
+        const currentPhaseIndex = phaseOrder.indexOf(opportunity.currentPhase);
+        const thisPhaseIndex = phaseOrder.indexOf(phase);
+        
+        if (thisPhaseIndex < currentPhaseIndex) {
+            // Previous phases should be completed unless there are incomplete actions
+            if (progress === 100) {
+                return { status: 'completed', progress: 100, icon: '✅' };
+            } else {
+                return { status: 'needs-attention', progress, icon: '🎯' };
+            }
+        } else if (thisPhaseIndex === currentPhaseIndex) {
+            // Current phase
+            if (progress === 100) {
+                return { status: 'completed', progress: 100, icon: '✅' };
+            } else {
+                return { status: 'current', progress, icon: '🔄' };
+            }
+        } else {
+            // Future phases
+            if (progress > 0) {
+                return { status: 'current', progress, icon: '🔄' };
+            } else {
+                return { status: 'upcoming', progress: 0, icon: '⏳' };
+            }
+        }
     }
 };

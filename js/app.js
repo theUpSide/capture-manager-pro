@@ -51,8 +51,33 @@ const Navigation = {
 
     showReports() {
         this.hideAllViews();
-        // Add reports view when implemented
-        alert('Reports functionality coming soon!');
+        // The reports section is inside reports-view, but let's check both
+        let reportsView = document.getElementById('reports-view');
+        
+        if (reportsView) {
+            reportsView.style.display = 'block';
+        } else {
+            // If reports-view doesn't exist, maybe it's just reports-content
+            const reportsContent = document.getElementById('reports-content');
+            if (reportsContent) {
+                // Find the parent view
+                const parentView = reportsContent.closest('[id$="-view"]');
+                if (parentView) {
+                    parentView.style.display = 'block';
+                } else {
+                    // Create a temporary view structure
+                    reportsContent.style.display = 'block';
+                }
+            } else {
+                console.error('No reports container found');
+                return;
+            }
+        }
+        
+        this.updateActiveNav('Reports');
+        if (typeof Reports !== 'undefined') {
+            Reports.render();
+        }
     },
 
     hideAllViews() {
@@ -62,7 +87,8 @@ const Navigation = {
             'roadmap-view',
             'actions-view',
             'templates-view',
-            'saved-templates-view'
+            'saved-templates-view',
+            'reports-view'
         ];
         
         views.forEach(viewId => {
@@ -71,6 +97,12 @@ const Navigation = {
                 view.style.display = 'none';
             }
         });
+        
+        // Also hide reports-content if it's not inside a view
+        const reportsContent = document.getElementById('reports-content');
+        if (reportsContent && !reportsContent.closest('[id$="-view"]')) {
+            reportsContent.style.display = 'none';
+        }
     },
 
     updateActiveNav(activeText) {
@@ -92,13 +124,13 @@ window.onclick = function(event) {
     if (event.target === opportunityModal) {
         Opportunities.closeModal();
     }
-    if (event.target === phaseModal) {
+    if (event.target === phaseModal && typeof Roadmap !== 'undefined') {
         Roadmap.closePhaseModal();
     }
-    if (event.target === templateModal) {
+    if (event.target === templateModal && typeof Templates !== 'undefined') {
         Templates.closeModal();
     }
-    if (event.target === actionModal) {
+    if (event.target === actionModal && typeof Actions !== 'undefined') {
         Actions.closeModal();
     }
 };

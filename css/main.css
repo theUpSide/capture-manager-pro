@@ -171,16 +171,11 @@ nav a:hover, nav a.active {
     padding: 1.5rem;
 }
 
-.roadmap-controls {
-    display: flex;
-    gap: 1rem;
-}
-
 .roadmap-timeline {
     margin-top: 2rem;
     border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: visible; /* Changed from hidden to visible to allow card shadows */
+    box-shadow: none; /* Remove the overall shadow since we'll have individual card shadows */
 }
 
 .timeline-header {
@@ -192,6 +187,8 @@ nav a:hover, nav a.active {
     position: sticky;
     top: 0;
     z-index: 100;
+    border-radius: 10px 10px 0 0; /* Add top border radius */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add shadow to header */
 }
 
 .opportunity-column-header {
@@ -217,18 +214,28 @@ nav a:hover, nav a.active {
 }
 
 .timeline-rows {
-    background: white;
+    background: transparent; /* Changed from white to transparent */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Add gap between rows */
+    padding: 1rem 0; /* Add padding around the rows */
 }
 
 .timeline-row {
     display: grid;
     grid-template-columns: 350px 1fr;
-    border-bottom: 1px solid #e9ecef;
-    transition: background-color 0.2s;
+    background: white; /* Add white background to individual rows */
+    border-radius: 10px; /* Add border radius to individual rows */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Add shadow to individual rows */
+    transition: all 0.3s ease; /* Add transition for hover effects */
+    overflow: hidden; /* Ensure content doesn't overflow rounded corners */
+    border: 1px solid #e9ecef; /* Add subtle border */
 }
 
 .timeline-row:hover {
     background-color: #f8f9fa;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
 .timeline-row:last-child {
@@ -239,6 +246,7 @@ nav a:hover, nav a.active {
     padding: 1.5rem;
     border-right: 1px solid #e9ecef;
     background: white;
+    border-radius: 10px 0 0 10px; /* Round only the left corners */
 }
 
 .opp-name {
@@ -299,6 +307,8 @@ nav a:hover, nav a.active {
 .phase-blocks-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
+    border-radius: 0 10px 10px 0; /* Round only the right corners */
+    overflow: hidden; /* Ensure phase blocks don't overflow */
 }
 
 .phase-block {
@@ -380,8 +390,11 @@ nav a:hover, nav a.active {
     justify-content: center;
     gap: 2rem;
     padding: 1.5rem;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background: white; /* Add white background */
+    border-radius: 10px; /* Add border radius */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Add shadow */
+    border: 1px solid #e9ecef; /* Add border */
+    margin-top: 1rem; /* Add margin from the rows */
     font-size: 0.8rem;
 }
 
