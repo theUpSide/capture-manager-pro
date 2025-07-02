@@ -44,9 +44,7 @@ const Navigation = {
         this.hideAllViews();
         document.getElementById('templates-view').style.display = 'block';
         this.updateActiveNav('Templates');
-        if (typeof Templates !== 'undefined') {
-            Templates.render();
-        }
+        Templates.render();
     },
 
     showReports() {

@@ -53,6 +53,38 @@ const DataStore = {
             title: "Capture Plan Template (Master Document)",
             description: "Comprehensive capture plan serving as single source of truth for the entire capture effort. Update regularly as new intelligence emerges.",
             category: "Planning",
+            guidance: {
+                importance: "The capture plan is your strategic roadmap and single source of truth throughout the entire capture process. It prevents scope creep, ensures team alignment, and provides a framework for making informed bid/no-bid decisions. Without a solid capture plan, teams often waste resources pursuing unwinnable opportunities or fail to capitalize on their competitive advantages.",
+                keyConsiderations: [
+                    "Ensure senior leadership buy-in and resource commitment before proceeding",
+                    "Update the plan regularly as new intelligence emerges - it's a living document",
+                    "Focus on 3-4 key win themes rather than trying to be everything to everyone",
+                    "Validate assumptions through customer engagement, not internal speculation",
+                    "Include realistic timelines with buffer for unexpected delays"
+                ],
+                prework: [
+                    "Gather all available RFI responses, draft RFPs, and market research",
+                    "Interview internal subject matter experts who have worked similar programs",
+                    "Research customer organization structure and key personnel",
+                    "Analyze recent similar contract awards and pricing",
+                    "Assess internal capability gaps and potential teaming partners"
+                ],
+                workshopGuide: {
+                    duration: "4-6 hours",
+                    participants: "Capture manager, technical lead, business development, pricing, contracts",
+                    agenda: [
+                        "Review opportunity background and customer intelligence (30 min)",
+                        "Assess technical requirements and solution approach (60 min)",
+                        "Competitive landscape analysis and positioning (45 min)",
+                        "Win theme development and validation (60 min)",
+                        "Resource requirements and timeline planning (30 min)",
+                        "Risk assessment and mitigation strategies (30 min)",
+                        "Action items and next steps (15 min)"
+                    ],
+                    facilitation: "Use structured brainstorming, capture all ideas without judgment initially, then prioritize and validate. Assign specific owners and deadlines for each action item."
+                },
+                theory: "Based on proven capture management methodologies from Shipley Associates and APMP best practices. The capture plan forces disciplined thinking about customer needs, competitive positioning, and win strategy before expensive proposal efforts begin. Studies show that opportunities with comprehensive capture plans have 3x higher win rates than those without."
+            },
             fields: [
                 { id: "program_name", label: "Program/Project Name", type: "text", required: true },
                 { id: "customer_agency", label: "Customer Agency/Organization", type: "text", required: true },
@@ -76,6 +108,37 @@ const DataStore = {
             title: "Opportunity Qualification Scorecard",
             description: "Early-stage bid/no-bid decision tool to make disciplined pursuit decisions and focus resources on winnable opportunities.",
             category: "Planning",
+            guidance: {
+                importance: "The qualification scorecard prevents the 'chase everything' mentality that wastes precious BD resources. It forces objective evaluation of opportunities against consistent criteria, helping you focus on winnable business. Companies using formal qualification processes win 2x more often while spending 40% less on losing pursuits.",
+                keyConsiderations: [
+                    "Be brutally honest in your scoring - wishful thinking costs money",
+                    "Weight the criteria based on your company's strategic priorities",
+                    "Include customer relationship strength as a major factor",
+                    "Consider the competitive landscape realistically",
+                    "Factor in your capacity to properly pursue the opportunity"
+                ],
+                prework: [
+                    "Define your company's strategic priorities and growth targets",
+                    "Research the customer's procurement history and preferences",
+                    "Assess your past performance relevance and customer relationships",
+                    "Analyze competitor strengths and likely participation",
+                    "Calculate realistic pursuit costs (capture + proposal)"
+                ],
+                workshopGuide: {
+                    duration: "2-3 hours",
+                    participants: "BD manager, capture manager, technical lead, senior management",
+                    agenda: [
+                        "Review opportunity overview and requirements (20 min)",
+                        "Score each criterion individually with discussion (90 min)",
+                        "Calculate weighted scores and probability assessment (20 min)",
+                        "Discuss resource requirements and capacity (15 min)",
+                        "Make final go/no-go recommendation (10 min)",
+                        "If GO: Define success conditions and checkpoints (15 min)"
+                    ],
+                    facilitation: "Score independently first, then discuss differences. Require justification for all high scores. Document assumptions and revisit them regularly."
+                },
+                theory: "Based on portfolio management principles and opportunity cost analysis. The scorecard quantifies subjective factors, enabling better resource allocation decisions. Regular use builds institutional knowledge about what opportunities your company wins and why."
+            },
             fields: [
                 { id: "opportunity_name", label: "Opportunity Name", type: "text", required: true },
                 { id: "strategic_fit_score", label: "Strategic Fit Score (1-5)", type: "select", options: ["1 - Poor Fit", "2 - Marginal", "3 - Good Fit", "4 - Strong Fit", "5 - Perfect Fit"], required: true },
@@ -94,6 +157,39 @@ const DataStore = {
             title: "Customer Engagement Templates",
             description: "Systematic customer engagement planning to build relationships and gather intelligence through strategic interactions.",
             category: "Customer Intelligence",
+            guidance: {
+                importance: "Customer engagement is the foundation of successful capture. Government customers buy from companies they know and trust. Each interaction is an opportunity to build relationships, gather intelligence, and shape requirements in your favor. Companies with strong customer engagement programs win 4x more often than those relying solely on proposal excellence.",
+                keyConsiderations: [
+                    "Focus on building genuine relationships, not just selling",
+                    "Prepare thoroughly - customers can tell when you're winging it",
+                    "Listen more than you talk - intelligence gathering is the primary goal",
+                    "Follow up promptly on commitments and questions",
+                    "Share your meetings insights with the broader capture team"
+                ],
+                prework: [
+                    "Research attendees' backgrounds, roles, and interests",
+                    "Prepare thoughtful questions about their challenges and priorities",
+                    "Develop 2-3 key messages about your capabilities (not a sales pitch)",
+                    "Review recent contract awards and industry trends",
+                    "Prepare examples of relevant past performance"
+                ],
+                workshopGuide: {
+                    duration: "1-2 hours prep, 30 min debrief",
+                    participants: "Meeting attendees plus capture manager",
+                    agenda: [
+                        "Pre-meeting prep:",
+                        "- Review meeting objectives and success criteria (15 min)",
+                        "- Assign roles (lead, technical expert, note-taker) (10 min)",
+                        "- Practice key messages and difficult questions (20 min)",
+                        "- Review intelligence targets and priority questions (15 min)",
+                        "Post-meeting debrief:",
+                        "- Document key insights and intelligence gathered (15 min)",
+                        "- Assess relationship progression and next steps (15 min)"
+                    ],
+                    facilitation: "Role-play difficult scenarios during prep. In debrief, focus on actionable intelligence and relationship insights, not just what was said."
+                },
+                theory: "Relationship-based selling principles adapted for government contracting. Based on research showing that purchase decisions are 70% emotional and 30% rational, even in government procurement. Trust and credibility are earned through consistent, value-added interactions over time."
+            },
             fields: [
                 { id: "contact_name", label: "Primary Contact Name & Title", type: "text", required: true },
                 { id: "organization", label: "Customer Organization", type: "text", required: true },
@@ -113,6 +209,40 @@ const DataStore = {
             title: "Black Hat Analysis Framework",
             description: "Structured competitive analysis using role-playing to predict competitor strategies and develop effective counters.",
             category: "Intelligence",
+            guidance: {
+                importance: "Black Hat analysis forces you to think like your competitors, revealing vulnerabilities in your strategy and uncovering opponent strengths you might miss. It's one of the most powerful competitive intelligence tools available. Teams using Black Hat analysis win 50% more competitive procurements by developing more effective differentiation strategies.",
+                keyConsiderations: [
+                    "Choose participants who can genuinely role-play competitors objectively",
+                    "Focus on predicting strategies, not just listing competitor strengths",
+                    "Be honest about your own weaknesses from competitors' perspectives",
+                    "Develop specific countermeasures, not just awareness",
+                    "Update your analysis as new intelligence emerges"
+                ],
+                prework: [
+                    "Gather detailed competitive intelligence on each major competitor",
+                    "Research competitors' recent wins, losses, and strategic moves",
+                    "Understand competitors' key personnel and past performance",
+                    "Analyze competitors' pricing history and typical margins",
+                    "Identify potential teaming arrangements competitors might pursue"
+                ],
+                workshopGuide: {
+                    duration: "3-4 hours",
+                    participants: "5-8 people who understand competitors and customer",
+                    agenda: [
+                        "Set ground rules - honest, objective analysis only (10 min)",
+                        "Review customer evaluation criteria and priorities (20 min)",
+                        "Role-play each major competitor (45 min each):",
+                        "- What's their likely strategy and positioning?",
+                        "- How will they attack our weaknesses?",
+                        "- What are their key discriminators?",
+                        "- What's their probable pricing approach?",
+                        "Identify our vulnerabilities from competitors' view (30 min)",
+                        "Develop countermeasures and strategy adjustments (45 min)"
+                    ],
+                    facilitation: "Assign someone to genuinely advocate for each competitor. Challenge weak assumptions. Document specific actions, not just insights."
+                },
+                theory: "Based on military intelligence techniques and competitive strategy frameworks. The role-playing aspect overcomes cognitive biases that prevent objective competitor assessment. Forces systematic thinking about competitive dynamics rather than wishful thinking."
+            },
             fields: [
                 { id: "opportunity_name", label: "Opportunity Name", type: "text", required: true },
                 { id: "session_date", label: "Black Hat Session Date", type: "date", required: true },

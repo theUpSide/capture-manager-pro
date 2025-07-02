@@ -1,553 +1,490 @@
 const Templates = {
     render() {
         const container = document.getElementById('templates-grid');
-        
-        // Ensure savedTemplates is properly loaded
-        if (!DataStore.savedTemplates) {
-            DataStore.savedTemplates = JSON.parse(localStorage.getItem('savedTemplates')) || [];
-        }
-        
-        container.innerHTML = DataStore.templates.map(template => this.renderTemplateCard(template)).join('') + `
-            <div class="template-card" style="border: 2px dashed #ddd; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #666;">
-                <div style="margin-bottom: 1rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
-                    <h4>Saved Templates</h4>
-                    <p>View your completed templates</p>
-                </div>
-                <button class="btn" onclick="Templates.showSaved()">
-                    View Saved (${DataStore.savedTemplates.length})
-                </button>
-            </div>
-        `;
-    },
-
-    renderTemplateCard(template) {
-        const categoryClass = template.category ? template.category.toLowerCase() : 'planning';
-        const categoryDisplay = template.category || 'Planning';
-        
-        return `
-            <div class="template-card" data-category="${categoryClass}">
-                <div class="template-category ${categoryClass}">${categoryDisplay}</div>
-                <h4>${template.title}</h4>
-                <p>${template.description}</p>
-                <div class="template-actions">
-                    <button class="btn" onclick="Templates.useTemplate('${template.id}')">
-                        Use Template
-                    </button>
-                    <button class="btn btn-secondary" onclick="Templates.viewTemplate('${template.id}')">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        `;
-    },
-
-    use(templateId) {
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
-        
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-        
-        // Generate form HTML
-        const formHTML = `
-            <h2>${template.title}</h2>
-            <p style="color: #666; margin-bottom: 2rem;">${template.description}</p>
-            
-            <form id="templateForm" onsubmit="Templates.saveForm(event, ${templateId})">
-                <div class="form-group">
-                    <label for="template_title">Template Title *</label>
-                    <input type="text" id="template_title" value="${template.title} - ${new Date().toLocaleDateString()}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="template_opportunity">Related Opportunity (Optional)</label>
-                    <select id="template_opportunity">
-                        <option value="">Select Opportunity</option>
-                        ${DataStore.opportunities.map(opp => `<option value="${opp.id}">${opp.name}</option>`).join('')}
-                    </select>
-                </div>
-                
-                <hr style="margin: 2rem 0;">
-                
-                ${template.fields.map(field => this.generateFormField(field)).join('')}
-                
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
-                    <button type="submit" class="btn">Save Template</button>
-                </div>
-            </form>
-        `;
-        
-        content.innerHTML = formHTML;
-        modal.style.display = 'block';
-    },
-
-    generateFormField(field) {
-        const required = field.required ? 'required' : '';
-        const fieldId = `field_${field.id}`;
-        
-        switch (field.type) {
-            case 'text':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="text" id="${fieldId}" name="${field.id}" ${required}>
-                    </div>
-                `;
-            case 'number':
-                const min = field.min !== undefined ? `min="${field.min}"` : '';
-                const max = field.max !== undefined ? `max="${field.max}"` : '';
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="number" id="${fieldId}" name="${field.id}" value="${field.defaultValue}" ${min} ${max} ${required}>
-                    </div>
-                `;
-            case 'date':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="date" id="${fieldId}" name="${field.id}" ${required}>
-                    </div>
-                `;
-            case 'textarea':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <textarea id="${fieldId}" name="${field.id}" rows="4" ${required}>${field.defaultValue || ''}</textarea>
-                    </div>
-                `;
-            case 'select':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <select id="${fieldId}" name="${field.id}" ${required}>
-                            <option value="">Select an option</option>
-                            ${field.options.map(option => `<option value="${option}">${option}</option>`).join('')}
-                        </select>
-                    </div>
-                `;
-            default:
-                return '';
-        }
-    },
-
-    saveForm(event, templateId) {
-        event.preventDefault();
-        
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
-        
-        const formData = new FormData(event.target);
-        const savedTemplate = {
-            id: Date.now(),
-            templateId: templateId,
-            title: document.getElementById('template_title').value,
-            opportunityId: document.getElementById('template_opportunity').value || null,
-            opportunityName: document.getElementById('template_opportunity').value ? 
-                DataStore.opportunities.find(o => o.id == document.getElementById('template_opportunity').value)?.name : null,
-            savedDate: new Date().toISOString().split('T')[0],
-            data: {}
-        };
-        
-        // Collect all form data
-        template.fields.forEach(field => {
-            const value = formData.get(field.id);
-            savedTemplate.data[field.id] = value || '';
-        });
-        
-        DataStore.savedTemplates.push(savedTemplate);
-        localStorage.setItem('savedTemplates', JSON.stringify(DataStore.savedTemplates));
-        
-        this.closeModal();
-        alert('Template saved successfully!');
-        
-        // Refresh templates view
-        this.render();
-    },
-
-    showSaved() {
-        Navigation.hideAllViews();
-        document.getElementById('saved-templates-view').style.display = 'block';
-        Navigation.updateActiveNav('Templates');
-        this.renderSaved();
-    },
-
-    renderSaved() {
-        const container = document.getElementById('saved-templates-grid');
-        
-        if (DataStore.savedTemplates.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-                    <h3>No saved templates yet</h3>
-                    <p>Fill out some templates to see them here</p>
-                    <button class="btn" onclick="Templates.render(); Navigation.showTemplates()" style="margin-top: 1rem;">Browse Templates</button>
-                </div>
-            `;
+        if (!container) {
+            console.error('Templates container not found');
             return;
         }
 
-        container.innerHTML = DataStore.savedTemplates.map(saved => {
-            const template = DataStore.templates.find(t => t.id === saved.templateId);
-            return `
-                <div class="template-card">
-                    <h4>${saved.title}</h4>
-                    <p style="color: #666; font-size: 0.9rem;">${template ? template.title : 'Unknown Template'}</p>
-                    <div style="margin: 0.5rem 0; font-size: 0.8rem; color: #999;">
-                        Saved: ${Utils.formatDate(saved.savedDate)}
-                        ${saved.lastModified ? ` • Last Modified: ${Utils.formatDate(saved.lastModified)}` : ''}
-                        ${saved.opportunityName ? ` • ${saved.opportunityName}` : ''}
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-                        <span style="background: #e8f5e9; color: #2e7d2e; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">
-                            Completed
-                        </span>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Templates.view(${saved.id})">
-                                View
-                            </button>
-                            <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Templates.editSaved(${saved.id})">
-                                Edit
-                            </button>
-                            <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Templates.downloadSaved(${saved.id})">
-                                Export
-                            </button>
-                            <button class="btn btn-warning" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Templates.deleteSaved(${saved.id})">
-                                Delete
-                            </button>
-                        </div>
+        // Group templates by category
+        const categories = {};
+        DataStore.templates.forEach(template => {
+            if (!categories[template.category]) {
+                categories[template.category] = [];
+            }
+            categories[template.category].push(template);
+        });
+
+        let html = '';
+        Object.entries(categories).forEach(([category, templates]) => {
+            html += `
+                <div class="template-category">
+                    <h3 class="category-title">${category}</h3>
+                    <div class="template-cards-grid">
+                        ${templates.map(template => this.renderTemplateCard(template)).join('')}
                     </div>
                 </div>
             `;
-        }).join('');
+        });
+
+        container.innerHTML = html;
     },
 
-    view(savedId) {
-        const saved = DataStore.savedTemplates.find(s => s.id === savedId);
-        const template = DataStore.templates.find(t => t.id === saved.templateId);
-        
-        if (!saved || !template) return;
-        
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-        
-        // Generate read-only view
-        const viewHTML = `
-            <h2>${saved.title}</h2>
-            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-                <strong>Template:</strong> ${template.title}<br>
-                <strong>Saved:</strong> ${Utils.formatDate(saved.savedDate)}<br>
-                ${saved.lastModified ? `<strong>Last Modified:</strong> ${Utils.formatDate(saved.lastModified)}<br>` : ''}
-                ${saved.opportunityName ? `<strong>Opportunity:</strong> ${saved.opportunityName}<br>` : ''}
-            </div>
-            
-            <div style="max-height: 60vh; overflow-y: auto;">
-                ${template.fields.map(field => {
-                    const value = saved.data[field.id] || 'Not provided';
-                    return `
-                        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
-                            <h4 style="color: #333; margin-bottom: 0.5rem;">${field.label}</h4>
-                            <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 4px; white-space: pre-wrap;">${value}</div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            
-            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="Templates.closeModal()">Close</button>
-                <button class="btn" onclick="Templates.editSaved(${savedId})">Edit</button>
-                <button class="btn btn-secondary" onclick="Templates.downloadSaved(${savedId})">Export</button>
+    renderTemplateCard(template) {
+        return `
+            <div class="template-card">
+                <h4>${template.title}</h4>
+                <p>${template.description}</p>
+                <div class="template-meta">
+                    <span class="field-count">${template.fields.length} fields</span>
+                    <span class="category-badge">${template.category}</span>
+                </div>
+                <div class="template-actions">
+                    <button class="btn" onclick="Templates.showGuidance(${template.id})">Get Started</button>
+                </div>
             </div>
         `;
-        
-        content.innerHTML = viewHTML;
-        modal.style.display = 'block';
     },
 
-    editSaved(savedId) {
-        const saved = DataStore.savedTemplates.find(s => s.id === savedId);
-        const template = DataStore.templates.find(t => t.id === saved.templateId);
-        
-        if (!saved || !template) return;
-        
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-        
-        // Generate editable form HTML with existing data
-        const formHTML = `
-            <h2>Edit: ${saved.title}</h2>
-            <p style="color: #666; margin-bottom: 2rem;">Based on: ${template.title}</p>
-            
-            <form id="templateForm" onsubmit="Templates.updateSaved(event, ${savedId})">
-                <div class="form-group">
-                    <label for="template_title">Template Title *</label>
-                    <input type="text" id="template_title" value="${saved.title}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="template_opportunity">Related Opportunity (Optional)</label>
-                    <select id="template_opportunity">
-                        <option value="">Select Opportunity</option>
-                        ${DataStore.opportunities.map(opp => `
-                            <option value="${opp.id}" ${saved.opportunityId == opp.id ? 'selected' : ''}>
-                                ${opp.name}
-                            </option>
-                        `).join('')}
-                    </select>
-                </div>
-                
-                <hr style="margin: 2rem 0;">
-                
-                ${template.fields.map(field => this.generateEditableFormField(field, saved.data[field.id] || '')).join('')}
-                
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
-                    <button type="submit" class="btn">Update Template</button>
-                </div>
-            </form>
-        `;
-        
-        content.innerHTML = formHTML;
-        modal.style.display = 'block';
-    },
-
-    generateEditableFormField(field, existingValue) {
-        const required = field.required ? 'required' : '';
-        const fieldId = `field_${field.id}`;
-        
-        switch (field.type) {
-            case 'text':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="text" id="${fieldId}" name="${field.id}" value="${existingValue}" ${required}>
-                    </div>
-                `;
-            case 'number':
-                const min = field.min !== undefined ? `min="${field.min}"` : '';
-                const max = field.max !== undefined ? `max="${field.max}"` : '';
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="number" id="${fieldId}" name="${field.id}" value="${existingValue}" ${min} ${max} ${required}>
-                    </div>
-                `;
-            case 'date':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <input type="date" id="${fieldId}" name="${field.id}" value="${existingValue}" ${required}>
-                    </div>
-                `;
-            case 'textarea':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <textarea id="${fieldId}" name="${field.id}" rows="4" ${required}>${existingValue}</textarea>
-                    </div>
-                `;
-            case 'select':
-                return `
-                    <div class="form-group">
-                        <label for="${fieldId}">${field.label} ${field.required ? '*' : ''}</label>
-                        <select id="${fieldId}" name="${field.id}" ${required}>
-                            <option value="">Select an option</option>
-                            ${field.options.map(option => `
-                                <option value="${option}" ${existingValue === option ? 'selected' : ''}>${option}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                `;
-            default:
-                return '';
+    showGuidance(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) {
+            console.error('Template not found:', templateId);
+            return;
         }
+
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        const guidance = template.guidance;
+        
+        content.innerHTML = `
+            <div class="template-guidance">
+                <h2>${template.title}</h2>
+                <p class="template-description">${template.description}</p>
+                
+                <div class="guidance-section">
+                    <h3>🎯 Why This Template Matters</h3>
+                    <p class="guidance-text">${guidance.importance}</p>
+                </div>
+                
+                <div class="guidance-section">
+                    <h3>🤔 Key Considerations</h3>
+                    <ul class="guidance-list">
+                        ${guidance.keyConsiderations.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="guidance-section">
+                    <h3>📋 Pre-Work Checklist</h3>
+                    <ul class="guidance-checklist">
+                        ${guidance.prework.map(item => `
+                            <li>
+                                <label class="checklist-item">
+                                    <input type="checkbox"> ${item}
+                                </label>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                
+                ${guidance.workshopGuide ? `
+                    <div class="guidance-section">
+                        <h3>🏗️ Workshop Facilitation Guide</h3>
+                        <div class="workshop-details">
+                            <div class="workshop-meta">
+                                <span><strong>Duration:</strong> ${guidance.workshopGuide.duration}</span>
+                                <span><strong>Participants:</strong> ${guidance.workshopGuide.participants}</span>
+                            </div>
+                            
+                            <h4>Suggested Agenda:</h4>
+                            <ol class="agenda-list">
+                                ${guidance.workshopGuide.agenda.map(item => `<li>${item}</li>`).join('')}
+                            </ol>
+                            
+                            <div class="facilitation-tip">
+                                <h4>💡 Facilitation Tips:</h4>
+                                <p>${guidance.workshopGuide.facilitation}</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="guidance-section">
+                    <h3>📚 Theory & Best Practices</h3>
+                    <p class="guidance-text">${guidance.theory}</p>
+                </div>
+                
+                <div class="guidance-cta-section">
+                    <div class="cta-content">
+                        <h3>Ready to Get Started?</h3>
+                        <p>Now that you understand the framework and best practices, click below to open the interactive worksheet and begin documenting your capture strategy.</p>
+                    </div>
+                    <div class="template-form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Not Right Now</button>
+                        <button type="button" class="btn btn-large" onclick="Templates.openWorksheet(${template.id})">Open Worksheet</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
     },
 
-    updateSaved(event, savedId) {
+    openWorksheet(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) {
+            console.error('Template not found:', templateId);
+            return;
+        }
+
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        let fieldsHtml = template.fields.map(field => {
+            let inputHtml = '';
+            switch(field.type) {
+                case 'text':
+                    inputHtml = `<input type="text" id="field-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+                    break;
+                case 'number':
+                    inputHtml = `<input type="number" id="field-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+                    break;
+                case 'date':
+                    inputHtml = `<input type="date" id="field-${field.id}" ${field.required ? 'required' : ''}>`;
+                    break;
+                case 'select':
+                    const options = field.options ? field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('') : '';
+                    inputHtml = `<select id="field-${field.id}" ${field.required ? 'required' : ''}>
+                        <option value="">Select ${field.label}</option>
+                        ${options}
+                    </select>`;
+                    break;
+                case 'textarea':
+                    inputHtml = `<textarea id="field-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}" rows="3"></textarea>`;
+                    break;
+                default:
+                    inputHtml = `<input type="text" id="field-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+            }
+            
+            return `
+                <div class="form-group">
+                    <label for="field-${field.id}">
+                        ${field.label}
+                        ${field.required ? '<span style="color: #dc3545;">*</span>' : ''}
+                    </label>
+                    ${inputHtml}
+                </div>
+            `;
+        }).join('');
+
+        content.innerHTML = `
+            <div class="template-worksheet">
+                <div class="worksheet-header">
+                    <h2>${template.title} - Worksheet</h2>
+                    <p class="template-description">Complete the fields below to document your capture strategy. All required fields must be filled before saving.</p>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="Templates.showGuidance(${template.id})">← Back to Guidance</button>
+                </div>
+                
+                <form id="templateForm" onsubmit="Templates.saveTemplateData(event, ${template.id})">
+                    <div class="template-fields">
+                        ${fieldsHtml}
+                    </div>
+                    <div class="template-form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
+                        <button type="submit" class="btn">Save Template Data</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        // Keep modal open, just change content
+    },
+
+    saveTemplateData(event, templateId) {
         event.preventDefault();
         
-        const savedIndex = DataStore.savedTemplates.findIndex(s => s.id === savedId);
-        if (savedIndex === -1) return;
-        
-        const saved = DataStore.savedTemplates[savedIndex];
-        const template = DataStore.templates.find(t => t.id === saved.templateId);
-        if (!template) return;
-        
-        const formData = new FormData(event.target);
-        
-        // Update the saved template
-        saved.title = document.getElementById('template_title').value;
-        saved.opportunityId = document.getElementById('template_opportunity').value || null;
-        saved.opportunityName = document.getElementById('template_opportunity').value ? 
-            DataStore.opportunities.find(o => o.id == document.getElementById('template_opportunity').value)?.name : null;
-        saved.lastModified = new Date().toISOString().split('T')[0];
-        
-        // Update all form data
-        template.fields.forEach(field => {
-            const value = formData.get(field.id);
-            saved.data[field.id] = value || '';
-        });
-        
-        // Save back to localStorage
-        localStorage.setItem('savedTemplates', JSON.stringify(DataStore.savedTemplates));
-        
-        this.closeModal();
-        alert('Template updated successfully!');
-        
-        // Refresh the saved templates view
-        if (document.getElementById('saved-templates-view').style.display !== 'none') {
-            this.renderSaved();
-        }
-    },
-
-    download(templateId) {
         const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
-        
-        // Create a simple text template
-        const content = `${template.title}\n${'='.repeat(template.title.length)}\n\n${template.description}\n\n` +
-            template.fields.map(field => `${field.label}:\n${field.required ? '(Required)' : '(Optional)'}\n\n\n`).join('');
-        
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${template.title.replace(/\s+/g, '_')}_template.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    },
+        if (!template) {
+            console.error('Template not found:', templateId);
+            return;
+        }
 
-    downloadSaved(savedId) {
-        const saved = DataStore.savedTemplates.find(s => s.id === savedId);
-        const template = DataStore.templates.find(t => t.id === saved.templateId);
-        
-        if (!saved || !template) return;
-        
-        const content = `${saved.title}\n${'='.repeat(saved.title.length)}\n\n` +
-            `Template: ${template.title}\n` +
-            `Saved: ${Utils.formatDate(saved.savedDate)}\n` +
-            `${saved.opportunityName ? `Opportunity: ${saved.opportunityName}\n` : ''}\n` +
-            template.fields.map(field => {
-                const value = saved.data[field.id] || 'Not provided';
-                return `${field.label}:\n${value}\n`;
-            }).join('\n');
-        
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${saved.title.replace(/\s+/g, '_')}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    },
+        // Collect form data
+        const formData = {};
+        template.fields.forEach(field => {
+            const element = document.getElementById(`field-${field.id}`);
+            if (element) {
+                formData[field.id] = element.value;
+            }
+        });
 
-    deleteSaved(savedId) {
-        if (!confirm('Are you sure you want to delete this saved template?')) return;
+        // Create saved template entry
+        const savedTemplate = {
+            id: Date.now(),
+            templateId: templateId,
+            templateTitle: template.title,
+            templateCategory: template.category,
+            data: formData,
+            createdDate: new Date().toISOString().split('T')[0],
+            lastModified: new Date().toISOString().split('T')[0]
+        };
+
+        // Save to DataStore
+        if (!DataStore.savedTemplates) {
+            DataStore.savedTemplates = [];
+        }
+        DataStore.savedTemplates.push(savedTemplate);
+        DataStore.saveData();
+
+        // Close modal and show success
+        this.closeModal();
+        alert('Template data saved successfully!');
         
-        DataStore.savedTemplates = DataStore.savedTemplates.filter(s => s.id !== savedId);
-        localStorage.setItem('savedTemplates', JSON.stringify(DataStore.savedTemplates));
-        this.renderSaved();
+        // Refresh if we're on saved templates view
+        if (document.getElementById('saved-templates-view').style.display !== 'none') {
+            this.renderSavedTemplates();
+        }
     },
 
     closeModal() {
         document.getElementById('templateDetailModal').style.display = 'none';
     },
 
-    showTemplates() {
-        Navigation.hideAllViews();
-        document.getElementById('templates-view').style.display = 'block';
-        Navigation.updateActiveNav('Templates');
-        this.render();
-    },
-
-    clearAllSaved() {
-        if (!confirm('Are you sure you want to delete ALL saved templates?')) return;
+    showSavedTemplates() {
+        // Hide main templates view
+        document.getElementById('templates-view').style.display = 'none';
         
-        DataStore.savedTemplates = [];
-        localStorage.setItem('savedTemplates', JSON.stringify(DataStore.savedTemplates));
-        this.renderSaved();
-    },
-
-    openNewModal() {
-        alert('Add Template functionality coming soon!');
-    },
-
-    useTemplate(templateId) {
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
+        // Show saved templates view
+        document.getElementById('saved-templates-view').style.display = 'block';
         
+        // Update navigation
+        Navigation.updateActiveNav('Saved Templates');
+        
+        this.renderSavedTemplates();
+    },
+
+    renderSavedTemplates() {
+        const container = document.getElementById('saved-templates-grid');
+        if (!container) {
+            console.error('Saved templates container not found');
+            return;
+        }
+
+        if (!DataStore.savedTemplates || DataStore.savedTemplates.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📄</div>
+                    <h3>No saved templates yet</h3>
+                    <p>Use a template to create your first saved entry</p>
+                    <button class="btn btn-secondary" onclick="Navigation.showTemplates()">Browse Templates</button>
+                </div>
+            `;
+            return;
+        }
+
+        // Group by category
+        const categories = {};
+        DataStore.savedTemplates.forEach(saved => {
+            if (!categories[saved.templateCategory]) {
+                categories[saved.templateCategory] = [];
+            }
+            categories[saved.templateCategory].push(saved);
+        });
+
+        let html = '';
+        Object.entries(categories).forEach(([category, savedTemplates]) => {
+            html += `
+                <div class="template-category">
+                    <h3 class="category-title">${category}</h3>
+                    <div class="template-cards-grid">
+                        ${savedTemplates.map(saved => this.renderSavedTemplateCard(saved)).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    },
+
+    renderSavedTemplateCard(savedTemplate) {
+        const dataCount = Object.keys(savedTemplate.data).length;
+        const hasData = Object.values(savedTemplate.data).some(value => value && value.trim !== '');
+        
+        return `
+            <div class="template-card saved-template-card">
+                <h4>${savedTemplate.templateTitle}</h4>
+                <p class="saved-template-info">
+                    Created: ${Utils.formatDate(savedTemplate.createdDate)}<br>
+                    Last modified: ${Utils.formatDate(savedTemplate.lastModified)}
+                </p>
+                <div class="template-meta">
+                    <span class="field-count">${dataCount} fields</span>
+                    <span class="category-badge">${savedTemplate.templateCategory}</span>
+                    ${hasData ? '<span class="data-badge">Has Data</span>' : '<span class="no-data-badge">Empty</span>'}
+                </div>
+                <div class="template-actions">
+                    <button class="btn btn-secondary" onclick="Templates.viewSavedTemplate(${savedTemplate.id})">View/Edit</button>
+                    <button class="btn btn-secondary" onclick="Templates.exportSavedTemplate(${savedTemplate.id})">Export</button>
+                    <button class="btn btn-secondary" onclick="Templates.deleteSavedTemplate(${savedTemplate.id})" style="color: #dc3545;">Delete</button>
+                </div>
+            </div>
+        `;
+    },
+
+    viewSavedTemplate(savedId) {
+        const savedTemplate = DataStore.savedTemplates.find(s => s.id === savedId);
+        if (!savedTemplate) {
+            console.error('Saved template not found:', savedId);
+            return;
+        }
+
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        if (!template) {
+            console.error('Original template not found:', savedTemplate.templateId);
+            return;
+        }
+
         const modal = document.getElementById('templateDetailModal');
         const content = document.getElementById('template-detail-content');
         
-        // Generate form HTML
-        const formHTML = `
-            <h2>${template.title}</h2>
-            <p style="color: #666; margin-bottom: 2rem;">${template.description}</p>
+        let fieldsHtml = template.fields.map(field => {
+            const savedValue = savedTemplate.data[field.id] || '';
+            let inputHtml = '';
             
-            <form id="templateForm" onsubmit="Templates.saveForm(event, ${templateId})">
+            switch(field.type) {
+                case 'text':
+                    inputHtml = `<input type="text" id="field-${field.id}" value="${savedValue}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+                    break;
+                case 'number':
+                    inputHtml = `<input type="number" id="field-${field.id}" value="${savedValue}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+                    break;
+                case 'date':
+                    inputHtml = `<input type="date" id="field-${field.id}" value="${savedValue}" ${field.required ? 'required' : ''}>`;
+                    break;
+                case 'select':
+                    const options = field.options ? field.options.map(opt => 
+                        `<option value="${opt}" ${opt === savedValue ? 'selected' : ''}>${opt}</option>`
+                    ).join('') : '';
+                    inputHtml = `<select id="field-${field.id}" ${field.required ? 'required' : ''}>
+                        <option value="">Select ${field.label}</option>
+                        ${options}
+                    </select>`;
+                    break;
+                case 'textarea':
+                    inputHtml = `<textarea id="field-${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}" rows="3">${savedValue}</textarea>`;
+                    break;
+                default:
+                    inputHtml = `<input type="text" id="field-${field.id}" value="${savedValue}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}">`;
+            }
+            
+            return `
                 <div class="form-group">
-                    <label for="template_title">Template Title *</label>
-                    <input type="text" id="template_title" value="${template.title} - ${new Date().toLocaleDateString()}" required>
+                    <label for="field-${field.id}">
+                        ${field.label}
+                        ${field.required ? '<span style="color: #dc3545;">*</span>' : ''}
+                    </label>
+                    ${inputHtml}
                 </div>
-                
-                <div class="form-group">
-                    <label for="template_opportunity">Related Opportunity (Optional)</label>
-                    <select id="template_opportunity">
-                        <option value="">Select Opportunity</option>
-                        ${DataStore.opportunities.map(opp => `<option value="${opp.id}">${opp.name}</option>`).join('')}
-                    </select>
+            `;
+        }).join('');
+
+        content.innerHTML = `
+            <h2>${savedTemplate.templateTitle} (Saved)</h2>
+            <p class="template-description">Last modified: ${Utils.formatDate(savedTemplate.lastModified)}</p>
+            
+            <form id="templateForm" onsubmit="Templates.updateSavedTemplate(event, ${savedId})">
+                <div class="template-fields">
+                    ${fieldsHtml}
                 </div>
-                
-                <hr style="margin: 2rem 0;">
-                
-                ${template.fields.map(field => this.generateFormField(field)).join('')}
-                
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <div class="template-form-actions">
                     <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
-                    <button type="submit" class="btn">Save Template</button>
+                    <button type="submit" class="btn">Update Template Data</button>
                 </div>
             </form>
         `;
         
-        content.innerHTML = formHTML;
         modal.style.display = 'block';
     },
 
-    viewTemplate(templateId) {
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
+    updateSavedTemplate(event, savedId) {
+        event.preventDefault();
         
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-        
-        // Generate read-only view
-        const viewHTML = `
-            <h2>${template.title}</h2>
-            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-                <strong>Category:</strong> ${template.category}<br>
-                <strong>Description:</strong> ${template.description}<br>
-            </div>
-            
-            <div style="max-height: 60vh; overflow-y: auto;">
-                ${template.fields.map(field => {
-                    return `
-                        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
-                            <h4 style="color: #333; margin-bottom: 0.5rem;">${field.label}</h4>
-                            <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 4px; white-space: pre-wrap;">${field.type}</div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            
-            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="Templates.closeModal()">Close</button>
-                <button class="btn" onclick="Templates.useTemplate('${templateId}')">Use Template</button>
-            </div>
-        `;
-        
-        content.innerHTML = viewHTML;
-        modal.style.display = 'block';
+        const savedTemplate = DataStore.savedTemplates.find(s => s.id === savedId);
+        if (!savedTemplate) {
+            console.error('Saved template not found:', savedId);
+            return;
+        }
+
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        if (!template) {
+            console.error('Original template not found:', savedTemplate.templateId);
+            return;
+        }
+
+        // Collect updated form data
+        const formData = {};
+        template.fields.forEach(field => {
+            const element = document.getElementById(`field-${field.id}`);
+            if (element) {
+                formData[field.id] = element.value;
+            }
+        });
+
+        // Update saved template
+        savedTemplate.data = formData;
+        savedTemplate.lastModified = new Date().toISOString().split('T')[0];
+
+        DataStore.saveData();
+        this.closeModal();
+        alert('Template data updated successfully!');
+        this.renderSavedTemplates();
     },
+
+    exportSavedTemplate(savedId) {
+        const savedTemplate = DataStore.savedTemplates.find(s => s.id === savedId);
+        if (!savedTemplate) {
+            console.error('Saved template not found:', savedId);
+            return;
+        }
+
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        if (!template) {
+            console.error('Original template not found:', savedTemplate.templateId);
+            return;
+        }
+
+        // Create export data
+        const exportData = {
+            templateTitle: savedTemplate.templateTitle,
+            templateCategory: savedTemplate.templateCategory,
+            createdDate: savedTemplate.createdDate,
+            lastModified: savedTemplate.lastModified,
+            fields: template.fields.map(field => ({
+                label: field.label,
+                value: savedTemplate.data[field.id] || '',
+                required: field.required
+            }))
+        };
+
+        // Export as JSON
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${savedTemplate.templateTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${savedTemplate.createdDate}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    },
+
+    deleteSavedTemplate(savedId) {
+        if (!confirm('Are you sure you want to delete this saved template?')) {
+            return;
+        }
+
+        DataStore.savedTemplates = DataStore.savedTemplates.filter(s => s.id !== savedId);
+        DataStore.saveData();
+        this.renderSavedTemplates();
+        alert('Saved template deleted successfully!');
+    }
 };

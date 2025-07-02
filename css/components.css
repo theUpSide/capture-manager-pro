@@ -298,7 +298,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
-    padding: 2rem;
     align-items: stretch; /* Make all cards same height */
 }
 
@@ -368,6 +367,7 @@
     padding: 0.4rem 0.6rem;
     font-size: 0.8rem;
     border-radius: 6px;
+    transition: all 0.3s ease;
 }
 
 .opportunity-details-grid {
@@ -911,6 +911,176 @@ header .btn-secondary:hover {
     transform: translateY(-1px);
 }
 
+/* Template specific styles */
+.template-category {
+    margin-bottom: 3rem;
+}
+
+.category-title {
+    color: #2a5298;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.template-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.template-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.field-count {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.category-badge {
+    background: #2a5298;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.data-badge {
+    background: #28a745;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.no-data-badge {
+    background: #6c757d;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.template-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.template-actions .btn {
+    width: 100%;
+    max-width: 200px;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+/* Guidance CTA section styling */
+.guidance-cta-section {
+    background: linear-gradient(135deg, #2a5298 0%, #4dabf7 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.cta-content h3 {
+    color: white;
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.cta-content p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 2rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.guidance-cta-section .template-form-actions {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.guidance-cta-section .btn {
+    min-width: 150px;
+}
+
+.guidance-cta-section .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.guidance-cta-section .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-large {
+    padding: 0.9rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: white;
+    color: #2a5298;
+    border: none;
+}
+
+.btn-large:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Worksheet header styling */
+.worksheet-header {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #2a5298;
+}
+
+.worksheet-header h2 {
+    color: #2a5298;
+    margin: 0 0 0.5rem 0;
+}
+
+.worksheet-header .template-description {
+    color: #666;
+    margin: 0 0 1rem 0;
+    font-style: normal;
+}
+
+.btn-small {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Template worksheet container */
+.template-worksheet {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
 /* Template Cards (keeping existing styles for other pages) */
 .templates-grid {
     display: grid;
@@ -957,7 +1127,7 @@ header .btn-secondary:hover {
     color: #2a5298;
     font-size: 1.2rem;
     font-weight: 600;
-    margin: 0 0 1rem 0;
+    margin: 0;
     line-height: 1.3;
     padding-right: 1rem;
 }
@@ -980,6 +1150,135 @@ header .btn-secondary:hover {
 .template-card .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+}
+
+/* Template Guidance Styling */
+.template-guidance {
+    line-height: 1.6;
+    color: #333;
+}
+
+.guidance-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #2a5298;
+}
+
+.guidance-section h3 {
+    color: #2a5298;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.guidance-section h4 {
+    color: #495057;
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.guidance-text {
+    margin: 0;
+    color: #495057;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.guidance-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #495057;
+}
+
+.guidance-list li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.guidance-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.checklist-item:hover {
+    background: #f0f8ff;
+}
+
+.checklist-item input[type="checkbox"] {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.workshop-details {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.workshop-meta {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.workshop-meta span {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.agenda-list {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    color: #495057;
+}
+
+.agenda-list li {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.facilitation-tip {
+    background: #fff3cd;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 4px solid #ffc107;
+    margin-top: 1rem;
+}
+
+.facilitation-tip h4 {
+    color: #856404;
+    margin-top: 0;
+}
+
+.facilitation-tip p {
+    color: #856404;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Enhanced modal styling for guidance */
+#templateDetailModal .modal-content {
+    max-width: 900px;
+    max-height: 85vh;
 }
 
 /* RESPONSIVE DESIGN FOR OPPORTUNITIES PAGE */
@@ -1058,13 +1357,6 @@ header .btn-secondary:hover {
     .opportunity-footer .btn {
         width: 100%;
         text-align: center;
-    }
-}
-
-@media (max-width: 640px) {
-    .category-cards-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
     }
 }
 
@@ -1265,6 +1557,7 @@ header .btn-secondary:hover {
 
 .report-text-content li {
     margin-bottom: 0.5rem;
+    font-size: 0.95rem;
 }
 
 /* Chart specific improvements */
@@ -1293,6 +1586,8 @@ header .btn-secondary:hover {
     background: white;
     border-radius: 6px;
     border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .legend-color {
