@@ -10,6 +10,25 @@ const Opportunities = {
     render() {
         const container = document.getElementById('opportunities-grid');
         
+        if (!container) {
+            console.error('Opportunities grid container not found');
+            return;
+        }
+        
+        console.log('Rendering opportunities:', DataStore.opportunities.length);
+        
+        if (DataStore.opportunities.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                    <h3>No opportunities yet</h3>
+                    <p>Add your first opportunity to get started</p>
+                    <button class="btn" onclick="Opportunities.openNewModal()" style="margin-top: 1rem;">Add Opportunity</button>
+                </div>
+            `;
+            return;
+        }
+        
         // Group opportunities by status
         const grouped = this.groupByStatus();
         
@@ -134,11 +153,13 @@ const Opportunities = {
                 <p style="color: #666; margin-bottom: 1rem;">${opp.description || 'No description'}</p>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
-                    <div><strong>Value:</strong> ${Utils.formatCurrency(opp.value)}</div>
-                    <div><strong>Probability:</strong> ${opp.probability}%</div>
+                    <div><strong>Value:</strong> ${Utils.formatCurrency(opp.value || 0)}</div>
+                    <div><strong>Probability:</strong> ${opp.probability || 0}%</div>
                     <div><strong>Close Date:</strong> ${Utils.formatDate(opp.closeDate)}</div>
                     <div><strong>Days Left:</strong> ${Utils.getDaysUntil(opp.closeDate)}</div>
                 </div>
+                
+                ${opp.client ? `<div style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;"><strong>Client:</strong> ${opp.client}</div>` : ''}
                 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 0.5rem;">
@@ -211,41 +232,94 @@ const Opportunities = {
     },
 
     openNewModal() {
-        document.getElementById('opportunityModal').style.display = 'block';
-        document.getElementById('opportunityForm').reset();
+        const modal = document.getElementById('opportunityModal');
+        const content = document.getElementById('opportunity-form-content');
+        
+        content.innerHTML = `
+            <h2>Add New Opportunity</h2>
+            <form id="opportunityForm" onsubmit="Opportunities.addOpportunity(event)">
+                <div class="form-group">
+                    <label for="opp_name">Opportunity Name *</label>
+                    <input type="text" id="opp_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="opp_description">Description</label>
+                    <textarea id="opp_description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="opp_value">Value ($) *</label>
+                        <input type="number" id="opp_value" min="0" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="opp_probability">Probability (%) *</label>
+                        <input type="number" id="opp_probability" min="0" max="100" value="50" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="opp_closeDate">Expected Close Date *</label>
+                        <input type="date" id="opp_closeDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="opp_status">Status</label>
+                        <select id="opp_status">
+                            ${Object.entries(this.statuses).map(([key, info]) => `
+                                <option value="${key}" ${key === 'capture' ? 'selected' : ''}>
+                                    ${info.icon} ${info.label}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="opp_client">Client/Customer</label>
+                    <input type="text" id="opp_client">
+                </div>
+                
+                <div class="form-group">
+                    <label for="opp_notes">Notes</label>
+                    <textarea id="opp_notes" rows="4"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="Opportunities.closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Add Opportunity</button>
+                </div>
+            </form>
+        `;
+        
+        modal.style.display = 'block';
     },
 
-    save(event) {
+    addOpportunity(event) {
         event.preventDefault();
         
         const newOpportunity = {
-            name: document.getElementById('oppName').value,
-            customer: document.getElementById('oppCustomer').value,
-            value: parseInt(document.getElementById('oppValue').value) || 0,
-            rfpDate: document.getElementById('oppRfpDate').value,
-            pwin: parseInt(document.getElementById('oppPwin').value) || 50,
-            type: document.getElementById('oppType').value,
-            role: document.getElementById('oppRole').value,
-            incumbent: document.getElementById('oppIncumbent').value,
-            description: document.getElementById('oppDescription').value
+            id: Date.now(),
+            name: document.getElementById('opp_name').value,
+            description: document.getElementById('opp_description').value,
+            value: parseFloat(document.getElementById('opp_value').value),
+            probability: parseInt(document.getElementById('opp_probability').value),
+            closeDate: document.getElementById('opp_closeDate').value,
+            status: document.getElementById('opp_status').value,
+            client: document.getElementById('opp_client').value,
+            notes: document.getElementById('opp_notes').value,
+            createdDate: new Date().toISOString().split('T')[0]
         };
         
-        DataStore.addOpportunity(newOpportunity);
+        DataStore.opportunities.push(newOpportunity);
+        DataStore.saveData();
         this.closeModal();
-        Dashboard.refresh();
-        
-        if (document.getElementById('roadmap-view').style.display !== 'none') {
-            Roadmap.render();
-        }
-        if (document.getElementById('opportunities-view').style.display !== 'none') {
-            this.renderAll();
-        }
+        this.render();
         
         alert('Opportunity added successfully!');
-    },
-
-    closeModal() {
-        document.getElementById('opportunityModal').style.display = 'none';
     },
 
     edit(oppId) {
@@ -353,16 +427,56 @@ const Opportunities = {
         alert('Opportunity updated successfully!');
     },
 
-    renderAll() {
-        this.render('all-opportunities', DataStore.opportunities);
+    view(oppId) {
+        const opp = DataStore.opportunities.find(o => o.id === oppId);
+        if (!opp) return;
+        
+        const modal = document.getElementById('opportunityModal');
+        const content = document.getElementById('opportunity-form-content');
+        const status = opp.status || 'capture';
+        const statusInfo = this.statuses[status];
+        
+        content.innerHTML = `
+            <h2>View Opportunity</h2>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">${opp.name}</h3>
+                    <span style="background: ${statusInfo.color}; color: white; padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.9rem;">
+                        ${statusInfo.icon} ${statusInfo.label}
+                    </span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div><strong>Value:</strong> ${Utils.formatCurrency(opp.value || 0)}</div>
+                    <div><strong>Probability:</strong> ${opp.probability || 0}%</div>
+                    <div><strong>Expected Value:</strong> ${Utils.formatCurrency((opp.value || 0) * (opp.probability || 0) / 100)}</div>
+                    <div><strong>Close Date:</strong> ${Utils.formatDate(opp.closeDate)}</div>
+                </div>
+                
+                ${opp.client ? `<div style="margin-bottom: 1rem;"><strong>Client:</strong> ${opp.client}</div>` : ''}
+                ${opp.description ? `<div style="margin-bottom: 1rem;"><strong>Description:</strong><br>${opp.description}</div>` : ''}
+                ${opp.notes ? `<div style="margin-bottom: 1rem;"><strong>Notes:</strong><br>${opp.notes}</div>` : ''}
+                
+                <div style="font-size: 0.9rem; color: #666; border-top: 1px solid #ddd; padding-top: 1rem;">
+                    <div><strong>Created:</strong> ${Utils.formatDate(opp.createdDate)}</div>
+                    ${opp.lastModified ? `<div><strong>Last Modified:</strong> ${Utils.formatDate(opp.lastModified)}</div>` : ''}
+                    ${opp.statusChangedDate ? `<div><strong>Status Changed:</strong> ${Utils.formatDate(opp.statusChangedDate)}</div>` : ''}
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="Opportunities.closeModal()">Close</button>
+                <button class="btn" onclick="Opportunities.edit(${oppId})">Edit</button>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
     },
 
-    getPwinClass(pwin) {
-        return pwin >= 70 ? 'high' : pwin >= 40 ? 'medium' : 'low';
+    closeModal() {
+        document.getElementById('opportunityModal').style.display = 'none';
     },
 
-    // ... existing methods (add, view, etc.) remain the same ...
-    
     // Close all dropdowns when clicking outside
     init() {
         document.addEventListener('click', (event) => {

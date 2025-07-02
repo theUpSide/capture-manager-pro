@@ -94,7 +94,8 @@
                     <h2>All Opportunities</h2>
                     <button class="btn" onclick="Opportunities.openNewModal()">+ Add Opportunity</button>
                 </div>
-                <div class="opportunity-list" id="all-opportunities">
+                <!-- Fixed: Changed from opportunity-list to opportunities-grid -->
+                <div class="opportunities-grid" id="opportunities-grid">
                     <!-- All opportunities will be populated here -->
                 </div>
             </div>
@@ -192,67 +193,13 @@
     </div>
 
     <!-- Modals -->
+    <!-- Fixed: Updated opportunity modal to match JavaScript expectations -->
     <div id="opportunityModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="Opportunities.closeModal()">&times;</span>
-            <h2>Add New Opportunity</h2>
-            <form id="opportunityForm" onsubmit="Opportunities.save(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppName">Opportunity Name *</label>
-                        <input type="text" id="oppName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="oppCustomer">Customer *</label>
-                        <input type="text" id="oppCustomer" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppValue">Contract Value ($)</label>
-                        <input type="number" id="oppValue" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="oppType">Opportunity Type</label>
-                        <select id="oppType">
-                            <option value="RFP">RFP - Request for Proposal</option>
-                            <option value="IDIQ">IDIQ - Indefinite Delivery</option>
-                            <option value="SBIR">SBIR - Small Business Innovation</option>
-                            <option value="Sole Source">Sole Source</option>
-                            <option value="GSA Schedule">GSA Schedule</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppRfpDate">Expected RFP Date</label>
-                        <input type="date" id="oppRfpDate">
-                    </div>
-                    <div class="form-group">
-                        <label for="oppPwin">Probability of Win (%)</label>
-                        <input type="number" id="oppPwin" min="0" max="100" value="50">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppRole">Our Role</label>
-                        <select id="oppRole">
-                            <option value="Prime">Prime Contractor</option>
-                            <option value="Sub">Subcontractor</option>
-                            <option value="Partner">Teaming Partner</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="oppIncumbent">Incumbent</label>
-                        <input type="text" id="oppIncumbent" placeholder="Current contractor (if recompete)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="oppDescription">Description</label>
-                    <textarea id="oppDescription"></textarea>
-                </div>
-                <button type="submit" class="btn">Save Opportunity</button>
-            </form>
+            <div id="opportunity-form-content">
+                <!-- Form content will be populated by JavaScript -->
+            </div>
         </div>
     </div>
 

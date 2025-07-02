@@ -12,53 +12,71 @@ const Navigation = {
         this.hideAllViews();
         document.getElementById('dashboard-view').style.display = 'block';
         this.updateActiveNav('Dashboard');
-        Dashboard.refresh();
+        Dashboard.render();
     },
 
     showOpportunities() {
         this.hideAllViews();
         document.getElementById('opportunities-view').style.display = 'block';
         this.updateActiveNav('Opportunities');
-        Opportunities.renderAll();
+        Opportunities.render();
     },
 
     showRoadmap() {
         this.hideAllViews();
         document.getElementById('roadmap-view').style.display = 'block';
         this.updateActiveNav('Roadmap');
-        Roadmap.render();
+        if (typeof Roadmap !== 'undefined') {
+            Roadmap.render();
+        }
     },
 
     showActions() {
         this.hideAllViews();
         document.getElementById('actions-view').style.display = 'block';
         this.updateActiveNav('Action Items');
-        Actions.renderAll();
+        if (typeof Actions !== 'undefined') {
+            Actions.render();
+        }
     },
 
     showTemplates() {
         this.hideAllViews();
         document.getElementById('templates-view').style.display = 'block';
         this.updateActiveNav('Templates');
-        Templates.render();
+        if (typeof Templates !== 'undefined') {
+            Templates.render();
+        }
     },
 
     showReports() {
+        this.hideAllViews();
+        // Add reports view when implemented
         alert('Reports functionality coming soon!');
     },
 
     hideAllViews() {
-        const views = ['dashboard-view', 'opportunities-view', 'roadmap-view', 'actions-view', 'templates-view', 'saved-templates-view'];
+        const views = [
+            'dashboard-view',
+            'opportunities-view',
+            'roadmap-view',
+            'actions-view',
+            'templates-view',
+            'saved-templates-view'
+        ];
+        
         views.forEach(viewId => {
-            const element = document.getElementById(viewId);
-            if (element) element.style.display = 'none';
+            const view = document.getElementById(viewId);
+            if (view) {
+                view.style.display = 'none';
+            }
         });
     },
 
-    updateActiveNav(activeSection) {
+    updateActiveNav(activeText) {
         document.querySelectorAll('nav a').forEach(link => {
             link.classList.remove('active');
-            if (link.textContent === activeSection) {
+            if (link.textContent.trim() === activeText) {
                 link.classList.add('active');
             }
         });
@@ -85,7 +103,42 @@ window.onclick = function(event) {
     }
 };
 
-// Initialize when DOM is ready  
-document.addEventListener('DOMContentLoaded', () => {
-    CaptureManager.init();
+// Update the loadData function
+function loadData() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a file to load');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const result = DataStore.importData(e.target.result);
+            if (result.success) {
+                alert(result.message);
+                // Refresh all views
+                Navigation.showOpportunities();
+            } else {
+                alert('Error loading data: ' + result.message);
+            }
+        } catch (error) {
+            alert('Error loading file: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    // Load data from localStorage
+    DataStore.loadData();
+    
+    // Initialize all modules
+    Dashboard.init();
+    
+    // Show dashboard by default
+    Navigation.showDashboard();
 });

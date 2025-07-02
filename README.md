@@ -232,3 +232,178 @@ This is a standalone web application designed for internal business use. Modify 
 ---
 
 **Capture Manager Pro** - Streamline your business capture process from opportunity identification to proposal handoff.
+
+
+
+
+----
+
+Capture Manager Pro
+A comprehensive business development and capture management application designed specifically for defense contractors and government services companies. Track opportunities, manage capture activities, and execute winning strategies with systematic templates and workflows.
+
+🎯 Overview
+Capture Manager Pro provides a complete solution for managing the business development lifecycle from opportunity identification through proposal handoff. Built with modern web technologies, it runs entirely in your browser with local data storage for security and privacy.
+
+✨ Key Features
+📊 Dashboard & Analytics
+Real-time Pipeline Metrics: Total pipeline value, weighted pipeline, active opportunity count
+Smart Recommendations: AI-powered insights for overdue actions, stale opportunities, and strategic priorities
+Progress Tracking: Visual progress indicators and trend analysis
+Urgent Actions Widget: Immediate visibility into high-priority and overdue tasks
+🎯 Opportunity Management
+Complete Lifecycle Tracking: From identification through win/loss/archive
+Status Management: Capture, Pursuing, Won, Lost, Archived with visual indicators
+Comprehensive Data: Value, probability, close dates, client information, notes
+Organized Views: Collapsible sections for active, completed, and archived opportunities
+Edit & Update: Full CRUD operations with change tracking
+🗺️ Capture Roadmap
+Six-Phase Framework: Identification → Qualification → Planning → Engagement → Intelligence → Preparation
+Visual Timeline: Interactive Gantt-style view showing phase progression
+Milestone Tracking: Key activities and deliverables for each phase
+Progress Indicators: Color-coded status (completed, current, upcoming, needs attention)
+Customizable Workflows: Adapt to your organization's capture process
+✅ Action Item Management
+Priority-Based Organization: High/Medium/Low priority with visual indicators
+Overdue Tracking: Automatic identification and highlighting of overdue items
+Opportunity Linking: Actions tied to specific opportunities
+Phase Association: Actions mapped to capture roadmap phases
+Completion Tracking: Mark complete with date stamps and history
+📋 Professional Templates (21 Templates)
+Planning & Strategy
+Capture Plan Template: Comprehensive master document for capture strategy
+Opportunity Qualification Scorecard: Bid/no-bid decision framework
+Win Theme Development: Systematic theme creation and validation
+Solution Development Framework: Technical and management approach planning
+Customer Intelligence
+Customer Engagement Templates: Systematic relationship building
+Air Force Customer Mapping: GMRE-specific organizational mapping
+Customer Intelligence Gathering: Structured information collection
+Competitive Intelligence
+Black Hat Analysis Framework: Role-playing competitor strategies
+Competitive Intelligence Checklist: Systematic competitor research
+Win Strategy Workshop Agenda: Collaborative strategy development
+Pricing & Analysis
+Price-to-Win (PTW) Analysis: Comprehensive pricing strategy
+Cost Intelligence Gathering: Market rate and pricing research
+Reviews & Quality Assurance
+Capture Strategy Review (Gate 2): Formal review checkpoints
+Execution Readiness Review: Pre-proposal feasibility assessment
+Capture Plan Review Checklist: Quality assurance framework
+Specialized Areas
+Test & Evaluation Templates: T&E-specific requirements and safety
+Security & Compliance Checklist: Defense contracting compliance
+Teaming & Partnership Templates: Strategic partnership evaluation
+Past Performance Packaging: CPARS and reference optimization
+Process & Training
+Capture Process Workflow: Standardized process management
+Training & Onboarding: Team member development
+Capture Status Reporting: Regular communication templates
+💾 Data Management
+Local Storage: Secure browser-based data storage
+Import/Export: JSON-based data backup and restoration
+Data Migration: Automatic field mapping for legacy data
+Version Control: Change tracking and modification dates
+🚀 Getting Started
+Installation
+Download or clone the repository
+Open index.html in a modern web browser
+Start adding your opportunities and begin capturing!
+First Steps
+Add Your First Opportunity: Click "Add Opportunity" and enter basic details
+Set Up Actions: Create action items linked to your opportunities
+Use Templates: Fill out capture planning templates for systematic approach
+Track Progress: Monitor your pipeline through the dashboard metrics
+📱 User Interface
+Navigation
+Dashboard: Overview metrics and urgent items
+Opportunities: Full opportunity management with status tracking
+Roadmap: Visual timeline of capture activities
+Action Items: Task management with priority and due date tracking
+Templates: Professional capture management templates
+Reports: Analytics and export capabilities
+Key Workflows
+Opportunity Lifecycle
+Identification: Discover and initially assess opportunities
+Qualification: Formal bid/no-bid decision process
+Planning: Develop comprehensive capture strategy
+Engagement: Build relationships and shape opportunity
+Intelligence: Analyze competition and refine strategy
+Preparation: Final preparations before RFP release
+Status Management
+Capture: Early-stage opportunity development
+Pursuing: Active pursuit with approved capture plan
+Won: Successfully awarded contracts
+Lost: Unsuccessful pursuits for lessons learned
+Archived: Inactive opportunities for historical reference
+🔧 Technical Details
+Architecture
+Frontend: Vanilla JavaScript, HTML5, CSS3
+Storage: Browser localStorage for data persistence
+Security: Client-side only, no server communication
+Compatibility: Modern web browsers (Chrome, Firefox, Safari, Edge)
+File Structure
+17 lines
+▲
+Data Model
+Opportunities: Core business opportunities with lifecycle tracking
+Actions: Task items linked to opportunities and phases
+Templates: Professional forms with field definitions
+Saved Templates: Completed template instances
+Roadmap: Phase definitions and workflow steps
+🎨 Customization
+Adding Custom Templates
+Edit js/data.js
+Add new template objects to the templates array
+Define fields with appropriate types (text, textarea, select, date, number)
+Set required fields and validation rules
+Modifying Capture Phases
+Update the captureRoadmap object in js/data.js
+Define steps with timing and descriptions
+Customize phase names and workflows for your organization
+Styling Customization
+Colors: Modify CSS custom properties in css/main.css
+Layout: Adjust grid systems and spacing in css/components.css
+Branding: Replace logo and update header styling
+📊 Analytics & Reporting
+Dashboard Metrics
+Total Pipeline Value: Sum of all active opportunity values
+Weighted Pipeline: Probability-adjusted pipeline value
+Active Opportunity Count: Current pursuits in progress
+Average Progress: Overall capture phase progression
+Smart Recommendations
+Overdue Action Detection: Automatic identification of late tasks
+Stale Opportunity Alerts: Opportunities without recent activity
+High-Value Strategy Alerts: Low-probability, high-value opportunities
+Closing Soon Warnings: Opportunities requiring immediate attention
+🔒 Security & Privacy
+Local Storage Only: All data stays on your device
+No Server Communication: Complete offline functionality
+Data Control: You own and control all information
+Export Capability: Regular backups recommended
+🚧 Roadmap & Future Enhancements
+Planned Features
+Advanced Analytics: Trend analysis and forecasting
+Collaboration Tools: Team sharing and assignment features
+Integration Capabilities: CRM and ERP system connections
+Mobile App: Dedicated mobile application
+Advanced Reporting: Custom report generation
+Enhancement Requests
+Multi-user Support: Team collaboration features
+Document Management: File attachment and storage
+Email Integration: Automated notifications and reminders
+Advanced Filtering: Complex search and filter options
+🤝 Support & Contributing
+Getting Help
+Review this documentation for common questions
+Check browser console for error messages
+Ensure you're using a modern, updated web browser
+Contributing
+Report bugs or suggest features through GitHub issues
+Submit pull requests for improvements
+Share templates and workflows with the community
+📝 License
+MIT License - see LICENSE file for details.
+
+🏢 About GMRE
+Built specifically for defense contractors and government services companies, with particular attention to Air Force and DoD contracting requirements. Templates and workflows reflect industry best practices and proven capture methodologies.
+

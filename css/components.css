@@ -86,11 +86,18 @@
 }
 
 .status-badge {
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
     font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
+    color: white;
+}
+
+.status-badge.status-capture {
+    background-color: #007bff;
+}
+
+.status-badge.status-pursuing {
+    background-color: #28a745;
 }
 
 .status-identification { background: #e2e3e5; color: #383d41; }
@@ -141,16 +148,16 @@
 
 .form-group label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     font-weight: bold;
     color: #333;
 }
 
 .form-group input, .form-group select, .form-group textarea {
     width: 100%;
-    padding: 0.7rem;
+    padding: 0.75rem;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: 0.9rem;
 }
 
@@ -159,33 +166,133 @@
     resize: vertical;
 }
 
+/* Opportunity Cards */
+.opportunity-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.opportunity-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.opportunities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* Status sections */
+.status-section {
+    margin-bottom: 2rem;
+}
+
+.status-header {
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.status-header:hover {
+    background-color: #f8f9fa;
+}
+
+/* Dropdown styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 150px;
+    display: none;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover:not(:disabled) {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    font-weight: bold;
+}
+
+/* Form styles */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-}
-
-.template-card {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
-    background: white;
-    transition: box-shadow 0.3s;
-}
-
-.template-card:hover {
-    transform: translateY(-1px);
-}
-
-.template-card h4 {
-    color: #2a5298;
-    margin-bottom: 0.5rem;
-}
-
-.template-card p {
-    color: #666;
-    font-size: 0.9rem;
     margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .opportunities-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Action Cards */
+.action-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.action-card.urgent {
+    border-left: 4px solid #dc3545;
+}
+
+.action-card.completed {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.actions-section {
+    margin-bottom: 2rem;
 }
 
 /* Step items for phase detail modal */
@@ -493,4 +600,83 @@ header .btn-secondary {
 
 header .btn-secondary:hover {
     transform: translateY(-1px);
+}
+
+/* Dashboard specific styles */
+.opportunity-summary {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.opportunity-details {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+
+.action-summary {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.action-summary.overdue {
+    border-left: 4px solid #dc3545;
+}
+
+.priority-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: white;
+}
+
+.priority-badge.priority-high {
+    background-color: #dc3545;
+}
+
+.priority-badge.priority-medium {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.priority-badge.priority-low {
+    background-color: #28a745;
+}
+
+.recommendation-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.next-actions-widget {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
 }
