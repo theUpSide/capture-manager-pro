@@ -172,6 +172,57 @@ const Reports = {
         
         const winRate = totalDecided > 0 ? Math.round((wonOpps.length / totalDecided) * 100) : 0;
 
+        // Win/Loss by opportunity size
+        const sizeCategories = {
+            small: { won: 0, lost: 0, threshold: 1000000, label: 'Small (<$1M)' },
+            medium: { won: 0, lost: 0, threshold: 5000000, label: 'Medium ($1M-$5M)' },
+            large: { won: 0, lost: 0, threshold: Infinity, label: 'Large (>$5M)' }
+        };
+
+        [...wonOpps, ...lostOpps].forEach(opp => {
+            const value = opp.value || 0;
+            const status = opp.status;
+            
+            if (value < sizeCategories.small.threshold) {
+                sizeCategories.small[status]++;
+            } else if (value < sizeCategories.medium.threshold) {
+                sizeCategories.medium[status]++;
+            } else {
+                sizeCategories.large[status]++;
+            }
+        });
+
+        // Customer performance analysis
+        const customerPerformance = {};
+        [...wonOpps, ...lostOpps].forEach(opp => {
+            const customer = opp.client || opp.customer || 'Unknown';
+            if (!customerPerformance[customer]) {
+                customerPerformance[customer] = { won: 0, lost: 0, totalValue: 0 };
+            }
+            customerPerformance[customer][opp.status]++;
+            customerPerformance[customer].totalValue += (opp.value || 0);
+        });
+
+        const topCustomers = Object.entries(customerPerformance)
+            .filter(([customer, data]) => (data.won + data.lost) > 0)
+            .sort((a, b) => (b[1].won + b[1].lost) - (a[1].won + a[1].lost))
+            .slice(0, 5);
+
+        // Competitive analysis
+        const competitiveData = {};
+        [...wonOpps, ...lostOpps].forEach(opp => {
+            const incumbent = opp.incumbent || 'Unknown';
+            if (!competitiveData[incumbent]) {
+                competitiveData[incumbent] = { won: 0, lost: 0 };
+            }
+            competitiveData[incumbent][opp.status]++;
+        });
+
+        const topCompetitors = Object.entries(competitiveData)
+            .filter(([competitor, data]) => (data.won + data.lost) > 0)
+            .sort((a, b) => (b[1].won + b[1].lost) - (a[1].won + a[1].lost))
+            .slice(0, 5);
+
         return `
             <div class="report-header-window">
                 <h2>🎯 Win/Loss Analysis Report</h2>
@@ -204,14 +255,116 @@ const Reports = {
             </div>
 
             <div class="report-charts-window">
-                <div class="report-text-content">
-                    <p>This section would contain win/loss analysis charts and detailed breakdowns by opportunity size, customer performance, and competitive positioning.</p>
-                    <ul>
-                        <li>Win rate trends over time</li>
-                        <li>Performance by opportunity size categories</li>
-                        <li>Customer relationship strength correlation</li>
-                        <li>Competitive win/loss patterns</li>
-                    </ul>
+                <div class="report-section-grid">
+                    <div class="report-card">
+                        <h3>📊 Performance by Opportunity Size</h3>
+                        <div class="stacked-bar-chart">
+                            ${Object.entries(sizeCategories).map(([key, data]) => {
+                                const total = data.won + data.lost;
+                                if (total === 0) return '';
+                                
+                                const winRate = Math.round((data.won / total) * 100);
+                                const wonWidth = (data.won / total) * 100;
+                                const lostWidth = (data.lost / total) * 100;
+                                
+                                return `
+                                    <div class="stacked-bar-row">
+                                        <div class="stacked-bar-label">
+                                            <div class="size-label">${data.label}</div>
+                                            <div class="win-rate-badge ${winRate >= 60 ? 'high' : winRate >= 40 ? 'medium' : 'low'}">
+                                                ${winRate}% Win Rate
+                                            </div>
+                                        </div>
+                                        <div class="stacked-bar-container">
+                                            <div class="stacked-bar">
+                                                <div class="bar-segment won" style="width: ${wonWidth}%"></div>
+                                                <div class="bar-segment lost" style="width: ${lostWidth}%"></div>
+                                            </div>
+                                            <div class="stacked-bar-text">${data.won}W / ${data.lost}L</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>🏢 Customer Relationship Performance</h3>
+                        <div class="customer-performance-chart">
+                            ${topCustomers.map(([customer, data]) => {
+                                const total = data.won + data.lost;
+                                const winRate = Math.round((data.won / total) * 100);
+                                
+                                return `
+                                    <div class="customer-performance-row">
+                                        <div class="customer-info">
+                                            <div class="customer-name">${customer}</div>
+                                            <div class="customer-record">${data.won}W / ${data.lost}L • ${Utils.formatCurrency(data.totalValue)} total value</div>
+                                        </div>
+                                        <div class="performance-visual">
+                                            <div class="win-rate-circle ${winRate >= 60 ? 'high' : winRate >= 40 ? 'medium' : 'low'}">
+                                                <div class="win-rate-inner">
+                                                    <div class="win-rate-percent">${winRate}%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-charts-window">
+                <div class="report-section-grid">
+                    <div class="report-card">
+                        <h3>⚔️ Competitive Analysis</h3>
+                        <div class="report-text-content">
+                            <p><strong>Performance Against Key Competitors:</strong></p>
+                            ${topCompetitors.map(([competitor, data]) => {
+                                const total = data.won + data.lost;
+                                const winRate = Math.round((data.won / total) * 100);
+                                const statusColor = winRate >= 60 ? '#28a745' : winRate >= 40 ? '#ffc107' : '#dc3545';
+                                
+                                return `
+                                    <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${statusColor};">
+                                        <strong>vs ${competitor}</strong><br>
+                                        <span style="color: #666;">Win Rate: ${winRate}% (${data.won}W / ${data.lost}L across ${total} competitions)</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                            
+                            <p><strong>Key Insights:</strong></p>
+                            <ul>
+                                <li>Strongest performance: ${this.getBestPerformanceCategory(sizeCategories)}</li>
+                                <li>Best customer relationship: ${topCustomers.length > 0 ? topCustomers[0][0] : 'N/A'}</li>
+                                <li>Most challenging competitor: ${this.getMostChallengingCompetitor(topCompetitors)}</li>
+                                <li>Overall trend: ${wonOpps.length >= lostOpps.length ? 'Positive momentum' : 'Need strategic review'}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>📈 Win/Loss Trends</h3>
+                        <div class="report-text-content">
+                            <p><strong>Recent Performance Analysis:</strong></p>
+                            ${this.generateTrendAnalysis(wonOpps, lostOpps)}
+                            
+                            <p><strong>Strategic Recommendations:</strong></p>
+                            <ul>
+                                ${this.generateRecommendations(sizeCategories, topCustomers, winRate).map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                            
+                            <p><strong>Focus Areas for Improvement:</strong></p>
+                            <ul>
+                                <li>Strengthen relationships with high-value customers</li>
+                                <li>Develop competitive advantages in challenging segments</li>
+                                <li>Leverage successful patterns from wins</li>
+                                <li>Address recurring themes from losses</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -393,6 +546,101 @@ const Reports = {
         
         const completed = highPriorityActions.filter(a => a.completed).length;
         return Math.round((completed / highPriorityActions.length) * 100);
+    },
+
+    getBestPerformanceCategory(sizeCategories) {
+        let bestCategory = 'Unknown';
+        let bestRate = 0;
+        
+        Object.entries(sizeCategories).forEach(([key, data]) => {
+            const total = data.won + data.lost;
+            if (total > 0) {
+                const rate = (data.won / total) * 100;
+                if (rate > bestRate) {
+                    bestRate = rate;
+                    bestCategory = data.label;
+                }
+            }
+        });
+        
+        return `${bestCategory} (${Math.round(bestRate)}% win rate)`;
+    },
+
+    getMostChallengingCompetitor(topCompetitors) {
+        if (topCompetitors.length === 0) return 'N/A';
+        
+        let mostChallenging = topCompetitors[0];
+        let lowestWinRate = 100;
+        
+        topCompetitors.forEach(([competitor, data]) => {
+            const total = data.won + data.lost;
+            const winRate = (data.won / total) * 100;
+            if (winRate < lowestWinRate) {
+                lowestWinRate = winRate;
+                mostChallenging = [competitor, data];
+            }
+        });
+        
+        return `${mostChallenging[0]} (${Math.round(lowestWinRate)}% win rate)`;
+    },
+
+    generateTrendAnalysis(wonOpps, lostOpps) {
+        const allDecided = [...wonOpps, ...lostOpps].sort((a, b) => 
+            new Date(b.statusChangedDate || b.createdDate) - new Date(a.statusChangedDate || a.createdDate)
+        );
+        
+        const recent = allDecided.slice(0, 5);
+        const recentWins = recent.filter(opp => opp.status === 'won').length;
+        const recentRate = recent.length > 0 ? Math.round((recentWins / recent.length) * 100) : 0;
+        
+        return `
+            <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <strong>Last 5 Decisions:</strong> ${recentRate}% win rate (${recentWins} wins out of ${recent.length})<br>
+                <span style="color: #666;">
+                    Recent outcomes show ${recentRate >= 60 ? 'strong' : recentRate >= 40 ? 'moderate' : 'concerning'} performance trends
+                </span>
+            </div>
+        `;
+    },
+
+    generateRecommendations(sizeCategories, topCustomers, overallWinRate) {
+        const recommendations = [];
+        
+        // Size-based recommendations
+        const smallRate = sizeCategories.small.won + sizeCategories.small.lost > 0 ? 
+            (sizeCategories.small.won / (sizeCategories.small.won + sizeCategories.small.lost)) * 100 : 0;
+        const largeRate = sizeCategories.large.won + sizeCategories.large.lost > 0 ? 
+            (sizeCategories.large.won / (sizeCategories.large.won + sizeCategories.large.lost)) * 100 : 0;
+        
+        if (smallRate > largeRate + 20) {
+            recommendations.push('Focus on smaller opportunities where win rate is significantly higher');
+        } else if (largeRate > smallRate + 20) {
+            recommendations.push('Prioritize larger opportunities where competitive advantage is strongest');
+        }
+        
+        // Win rate recommendations
+        if (overallWinRate < 40) {
+            recommendations.push('Implement more rigorous bid/no-bid qualification process');
+            recommendations.push('Strengthen customer engagement and relationship building');
+        } else if (overallWinRate > 70) {
+            recommendations.push('Consider pursuing more challenging, higher-value opportunities');
+        }
+        
+        // Customer recommendations
+        if (topCustomers.length > 0) {
+            const bestCustomer = topCustomers[0];
+            const bestRate = (bestCustomer[1].won / (bestCustomer[1].won + bestCustomer[1].lost)) * 100;
+            if (bestRate > 60) {
+                recommendations.push(`Expand relationship with ${bestCustomer[0]} - proven success partner`);
+            }
+        }
+        
+        if (recommendations.length === 0) {
+            recommendations.push('Continue current strategy while monitoring competitive landscape');
+            recommendations.push('Focus on lessons learned from recent wins and losses');
+        }
+        
+        return recommendations;
     },
 
     renderPieChart(data) {
