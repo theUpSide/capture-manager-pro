@@ -51,7 +51,7 @@ const DataStore = {
         {
             id: 1,
             title: "Capture Plan Template (Master Document)",
-            description: "Comprehensive capture plan serving as single source of truth for the entire capture effort. Update regularly as new intelligence emerges.",
+            description: "Comprehensive capture plan serving as single source of truth for the entire capture effort.",
             category: "Planning",
             guidance: {
                 importance: "The capture plan is your strategic roadmap and single source of truth throughout the entire capture process. It prevents scope creep, ensures team alignment, and provides a framework for making informed bid/no-bid decisions. Without a solid capture plan, teams often waste resources pursuing unwinnable opportunities or fail to capitalize on their competitive advantages.",
@@ -96,7 +96,7 @@ const DataStore = {
                 { id: "key_stakeholders", label: "Key Decision Makers & Influencers", type: "textarea", required: true },
                 { id: "customer_hot_buttons", label: "Customer Hot Buttons & Priorities", type: "textarea", required: true },
                 { id: "requirements_summary", label: "Key Requirements Summary", type: "textarea", required: true },
-                { id: "capability_gaps", label: "GMRE Capability Gaps & Mitigation", type: "textarea", required: false },
+                { id: "capability_gaps", label: "Company Capability Gaps & Mitigation", type: "textarea", required: false },
                 { id: "win_themes", label: "Primary Win Themes (3-4)", type: "textarea", required: true },
                 { id: "competitive_positioning", label: "Competitive Positioning Summary", type: "textarea", required: true },
                 { id: "key_risks", label: "Key Risks & Mitigation Strategies", type: "textarea", required: true },
@@ -106,7 +106,7 @@ const DataStore = {
         {
             id: 2,
             title: "Opportunity Qualification Scorecard",
-            description: "Early-stage bid/no-bid decision tool to make disciplined pursuit decisions and focus resources on winnable opportunities.",
+            description: "Early-stage bid/no-bid decision tool to focus resources on winnable opportunities.",
             category: "Planning",
             guidance: {
                 importance: "The qualification scorecard prevents the 'chase everything' mentality that wastes precious BD resources. It forces objective evaluation of opportunities against consistent criteria, helping you focus on winnable business. Companies using formal qualification processes win 2x more often while spending 40% less on losing pursuits.",
@@ -259,8 +259,39 @@ const DataStore = {
         {
             id: 5,
             title: "Competitive Intelligence Gathering Checklist",
-            description: "Systematic framework for gathering and analyzing competitive intelligence from multiple sources throughout capture.",
+            description: "Systematic framework for gathering and analyzing competitive intelligence from multiple sources.",
             category: "Intelligence",
+            guidance: {
+                importance: "Competitive intelligence is the foundation of effective positioning and strategy development. This systematic approach ensures you gather actionable intelligence while staying within legal and ethical boundaries. Companies with structured competitive intelligence processes are 3x more likely to accurately predict competitor moves and develop effective counter-strategies.",
+                keyConsiderations: [
+                    "Focus on publicly available information and ethical sources only",
+                    "Validate intelligence through multiple independent sources",
+                    "Distinguish between facts, assumptions, and speculation",
+                    "Update intelligence regularly as situations change rapidly",
+                    "Share intelligence appropriately while protecting sources"
+                ],
+                prework: [
+                    "Identify key competitors likely to bid on similar opportunities",
+                    "Establish ethical guidelines for intelligence gathering",
+                    "Train team members on legal boundaries and proper techniques",
+                    "Set up monitoring systems for competitor announcements",
+                    "Develop relationships with industry contacts for insights"
+                ],
+                workshopGuide: {
+                    duration: "2-3 hours quarterly",
+                    participants: "BD team, capture managers, competitive analysts",
+                    agenda: [
+                        "Review competitive landscape changes (30 min)",
+                        "Share new intelligence gathered since last meeting (45 min)",
+                        "Analyze competitor strategic moves and implications (45 min)",
+                        "Update competitive profiles and positioning (30 min)",
+                        "Assign intelligence gathering tasks for next quarter (15 min)",
+                        "Review and update intelligence gathering procedures (15 min)"
+                    ],
+                    facilitation: "Encourage sharing while maintaining confidentiality. Focus on actionable insights rather than raw data collection."
+                },
+                theory: "Based on business intelligence methodologies and competitive analysis frameworks. Systematic intelligence gathering enables proactive rather than reactive competitive strategies, leading to better positioning and higher win rates."
+            },
             fields: [
                 { id: "competitor_name", label: "Competitor Name", type: "text", required: true },
                 { id: "open_source_research", label: "Open Source Research Findings", type: "textarea", required: true },
@@ -279,12 +310,44 @@ const DataStore = {
         {
             id: 6,
             title: "Win Theme Development Worksheet",
-            description: "Systematic development of compelling win themes that highlight strengths, address customer needs, and differentiate from competitors.",
+            description: "Systematic development of compelling win themes that highlight strengths and differentiate from competitors.",
             category: "Strategy",
+            guidance: {
+                importance: "Win themes are the foundation of your competitive positioning and proposal messaging. They connect customer needs with your unique capabilities while differentiating you from competitors. Well-developed win themes increase win probability by 40% and make proposal writing more focused and compelling.",
+                keyConsiderations: [
+                    "Limit to 3-4 primary themes - more dilutes impact",
+                    "Each theme must address a real customer hot button",
+                    "Provide concrete proof points, not just claims",
+                    "Ensure themes are truly differentiating, not just strengths",
+                    "Test themes with customer contacts when possible"
+                ],
+                prework: [
+                    "Complete thorough customer needs analysis",
+                    "Conduct competitive intelligence gathering",
+                    "Inventory your company's relevant capabilities and past performance",
+                    "Identify customer evaluation criteria and weighting",
+                    "Gather quantitative proof points and success stories"
+                ],
+                workshopGuide: {
+                    duration: "4-5 hours",
+                    participants: "Capture manager, technical leads, proposal manager, subject matter experts",
+                    agenda: [
+                        "Review customer hot buttons and evaluation criteria (30 min)",
+                        "Brainstorm potential themes without judgment (45 min)",
+                        "Map themes to customer needs and evaluation criteria (30 min)",
+                        "Develop proof points for each potential theme (60 min)",
+                        "Test themes against competitive differentiation (45 min)",
+                        "Select final 3-4 themes and refine messaging (60 min)",
+                        "Assign theme validation and development tasks (15 min)"
+                    ],
+                    facilitation: "Use structured brainstorming initially, then apply rigorous evaluation criteria. Focus on customer perspective, not internal pride."
+                },
+                theory: "Based on persuasion psychology and competitive positioning theory. Win themes work by creating mental anchors that influence evaluation and decision-making. They must be memorable, credible, and clearly superior to alternatives."
+            },
             fields: [
                 { id: "theme_title", label: "Win Theme Title", type: "text", required: true },
                 { id: "customer_hot_button", label: "Customer Hot Button Addressed", type: "textarea", required: true },
-                { id: "gmre_strength", label: "GMRE Strength Highlighted", type: "textarea", required: true },
+                { id: "company_strength", label: "Company Strength Highlighted", type: "textarea", required: true },
                 { id: "competitor_weakness", label: "Competitor Weakness Exploited", type: "textarea", required: false },
                 { id: "proof_points", label: "Proof Points & Evidence", type: "textarea", required: true },
                 { id: "past_performance_examples", label: "Supporting Past Performance", type: "textarea", required: true },
@@ -298,8 +361,42 @@ const DataStore = {
         {
             id: 7,
             title: "Solution Development Framework",
-            description: "Structured approach to developing technical and management solutions that are feasible, compelling, and superior to competitors.",
+            description: "Structured approach to developing technical and management solutions that are feasible and compelling.",
             category: "Strategy",
+            guidance: {
+                importance: "Solution development bridges the gap between customer requirements and your technical approach. A well-structured solution development process ensures technical feasibility, competitive differentiation, and executable implementation. Companies with systematic solution development win 35% more technical competitions.",
+                keyConsiderations: [
+                    "Balance innovation with proven approaches and manageable risk",
+                    "Ensure solution directly addresses customer's key performance challenges",
+                    "Design for the evaluation criteria, not just technical elegance",
+                    "Consider lifecycle costs and sustainability, not just initial implementation",
+                    "Validate feasibility with actual technical personnel who will execute"
+                ],
+                prework: [
+                    "Thoroughly analyze customer requirements and performance objectives",
+                    "Research customer's current systems, processes, and pain points",
+                    "Review relevant company past performance and lessons learned",
+                    "Assess available personnel, technologies, and partnership options",
+                    "Understand budget constraints and cost sensitivity"
+                ],
+                workshopGuide: {
+                    duration: "6-8 hours over 2 sessions",
+                    participants: "Technical leads, solution architects, program managers, operations personnel",
+                    agenda: [
+                        "Session 1: Requirements Analysis & Concept Development",
+                        "- Requirements decomposition and analysis (90 min)",
+                        "- Brainstorm solution concepts and approaches (60 min)",
+                        "- Initial feasibility and risk assessment (45 min)",
+                        "Session 2: Solution Architecture & Validation",
+                        "- Develop detailed solution architecture (90 min)",
+                        "- Risk mitigation and management planning (45 min)",
+                        "- Validation with technical SMEs and operations (45 min)",
+                        "- Cost and schedule reality check (30 min)"
+                    ],
+                    facilitation: "Focus on customer outcomes, not just technical features. Challenge assumptions and validate with operational personnel."
+                },
+                theory: "Based on systems engineering principles and solution architecture methodologies. Successful solutions balance customer needs, technical feasibility, and competitive positioning while remaining executable within resource constraints."
+            },
             fields: [
                 { id: "technical_approach_summary", label: "Technical Approach Summary", type: "textarea", required: true },
                 { id: "key_innovations", label: "Key Innovations & Differentiators", type: "textarea", required: true },
@@ -317,8 +414,39 @@ const DataStore = {
         {
             id: 8,
             title: "PTW Analysis Workbook",
-            description: "Comprehensive Price-to-Win analysis to identify optimal pricing that maximizes win probability while maintaining profitability.",
+            description: "Comprehensive Price-to-Win analysis to identify optimal pricing that maximizes win probability.",
             category: "Pricing",
+            guidance: {
+                importance: "Price-to-Win analysis is critical for competitive positioning and profitability. It helps you find the sweet spot between winning the contract and maintaining acceptable margins. Systematic PTW analysis increases win rates by 25% while protecting profitability through disciplined pricing decisions.",
+                keyConsiderations: [
+                    "Gather multiple data points - don't rely on single sources",
+                    "Consider customer's budget constraints and funding cycles",
+                    "Factor in competitive dynamics and likely bidder strategies",
+                    "Balance win probability with acceptable profit margins",
+                    "Update estimates as new intelligence becomes available"
+                ],
+                prework: [
+                    "Research government budget documents and appropriations",
+                    "Analyze historical contract awards for similar work",
+                    "Gather intelligence on competitor cost structures and pricing",
+                    "Develop detailed should-cost estimates for major elements",
+                    "Understand customer's cost sensitivity and evaluation criteria"
+                ],
+                workshopGuide: {
+                    duration: "3-4 hours",
+                    participants: "Pricing manager, capture manager, finance, competitive intelligence",
+                    agenda: [
+                        "Review available budget and cost intelligence (45 min)",
+                        "Analyze historical pricing data and trends (30 min)",
+                        "Develop competitor price estimates and rationales (60 min)",
+                        "Model different pricing scenarios and win probability (45 min)",
+                        "Sensitivity analysis and risk assessment (30 min)",
+                        "Recommend pricing strategy and bounds (15 min)"
+                    ],
+                    facilitation: "Challenge assumptions and require supporting rationale for all estimates. Focus on ranges rather than point estimates."
+                },
+                theory: "Based on competitive bidding theory and microeconomics principles. PTW analysis combines market intelligence with statistical modeling to optimize bid pricing under uncertainty."
+            },
             fields: [
                 { id: "government_budget", label: "Government Budget Research", type: "textarea", required: true },
                 { id: "historical_pricing", label: "Historical Contract Pricing Data", type: "textarea", required: false },
@@ -337,8 +465,38 @@ const DataStore = {
         {
             id: 9,
             title: "Cost Intelligence Gathering",
-            description: "Systematic collection and analysis of cost intelligence to support informed pricing decisions and PTW analysis.",
+            description: "Systematic collection and analysis of cost intelligence to support informed pricing decisions.",
             category: "Pricing",
+            guidance: {
+                importance: "Cost intelligence provides the foundation for competitive pricing strategies. Understanding market rates, competitor cost structures, and customer budget constraints enables more accurate price-to-win analysis and better bid decisions. Companies with strong cost intelligence win 30% more price-sensitive competitions.",
+                keyConsiderations: [
+                    "Focus on publicly available and ethically obtained information",
+                    "Validate cost data through multiple independent sources",
+                    "Consider regional variations and market conditions",
+                    "Factor in inflation and cost escalation trends",
+                    "Document sources and confidence levels for all data"
+                ],
+                prework: [
+                    "Identify relevant historical contracts and awards data",
+                    "Research government budget documents and spending patterns",
+                    "Network with industry contacts for market rate insights",
+                    "Analyze competitor public financial reports and statements",
+                    "Gather internal historical cost data for benchmarking"
+                ],
+                workshopGuide: {
+                    duration: "2-3 hours quarterly",
+                    participants: "Pricing team, business development, competitive intelligence, finance",
+                    agenda: [
+                        "Review recent contract awards and pricing trends (45 min)",
+                        "Share cost intelligence gathered from various sources (45 min)",
+                        "Analyze competitor cost structures and capabilities (30 min)",
+                        "Update market rate databases and benchmarks (15 min)",
+                        "Identify cost intelligence gaps and collection priorities (15 min)"
+                    ],
+                    facilitation: "Maintain strict ethical standards while maximizing insight development. Focus on actionable intelligence for pricing decisions."
+                },
+                theory: "Based on market research methodologies and competitive intelligence principles. Systematic cost intelligence gathering enables data-driven rather than intuition-based pricing decisions."
+            },
             fields: [
                 { id: "contract_reference", label: "Reference Contract Number", type: "text", required: false },
                 { id: "contract_value", label: "Contract Value", type: "number", required: false },
@@ -356,8 +514,40 @@ const DataStore = {
         {
             id: 10,
             title: "Capture Strategy Review (Gate 2) Template",
-            description: "Formal review template to validate capture strategy and secure leadership commitment before proceeding to proposal development.",
+            description: "Formal review template to validate capture strategy and secure leadership commitment.",
             category: "Reviews",
+            guidance: {
+                importance: "Gate reviews provide critical checkpoints to validate strategy and secure continued investment. This formal review ensures capture strategy is sound before proceeding to expensive proposal development. Companies using structured gate reviews have 60% higher win rates and waste 40% less money on losing pursuits.",
+                keyConsiderations: [
+                    "Present honest assessment, not optimistic projections",
+                    "Focus on evidence-based recommendations, not intuition",
+                    "Address leadership concerns and risk tolerance explicitly",
+                    "Provide clear go/no-go recommendation with rationale",
+                    "Define success conditions and checkpoints for next phase"
+                ],
+                prework: [
+                    "Complete all capture activities and gather supporting data",
+                    "Prepare executive summary with key findings and recommendation",
+                    "Develop risk assessment and mitigation strategies",
+                    "Calculate resource requirements for proposal phase",
+                    "Prepare compelling business case for continued investment"
+                ],
+                workshopGuide: {
+                    duration: "90 minutes",
+                    participants: "Senior leadership, capture manager, BD manager, proposal manager",
+                    agenda: [
+                        "Opportunity summary and strategic fit (15 min)",
+                        "Customer intelligence and relationship status (15 min)",
+                        "Competitive assessment and positioning (15 min)",
+                        "Win strategy and theme validation (15 min)",
+                        "Resource requirements and timeline (10 min)",
+                        "Risk assessment and mitigation (10 min)",
+                        "Go/no-go recommendation and discussion (10 min)"
+                    ],
+                    facilitation: "Focus on decision-making, not just information sharing. Require specific commitments and clear next steps."
+                },
+                theory: "Based on stage-gate innovation methodologies adapted for capture management. Formal reviews improve decision quality and resource allocation while reducing sunk costs from poor pursuits."
+            },
             fields: [
                 { id: "opportunity_summary", label: "Opportunity Summary", type: "textarea", required: true },
                 { id: "capture_activities_complete", label: "Capture Activities Completion Status", type: "textarea", required: true },
@@ -376,8 +566,42 @@ const DataStore = {
         {
             id: 11,
             title: "Win Strategy Workshop Agenda",
-            description: "Structured workshop template for collaborative win strategy development ensuring team alignment and leveraging diverse perspectives.",
+            description: "Structured workshop template for collaborative win strategy development ensuring team alignment.",
             category: "Reviews",
+            guidance: {
+                importance: "Win strategy workshops align diverse perspectives and expertise to develop comprehensive competitive strategies. They leverage collective intelligence while ensuring all team members understand and buy into the approach. Teams using structured strategy workshops have 45% higher win rates due to better alignment and more thorough planning.",
+                keyConsiderations: [
+                    "Include diverse perspectives but limit to 6-8 participants",
+                    "Prepare thoroughly with background materials distributed in advance",
+                    "Focus on decisions and actions, not just discussion",
+                    "Document assumptions and validate them through capture activities",
+                    "Assign specific owners and deadlines for all action items"
+                ],
+                prework: [
+                    "Distribute background materials 2-3 days before workshop",
+                    "Complete preliminary customer and competitive intelligence",
+                    "Prepare initial solution concepts and win themes",
+                    "Gather relevant past performance and capability information",
+                    "Reserve appropriate meeting space with visual aids"
+                ],
+                workshopGuide: {
+                    duration: "6-8 hours",
+                    participants: "Capture manager, technical leads, BD, proposal manager, subject matter experts",
+                    agenda: [
+                        "Workshop objectives and ground rules (15 min)",
+                        "Opportunity overview and customer intelligence (45 min)",
+                        "Competitive landscape and positioning (60 min)",
+                        "Solution approach brainstorming and selection (90 min)",
+                        "Win theme development and validation (90 min)",
+                        "Pricing strategy discussion (45 min)",
+                        "Risk assessment and mitigation planning (30 min)",
+                        "Action planning and assignments (30 min)",
+                        "Next steps and success conditions (15 min)"
+                    ],
+                    facilitation: "Use structured brainstorming techniques. Encourage creative thinking initially, then apply evaluation criteria. Maintain energy through varied activities and regular breaks."
+                },
+                theory: "Based on collaborative decision-making research and group dynamics principles. Structured workshops improve strategy quality while building team commitment through participatory development."
+            },
             fields: [
                 { id: "workshop_date", label: "Workshop Date", type: "date", required: true },
                 { id: "participants", label: "Workshop Participants", type: "textarea", required: true },
@@ -392,8 +616,7 @@ const DataStore = {
                 { id: "action_items", label: "Workshop Action Items", type: "textarea", required: true },
                 { id: "next_steps", label: "Next Steps & Timeline", type: "textarea", required: true }
             ]
-        },
-        {
+        },        {
             id: 12,
             title: "Capture Status Reporting",
             description: "Regular communication templates to keep leadership informed and stakeholders aligned throughout the capture process.",
@@ -435,12 +658,43 @@ const DataStore = {
         },
         {
             id: 14,
-            title: "Air Force Customer Mapping",
-            description: "GMRE-specific template for mapping Air Force organizational relationships and decision-making processes across SPOs and commands.",
+            title: "Customer Organization Mapping",
+            description: "Map customer organizational relationships and decision-making processes.",
             category: "Customer Intelligence",
+            guidance: {
+                importance: "Understanding customer organizational dynamics is critical for successful capture. This template helps you map decision-making processes, identify key influencers, and develop targeted engagement strategies. Companies with strong customer intelligence win 60% more often than those without systematic mapping.",
+                keyConsiderations: [
+                    "Focus on decision makers and influencers, not just program managers",
+                    "Understand both formal and informal organizational relationships",
+                    "Map budget authority and funding sources clearly",
+                    "Identify end user organizations and their specific needs",
+                    "Document your current relationship status honestly"
+                ],
+                prework: [
+                    "Gather organizational charts and contact directories",
+                    "Research key personnel backgrounds and career histories",
+                    "Understand the customer's recent organizational changes",
+                    "Identify budget authority and appropriation sources",
+                    "Map previous contract awards and decision patterns"
+                ],
+                workshopGuide: {
+                    duration: "2-3 hours",
+                    participants: "Business development, capture manager, account managers, technical leads",
+                    agenda: [
+                        "Review customer organizational structure (30 min)",
+                        "Identify key decision makers and influencers (45 min)",
+                        "Map decision-making processes and approval chains (30 min)",
+                        "Assess current relationship strengths and gaps (30 min)",
+                        "Develop targeted engagement strategy (30 min)",
+                        "Assign relationship-building responsibilities (15 min)"
+                    ],
+                    facilitation: "Use visual mapping tools like whiteboards or sticky notes. Focus on relationships and influence patterns, not just titles."
+                },
+                theory: "Based on stakeholder analysis and influence mapping methodologies. Understanding organizational dynamics enables targeted relationship building and more effective positioning strategies."
+            },
             fields: [
-                { id: "program_office", label: "System Program Office (SPO)", type: "text", required: true },
-                { id: "major_command", label: "Major Command (ACC/ANG/AFRC)", type: "text", required: true },
+                { id: "program_office", label: "Primary Program Office", type: "text", required: true },
+                { id: "parent_organization", label: "Parent Organization/Command", type: "text", required: true },
                 { id: "program_manager", label: "Program Manager Name & Contact", type: "text", required: true },
                 { id: "technical_lead", label: "Technical Lead Name & Contact", type: "text", required: false },
                 { id: "contracting_officer", label: "Contracting Officer Name & Contact", type: "text", required: true },
@@ -449,7 +703,7 @@ const DataStore = {
                 { id: "influencers", label: "Key Influencers", type: "textarea", required: true },
                 { id: "budget_authority", label: "Budget Authority/Funding Source", type: "textarea", required: true },
                 { id: "decision_process", label: "Decision-Making Process", type: "textarea", required: true },
-                { id: "relationship_status", label: "GMRE Relationship Status", type: "textarea", required: true },
+                { id: "relationship_status", label: "Current Relationship Status", type: "textarea", required: true },
                 { id: "engagement_strategy", label: "Engagement Strategy", type: "textarea", required: true }
             ]
         },
