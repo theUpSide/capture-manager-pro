@@ -32,6 +32,16 @@ const Utils = {
         return diffDays;
     },
 
+    // Add the missing function for roadmap
+    calculateDaysUntilDate(dateString) {
+        if (!dateString) return null;
+        const targetDate = new Date(dateString);
+        const today = new Date();
+        const diffTime = targetDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    },
+
     formatPhase(phase) {
         const phases = {
             'identification': 'Identification',

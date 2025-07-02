@@ -227,8 +227,7 @@ const Opportunities = {
         // Close the dropdown
         document.getElementById(`status-menu-${oppId}`).style.display = 'none';
         
-        const statusInfo = this.statuses[newStatus];
-        alert(`Opportunity moved to ${statusInfo.label}!`);
+        // Removed the alert popup - status change is already visually indicated by the re-render
     },
 
     openNewModal() {

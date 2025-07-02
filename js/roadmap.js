@@ -7,7 +7,13 @@ const Roadmap = {
         const container = document.getElementById('roadmap-timeline-rows');
         if (!container) return;
         
-        container.innerHTML = DataStore.opportunities.map(opp => {
+        // Filter opportunities to only show active ones (capture or pursuing status)
+        const activeOpportunities = DataStore.opportunities.filter(opp => {
+            const status = opp.status || 'capture'; // default to 'capture' if no status set
+            return status === 'capture' || status === 'pursuing';
+        });
+        
+        container.innerHTML = activeOpportunities.map(opp => {
             const daysToRfp = opp.rfpDate ? Utils.calculateDaysUntilDate(opp.rfpDate) : null;
             
             return `
