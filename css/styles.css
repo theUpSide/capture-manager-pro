@@ -1,0 +1,63 @@
+/* ... existing styles ... */
+
+/* Status section styles */
+.status-section {
+    margin-bottom: 2rem;
+}
+
+.status-header:hover {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin: -0.5rem;
+}
+
+/* Dropdown styles */
+.dropdown-menu {
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.dropdown-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dropdown-item:disabled:hover {
+    background-color: transparent !important;
+}
+
+/* Form row for side-by-side inputs */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Status-specific styling */
+.opportunity-card {
+    position: relative;
+}
+
+.opportunity-card[data-status="won"] {
+    border-left: 4px solid #28a745;
+}
+
+.opportunity-card[data-status="lost"] {
+    border-left: 4px solid #dc3545;
+}
+
+.opportunity-card[data-status="archived"] {
+    opacity: 0.8;
+    border-left: 4px solid #6c757d;
+}

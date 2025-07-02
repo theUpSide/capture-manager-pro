@@ -452,40 +452,45 @@ textarea:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
-/* Add these missing styles: */
-.step-item {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s;
+
+/* Notification animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
-.step-item.completed {
-    background: #d4edda;
-    border-color: #c3e6cb;
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
 
-.step-item.current {
-    background: #fff3cd;
-    border-color: #ffeaa7;
-    border-left: 4px solid #ffc107;
+.notification {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
 }
 
-.step-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.notification:hover {
+    opacity: 0.9;
 }
 
-.next-action-item {
-    background: rgba(255,255,255,0.1);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Data management button styling */
+header .btn-secondary {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
 }
 
-.next-action-item:last-child {
-    margin-bottom: 0;
+header .btn-secondary:hover {
+    transform: translateY(-1px);
 }
