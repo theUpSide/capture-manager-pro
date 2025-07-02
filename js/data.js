@@ -654,6 +654,18 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+        { id: "partner_company", label: "Partner Company Name", type: "text", required: true },
+        { id: "partnership_type", label: "Partnership Type", type: "select", options: ["Prime-Sub", "Joint Venture", "Teaming Agreement", "Mentor-Protege"], required: true },
+        { id: "complementary_capabilities", label: "Complementary Capabilities", type: "textarea", required: true },
+        { id: "past_performance_strength", label: "Partner's Past Performance Strength", type: "textarea", required: true },
+        { id: "cultural_fit", label: "Cultural Fit Assessment", type: "select", options: ["Poor", "Fair", "Good", "Excellent"], required: true },
+        { id: "commitment_level", label: "Partner Commitment Level", type: "select", options: ["Low", "Medium", "High"], required: true },
+        { id: "work_allocation", label: "Proposed Work Allocation", type: "textarea", required: true },
+        { id: "pricing_strategy", label: "Joint Pricing Strategy", type: "textarea", required: true },
+        { id: "management_structure", label: "Joint Management Structure", type: "textarea", required: true },
+        { id: "risk_sharing", label: "Risk Sharing Arrangement", type: "textarea", required: true },
+        { id: "intellectual_property", label: "Intellectual Property Agreements", type: "textarea", required: false },
+        { id: "performance_metrics", label: "Joint Performance Metrics", type: "textarea", required: true }
         ]
     },
     {
@@ -693,6 +705,18 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+        { id: "partner_company", label: "Partner Company Name", type: "text", required: true },
+        { id: "partnership_type", label: "Partnership Type", type: "select", options: ["Prime-Sub", "Joint Venture", "Teaming Agreement", "Mentor-Protege"], required: true },
+        { id: "complementary_capabilities", label: "Complementary Capabilities", type: "textarea", required: true },
+        { id: "past_performance_strength", label: "Partner's Past Performance Strength", type: "textarea", required: true },
+        { id: "cultural_fit", label: "Cultural Fit Assessment", type: "select", options: ["Poor", "Fair", "Good", "Excellent"], required: true },
+        { id: "commitment_level", label: "Partner Commitment Level", type: "select", options: ["Low", "Medium", "High"], required: true },
+        { id: "work_allocation", label: "Proposed Work Allocation", type: "textarea", required: true },
+        { id: "pricing_strategy", label: "Joint Pricing Strategy", type: "textarea", required: true },
+        { id: "management_structure", label: "Joint Management Structure", type: "textarea", required: true },
+        { id: "risk_sharing", label: "Risk Sharing Arrangement", type: "textarea", required: true },
+        { id: "intellectual_property", label: "Intellectual Property Agreements", type: "textarea", required: false },
+        { id: "performance_metrics", label: "Joint Performance Metrics", type: "textarea", required: true }    
         ]
     },
     {
@@ -733,6 +757,18 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+        { id: "program_office", label: "Primary Program Office", type: "text", required: true },
+        { id: "parent_organization", label: "Parent Organization/Command", type: "text", required: true },
+        { id: "program_manager", label: "Program Manager Name & Contact", type: "text", required: true },
+        { id: "technical_lead", label: "Technical Lead Name & Contact", type: "text", required: false },
+        { id: "contracting_officer", label: "Contracting Officer Name & Contact", type: "text", required: true },
+        { id: "end_users", label: "End User Organizations", type: "textarea", required: true },
+        { id: "decision_makers", label: "Key Decision Makers", type: "textarea", required: true },
+        { id: "influencers", label: "Key Influencers", type: "textarea", required: true },
+        { id: "budget_authority", label: "Budget Authority/Funding Source", type: "textarea", required: true },
+        { id: "decision_process", label: "Decision-Making Process", type: "textarea", required: true },
+        { id: "relationship_status", label: "Current Relationship Status", type: "textarea", required: true },
+        { id: "engagement_strategy", label: "Engagement Strategy", type: "textarea", required: true }    
         ]
     },
     {
@@ -773,6 +809,19 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+        { id: "contract_number", label: "Contract Number", type: "text", required: true },
+        { id: "program_name", label: "Program Name", type: "text", required: true },
+        { id: "customer_organization", label: "Customer Organization", type: "text", required: true },
+        { id: "period_of_performance", label: "Period of Performance", type: "text", required: true },
+        { id: "contract_value", label: "Contract Value", type: "number", required: true },
+        { id: "relevance_score", label: "Relevance Score (1-5)", type: "select", options: ["1 - Low", "2 - Limited", "3 - Moderate", "4 - High", "5 - Highly Relevant"], required: true },
+        { id: "cpars_ratings", label: "CPARS Ratings Summary", type: "textarea", required: true },
+        { id: "key_accomplishments", label: "Key Accomplishments", type: "textarea", required: true },
+        { id: "performance_metrics", label: "Quantitative Performance Metrics", type: "textarea", required: true },
+        { id: "customer_testimonials", label: "Customer Testimonials/Quotes", type: "textarea", required: false },
+        { id: "reference_contact", label: "Reference Contact Information", type: "textarea", required: true },
+        { id: "lessons_learned", label: "Lessons Learned Applied", type: "textarea", required: false },
+        { id: "performance_story", label: "Performance Story (Situation-Action-Results)", type: "textarea", required: true }
         ]
     },
     {
@@ -811,6 +860,18 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+        { id: "far_clauses_review", label: "Relevant FAR Clauses Review", type: "textarea", required: true },
+        { id: "security_clearance_requirements", label: "Security Clearance Requirements", type: "textarea", required: true },
+        { id: "team_clearance_status", label: "Team Clearance Status", type: "textarea", required: true },
+        { id: "facility_clearance", label: "Facility Clearance Requirements", type: "textarea", required: false },
+        { id: "itar_assessment", label: "ITAR/Export Control Assessment", type: "textarea", required: true },
+        { id: "conflict_of_interest", label: "Conflict of Interest Analysis", type: "textarea", required: true },
+        { id: "cybersecurity_requirements", label: "Cybersecurity Requirements (NIST, CMMC)", type: "textarea", required: true },
+        { id: "small_business_certifications", label: "Small Business Certifications", type: "textarea", required: false },
+        { id: "environmental_compliance", label: "Environmental Compliance Requirements", type: "textarea", required: false },
+        { id: "safety_requirements", label: "Safety Requirements & Protocols", type: "textarea", required: true },
+        { id: "compliance_gaps", label: "Identified Compliance Gaps", type: "textarea", required: false },
+        { id: "mitigation_plan", label: "Gap Mitigation Plan", type: "textarea", required: false }
         ]
     },
     {
@@ -850,6 +911,18 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+                    { id: "test_objectives", label: "Primary Test Objectives", type: "textarea", required: true },
+        { id: "success_criteria", label: "Test Success Criteria", type: "textarea", required: true },
+        { id: "test_methodology", label: "Proposed Test Methodology", type: "textarea", required: true },
+        { id: "test_facilities", label: "Required Test Facilities/Ranges", type: "textarea", required: true },
+        { id: "safety_considerations", label: "Safety Considerations & Requirements", type: "textarea", required: true },
+        { id: "airworthiness_requirements", label: "Airworthiness Requirements", type: "textarea", required: false },
+        { id: "instrumentation_needs", label: "Instrumentation & Data Collection", type: "textarea", required: true },
+        { id: "schedule_constraints", label: "Schedule Constraints & Dependencies", type: "textarea", required: true },
+        { id: "test_articles", label: "Test Articles & Configuration", type: "textarea", required: true },
+        { id: "data_analysis_approach", label: "Data Analysis Approach", type: "textarea", required: true },
+        { id: "risk_mitigation", label: "Technical Risk Mitigation", type: "textarea", required: true },
+        { id: "regulatory_approvals", label: "Required Regulatory Approvals", type: "textarea", required: false }
         ]
     },
     {
@@ -888,6 +961,17 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+                    { id: "capture_phase", label: "Current Capture Phase", type: "select", options: ["Opportunity Identification", "Qualification", "Capture Planning", "Strategy Development", "Proposal Readiness"], required: true },
+        { id: "phase_entry_criteria", label: "Phase Entry Criteria Met", type: "textarea", required: true },
+        { id: "phase_deliverables", label: "Required Phase Deliverables", type: "textarea", required: true },
+        { id: "gate_review_status", label: "Gate Review Status", type: "select", options: ["Not Scheduled", "Scheduled", "Completed", "Approved", "Conditional Approval"], required: true },
+        { id: "document_version_control", label: "Document Version Control Log", type: "textarea", required: true },
+        { id: "team_assignments", label: "Team Role Assignments", type: "textarea", required: true },
+        { id: "communication_plan", label: "Stakeholder Communication Plan", type: "textarea", required: true },
+        { id: "handoff_checklist", label: "Capture-to-Proposal Handoff Checklist", type: "textarea", required: false },
+        { id: "lessons_learned", label: "Capture Lessons Learned", type: "textarea", required: false },
+        { id: "process_improvements", label: "Identified Process Improvements", type: "textarea", required: false },
+        { id: "next_phase_readiness", label: "Next Phase Readiness Assessment", type: "textarea", required: true }
         ]
     },
     {
@@ -926,6 +1010,19 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+                    { id: "team_member_name", label: "Team Member Name", type: "text", required: true },
+        { id: "role_assignment", label: "Capture Role Assignment", type: "text", required: true },
+        { id: "experience_level", label: "Capture Experience Level", type: "select", options: ["Beginner", "Intermediate", "Advanced", "Expert"], required: true },
+        { id: "training_completed", label: "Required Training Completed", type: "textarea", required: true },
+        { id: "customer_briefing", label: "Customer Background Briefing", type: "textarea", required: true },
+        { id: "process_training", label: "GMRE Capture Process Training", type: "textarea", required: true },
+        { id: "tool_access", label: "Tool Access & Training", type: "textarea", required: true },
+        { id: "mentor_assignment", label: "Assigned Mentor", type: "text", required: false },
+        { id: "competency_assessment", label: "Competency Assessment Results", type: "textarea", required: true },
+        { id: "development_plan", label: "Individual Development Plan", type: "textarea", required: false },
+        { id: "feedback_sessions", label: "Feedback Session Schedule", type: "textarea", required: true },
+        { id: "onboarding_completion", label: "Onboarding Completion Status", type: "select", options: ["In Progress", "Completed", "Needs Additional Training"], required: true }
+
         ]
     },
     {
@@ -965,6 +1062,23 @@ const DataStore = {
         },
         fields: [
             // ... existing fields ...
+                    { id: "opportunity_name", label: "Opportunity Name", type: "text", required: true },
+        { id: "review_date", label: "Review Date", type: "date", required: true },
+        { id: "execution_team_members", label: "Execution Team Reviewers", type: "textarea", required: true },
+        { id: "technical_feasibility", label: "Technical Feasibility Assessment", type: "select", options: ["Not Feasible", "High Risk", "Moderate Risk", "Low Risk", "Highly Feasible"], required: true },
+        { id: "resource_availability", label: "Resource Availability Assessment", type: "select", options: ["Inadequate", "Marginal", "Adequate", "Good", "Excellent"], required: true },
+        { id: "schedule_realism", label: "Schedule Realism Assessment", type: "select", options: ["Unrealistic", "Aggressive", "Challenging", "Reasonable", "Conservative"], required: true },
+        { id: "budget_adequacy", label: "Budget Adequacy Assessment", type: "select", options: ["Inadequate", "Tight", "Adequate", "Comfortable", "Conservative"], required: true },
+        { id: "execution_risks", label: "Identified Execution Risks", type: "textarea", required: true },
+        { id: "capability_gaps", label: "Execution Capability Gaps", type: "textarea", required: false },
+        { id: "mitigation_strategies", label: "Risk Mitigation Strategies", type: "textarea", required: true },
+        { id: "staffing_concerns", label: "Staffing & Personnel Concerns", type: "textarea", required: false },
+        { id: "subcontractor_dependencies", label: "Subcontractor Dependencies & Risks", type: "textarea", required: false },
+        { id: "execution_confidence", label: "Overall Execution Confidence", type: "select", options: ["Very Low", "Low", "Medium", "High", "Very High"], required: true },
+        { id: "recommendation", label: "Execution Team Recommendation", type: "select", options: ["Do Not Bid", "Bid with Major Changes", "Bid with Minor Changes", "Bid as Proposed"], required: true },
+        { id: "required_changes", label: "Required Changes for Execution", type: "textarea", required: false },
+        { id: "handoff_plan", label: "Capture-to-Execution Handoff Plan", type: "textarea", required: false }
+
         ]
     },
     {
