@@ -51,29 +51,7 @@ const Navigation = {
 
     showReports() {
         this.hideAllViews();
-        // The reports section is inside reports-view, but let's check both
-        let reportsView = document.getElementById('reports-view');
-        
-        if (reportsView) {
-            reportsView.style.display = 'block';
-        } else {
-            // If reports-view doesn't exist, maybe it's just reports-content
-            const reportsContent = document.getElementById('reports-content');
-            if (reportsContent) {
-                // Find the parent view
-                const parentView = reportsContent.closest('[id$="-view"]');
-                if (parentView) {
-                    parentView.style.display = 'block';
-                } else {
-                    // Create a temporary view structure
-                    reportsContent.style.display = 'block';
-                }
-            } else {
-                console.error('No reports container found');
-                return;
-            }
-        }
-        
+        document.getElementById('reports-view').style.display = 'block';
         this.updateActiveNav('Reports');
         if (typeof Reports !== 'undefined') {
             Reports.render();
@@ -97,12 +75,6 @@ const Navigation = {
                 view.style.display = 'none';
             }
         });
-        
-        // Also hide reports-content if it's not inside a view
-        const reportsContent = document.getElementById('reports-content');
-        if (reportsContent && !reportsContent.closest('[id$="-view"]')) {
-            reportsContent.style.display = 'none';
-        }
     },
 
     updateActiveNav(activeText) {

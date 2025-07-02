@@ -1,30 +1,32 @@
 const Reports = {
     render() {
-        console.log('Reports.render() called');
         const container = document.getElementById('reports-content');
-        if (!container) {
-            console.error('reports-content container not found');
-            return;
-        }
+        if (!container) return;
 
         container.innerHTML = `
-            <div class="section">
-                <div class="section-header">
-                    <h2>Reports & Analytics</h2>
+            <div class="reports-container">
+                <div class="reports-nav-window">
+                    <div class="reports-nav">
+                        <button class="btn report-tab active" onclick="Reports.showReport('pipeline')">📊 Pipeline Summary</button>
+                        <button class="btn report-tab" onclick="Reports.showReport('winloss')">🎯 Win/Loss Analysis</button>
+                        <button class="btn report-tab" onclick="Reports.showReport('actions')">📋 Action Performance</button>
+                        <button class="btn report-tab" onclick="Reports.showReport('deadlines')">⏰ Upcoming Deadlines</button>
+                    </div>
                 </div>
+                
                 <div class="report-content">
-                    <h3>📊 Pipeline Summary</h3>
-                    <p>Total opportunities: ${DataStore.opportunities.length}</p>
-                    <p>Total actions: ${DataStore.actions.length}</p>
-                    
-                    <h3>🎯 Quick Stats</h3>
-                    <ul>
-                        <li>Active opportunities: ${DataStore.opportunities.filter(opp => !opp.status || opp.status === 'capture' || opp.status === 'pursuing').length}</li>
-                        <li>Won opportunities: ${DataStore.opportunities.filter(opp => opp.status === 'won').length}</li>
-                        <li>Lost opportunities: ${DataStore.opportunities.filter(opp => opp.status === 'lost').length}</li>
-                        <li>Completed actions: ${DataStore.actions.filter(action => action.completed).length}</li>
-                        <li>Active actions: ${DataStore.actions.filter(action => !action.completed).length}</li>
-                    </ul>
+                    <div id="pipeline-report" class="report-section active">
+                        ${this.renderPipelineReport()}
+                    </div>
+                    <div id="winloss-report" class="report-section" style="display: none;">
+                        ${this.renderWinLossReport()}
+                    </div>
+                    <div id="actions-report" class="report-section" style="display: none;">
+                        ${this.renderActionsReport()}
+                    </div>
+                    <div id="deadlines-report" class="report-section" style="display: none;">
+                        ${this.renderDeadlinesReport()}
+                    </div>
                 </div>
             </div>
         `;
