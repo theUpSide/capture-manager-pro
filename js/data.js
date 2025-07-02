@@ -49,10 +49,10 @@ const DataStore = {
 
     templates: [
         {
-            id: 1,
-            title: "Capture Plan Template (Master Document)",
-            description: "Comprehensive capture plan serving as single source of truth for the entire capture effort.",
-            category: "Planning",
+        id: 1,
+        title: "Capture Plan Template (Master Document)",
+        description: "Comprehensive capture plan serving as single source of truth for the entire capture effort.",
+        category: "planning", // Changed from "Planning"
             guidance: {
                 importance: "The capture plan is your strategic roadmap and single source of truth throughout the entire capture process. It prevents scope creep, ensures team alignment, and provides a framework for making informed bid/no-bid decisions. Without a solid capture plan, teams often waste resources pursuing unwinnable opportunities or fail to capitalize on their competitive advantages.",
                 keyConsiderations: [
@@ -105,9 +105,9 @@ const DataStore = {
         },
         {
             id: 2,
-            title: "Opportunity Qualification Scorecard",
-            description: "Early-stage bid/no-bid decision tool to focus resources on winnable opportunities.",
-            category: "Planning",
+        title: "Opportunity Qualification Scorecard",
+        description: "Early-stage bid/no-bid decision tool to focus resources on winnable opportunities.",
+        category: "qualification", // Changed from "Planning"
             guidance: {
                 importance: "The qualification scorecard prevents the 'chase everything' mentality that wastes precious BD resources. It forces objective evaluation of opportunities against consistent criteria, helping you focus on winnable business. Companies using formal qualification processes win 2x more often while spending 40% less on losing pursuits.",
                 keyConsiderations: [
@@ -154,9 +154,9 @@ const DataStore = {
         },
         {
             id: 3,
-            title: "Customer Engagement Templates",
-            description: "Systematic customer engagement planning to build relationships and gather intelligence through strategic interactions.",
-            category: "Customer Intelligence",
+        title: "Customer Engagement Templates",
+        description: "Systematic customer engagement planning to build relationships and gather intelligence through strategic interactions.",
+        category: "engagement", // Changed from "Customer Intelligence"
             guidance: {
                 importance: "Customer engagement is the foundation of successful capture. Government customers buy from companies they know and trust. Each interaction is an opportunity to build relationships, gather intelligence, and shape requirements in your favor. Companies with strong customer engagement programs win 4x more often than those relying solely on proposal excellence.",
                 keyConsiderations: [
@@ -206,9 +206,9 @@ const DataStore = {
         },
         {
             id: 4,
-            title: "Black Hat Analysis Framework",
-            description: "Structured competitive analysis using role-playing to predict competitor strategies and develop effective counters.",
-            category: "Intelligence",
+        title: "Black Hat Analysis Framework",
+        description: "Structured competitive analysis using role-playing to predict competitor strategies and develop effective counters.",
+        category: "intelligence", // Already correct
             guidance: {
                 importance: "Black Hat analysis forces you to think like your competitors, revealing vulnerabilities in your strategy and uncovering opponent strengths you might miss. It's one of the most powerful competitive intelligence tools available. Teams using Black Hat analysis win 50% more competitive procurements by developing more effective differentiation strategies.",
                 keyConsiderations: [
@@ -309,9 +309,9 @@ const DataStore = {
         },
         {
             id: 6,
-            title: "Win Theme Development Worksheet",
-            description: "Systematic development of compelling win themes that highlight strengths and differentiate from competitors.",
-            category: "Strategy",
+        title: "Win Theme Development Worksheet",
+        description: "Systematic development of compelling win themes that highlight strengths and differentiate from competitors.",
+        category: "planning", // Changed from "Strategy"
             guidance: {
                 importance: "Win themes are the foundation of your competitive positioning and proposal messaging. They connect customer needs with your unique capabilities while differentiating you from competitors. Well-developed win themes increase win probability by 40% and make proposal writing more focused and compelling.",
                 keyConsiderations: [
@@ -360,9 +360,9 @@ const DataStore = {
         },
         {
             id: 7,
-            title: "Solution Development Framework",
-            description: "Structured approach to developing technical and management solutions that are feasible and compelling.",
-            category: "Strategy",
+        title: "Solution Development Framework",
+        description: "Structured approach to developing technical and management solutions that are feasible and compelling.",
+        category: "planning", // Changed from "Strategy"
             guidance: {
                 importance: "Solution development bridges the gap between customer requirements and your technical approach. A well-structured solution development process ensures technical feasibility, competitive differentiation, and executable implementation. Companies with systematic solution development win 35% more technical competitions.",
                 keyConsiderations: [
@@ -413,9 +413,9 @@ const DataStore = {
         },
         {
             id: 8,
-            title: "PTW Analysis Workbook",
-            description: "Comprehensive Price-to-Win analysis to identify optimal pricing that maximizes win probability.",
-            category: "Pricing",
+        title: "PTW Analysis Workbook",
+        description: "Comprehensive Price-to-Win analysis to identify optimal pricing that maximizes win probability.",
+        category: "preparation", // Changed from "Pricing"
             guidance: {
                 importance: "Price-to-Win analysis is critical for competitive positioning and profitability. It helps you find the sweet spot between winning the contract and maintaining acceptable margins. Systematic PTW analysis increases win rates by 25% while protecting profitability through disciplined pricing decisions.",
                 keyConsiderations: [
@@ -464,9 +464,9 @@ const DataStore = {
         },
         {
             id: 9,
-            title: "Cost Intelligence Gathering",
-            description: "Systematic collection and analysis of cost intelligence to support informed pricing decisions.",
-            category: "Pricing",
+        title: "Cost Intelligence Gathering",
+        description: "Systematic collection and analysis of cost intelligence to support informed pricing decisions.",
+        category: "intelligence", // Changed from "Pricing"
             guidance: {
                 importance: "Cost intelligence provides the foundation for competitive pricing strategies. Understanding market rates, competitor cost structures, and customer budget constraints enables more accurate price-to-win analysis and better bid decisions. Companies with strong cost intelligence win 30% more price-sensitive competitions.",
                 keyConsiderations: [
@@ -513,9 +513,9 @@ const DataStore = {
         },
         {
             id: 10,
-            title: "Capture Strategy Review (Gate 2) Template",
-            description: "Formal review template to validate capture strategy and secure leadership commitment.",
-            category: "Reviews",
+        title: "Capture Strategy Review (Gate 2) Template",
+        description: "Formal review template to validate capture strategy and secure leadership commitment.",
+        category: "planning", // Changed from "Reviews"
             guidance: {
                 importance: "Gate reviews provide critical checkpoints to validate strategy and secure continued investment. This formal review ensures capture strategy is sound before proceeding to expensive proposal development. Companies using structured gate reviews have 60% higher win rates and waste 40% less money on losing pursuits.",
                 keyConsiderations: [
@@ -565,9 +565,9 @@ const DataStore = {
         },
         {
             id: 11,
-            title: "Win Strategy Workshop Agenda",
-            description: "Structured workshop template for collaborative win strategy development ensuring team alignment.",
-            category: "Reviews",
+        title: "Win Strategy Workshop Agenda",
+        description: "Structured workshop template for collaborative win strategy development ensuring team alignment.",
+        category: "planning", // Changed from "Reviews"
             guidance: {
                 importance: "Win strategy workshops align diverse perspectives and expertise to develop comprehensive competitive strategies. They leverage collective intelligence while ensuring all team members understand and buy into the approach. Teams using structured strategy workshops have 45% higher win rates due to better alignment and more thorough planning.",
                 keyConsiderations: [
@@ -621,7 +621,7 @@ const DataStore = {
         id: 12,
         title: "Capture Status Reporting",
         description: "Regular communication templates to keep leadership informed and stakeholders aligned throughout the capture process.",
-        category: "Communication",
+        category: "planning", // Changed from "Communication"
         guidance: {
             importance: "Regular status reporting ensures leadership visibility, enables proactive decision-making, and maintains stakeholder alignment throughout the capture process. Effective reporting prevents surprises, builds confidence in the capture team, and provides early warning of issues requiring senior intervention. Teams with structured reporting practices have 35% fewer late-stage surprises and better resource allocation decisions.",
             keyConsiderations: [
@@ -672,7 +672,7 @@ const DataStore = {
         id: 13,
         title: "Teaming and Partnership Templates",
         description: "Strategic teaming evaluation and management templates for strengthening win probability through effective partnerships.",
-        category: "Teaming",
+        category: "qualification", // Changed from "Teaming"
         guidance: {
             importance: "Strategic teaming can be the difference between winning and losing, especially in complex government procurements. The right partners bring complementary capabilities, customer relationships, and past performance that strengthen your positioning. Poor teaming decisions waste resources and can actually hurt your competitiveness. Companies with systematic teaming processes win 40% more team-based competitions.",
             keyConsiderations: [
@@ -723,7 +723,7 @@ const DataStore = {
         id: 14,
         title: "Customer Organization Mapping",
         description: "Map customer organizational relationships and decision-making processes.",
-        category: "Customer Intelligence",
+        category: "identification", // Changed from "Customer Intelligence"
         guidance: {
             importance: "Understanding customer organizational dynamics is critical for successful capture. This template helps you map decision-making processes, identify key influencers, and develop targeted engagement strategies. Companies with strong customer intelligence win 60% more often than those without systematic mapping.",
             keyConsiderations: [
@@ -775,7 +775,7 @@ const DataStore = {
         id: 15,
         title: "Past Performance Packaging",
         description: "Template for effectively packaging GMRE's excellent CPARS ratings and past performance as a key competitive advantage.",
-        category: "Past Performance",
+        category: "preparation", // Changed from "Past Performance"
         guidance: {
             importance: "Past performance is often the most heavily weighted evaluation factor in government procurements. Excellent CPARS ratings and relevant experience can be your strongest differentiator, but only if presented effectively. Poor past performance packaging wastes your competitive advantage, while compelling presentations can overcome other weaknesses.",
             keyConsiderations: [
@@ -828,7 +828,7 @@ const DataStore = {
         id: 16,
         title: "Security and Compliance Checklist",
         description: "Defense contracting security and regulatory compliance verification template ensuring adherence to all requirements.",
-        category: "Compliance",
+        category: "qualification", // Changed from "Compliance"
         guidance: {
             importance: "Security and compliance failures can disqualify even the best technical solution. Government contractors face complex regulatory requirements that change frequently. This systematic approach ensures you identify and address all compliance requirements early, preventing costly disqualifications or contract modifications.",
             keyConsiderations: [
@@ -878,7 +878,7 @@ const DataStore = {
         id: 17,
         title: "Test and Evaluation Specific Templates",
         description: "Specialized template for T&E programs addressing unique requirements, safety considerations, and customer priorities.",
-        category: "Specialized",
+        category: "planning", // Changed from "Specialized"
         guidance: {
             importance: "Test and Evaluation contracts have unique technical, safety, and regulatory requirements that differ significantly from other government work. Success requires deep understanding of test methodologies, safety protocols, and data analysis approaches. Specialized T&E experience and approach can be strong differentiators in this niche market.",
             keyConsiderations: [
@@ -929,7 +929,7 @@ const DataStore = {
         id: 18,
         title: "Capture Process Workflow",
         description: "Standardized process management template ensuring consistency and efficiency across all GMRE capture efforts.",
-        category: "Process",
+        category: "identification", // Changed from "Process"
         guidance: {
             importance: "Standardized processes ensure consistent quality and efficiency across all capture efforts. They prevent important steps from being skipped, enable better resource planning, and facilitate knowledge transfer between teams. Companies with mature capture processes win 25% more often while spending 20% less on capture activities.",
             keyConsiderations: [
@@ -978,7 +978,7 @@ const DataStore = {
         id: 19,
         title: "Training and Onboarding",
         description: "Systematic onboarding template for new capture team members to accelerate productivity and ensure process consistency.",
-        category: "Training",
+        category: "identification", // Changed from "Training"
         guidance: {
             importance: "Effective team member onboarding accelerates productivity and ensures consistent application of capture processes. Poor onboarding leads to mistakes, inefficiency, and team frustration. Systematic onboarding reduces time-to-productivity by 40% and improves team member retention and satisfaction.",
             keyConsiderations: [
@@ -1029,7 +1029,7 @@ const DataStore = {
         id: 20,
         title: "Execution Readiness Review Template",
         description: "Independent execution team review to ensure proposed solution is actually executable and profitable if won.",
-        category: "Quality Assurance",
+        category: "preparation", // Changed from "Quality Assurance"
         guidance: {
             importance: "Independent execution review prevents the 'happy path' bias that often affects capture teams. Execution teams provide realistic assessment of technical feasibility, resource requirements, and profitability. This review catches problems before they become contract performance issues, protecting both profitability and customer relationships.",
             keyConsiderations: [
@@ -1085,7 +1085,7 @@ const DataStore = {
         id: 21,
         title: "Capture Plan Review Checklist",
         description: "Final quality assurance template ensuring capture plan completeness and compelling positioning before proposal development.",
-        category: "Quality Assurance",
+        category: "preparation", // Changed from "Quality Assurance"
         guidance: {
             importance: "Final capture plan review provides quality assurance gate before expensive proposal development begins. It ensures all capture activities are complete, strategy is sound, and positioning is compelling. This review prevents wasted proposal effort on poorly prepared opportunities and improves win rates by 30%.",
             keyConsiderations: [
