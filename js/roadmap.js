@@ -59,29 +59,44 @@ const Roadmap = {
             const currentPhaseIndex = phases.indexOf(opportunity.currentPhase);
             const thisPhaseIndex = phases.indexOf(phaseKey);
             
+            // Calculate actual completion for this specific phase
+            const phaseSteps = phase.steps;
+            const completedStepsInPhase = phaseSteps.filter(step => 
+                this.getStepCompletion(opportunity.id, step.id)
+            ).length;
+            const phaseProgress = phaseSteps.length > 0 ? 
+                Math.round((completedStepsInPhase / phaseSteps.length) * 100) : 0;
+            
             let status, icon, progress, statusText, className;
             
-            if (thisPhaseIndex < currentPhaseIndex) {
-                // Completed phase
+            // Check if this phase is 100% complete regardless of current phase
+            if (phaseProgress === 100) {
                 status = 'completed';
                 icon = '✅';
                 progress = '100%';
                 statusText = 'Complete';
                 className = 'completed';
+            } else if (thisPhaseIndex < currentPhaseIndex) {
+                // Phase should be completed but isn't - needs attention
+                status = 'needs-attention';
+                icon = '🎯';
+                progress = `${phaseProgress}%`;
+                statusText = 'Needs Attention';
+                className = 'needs-attention';
             } else if (thisPhaseIndex === currentPhaseIndex) {
                 // Current phase - check if needs attention
-                const needsAttention = this.shouldPhaseNeedAttention(phaseKey, daysToRfp, opportunity.progress);
+                const needsAttention = this.shouldPhaseNeedAttention(phaseKey, daysToRfp, phaseProgress);
                 
                 if (needsAttention) {
                     status = 'needs-attention';
                     icon = '🎯';
-                    progress = `${opportunity.progress}%`;
+                    progress = `${phaseProgress}%`;
                     statusText = 'Needs Attention';
                     className = 'needs-attention';
                 } else {
                     status = 'current';
                     icon = '🔄';
-                    progress = `${opportunity.progress}%`;
+                    progress = `${phaseProgress}%`;
                     statusText = 'In Progress';
                     className = 'current';
                 }
@@ -89,12 +104,12 @@ const Roadmap = {
                 // Future phase
                 status = 'upcoming';
                 icon = '⏳';
-                progress = '0%';
-                statusText = 'Pending';
-                className = 'upcoming';
+                progress = `${phaseProgress}%`;
+                statusText = phaseProgress > 0 ? 'Started' : 'Pending';
+                className = phaseProgress > 0 ? 'current' : 'upcoming';
             }
             
-            const tooltipText = this.generateTooltipText(opportunity, phase, status, daysToRfp);
+            const tooltipText = this.generateTooltipText(opportunity, phase, status, daysToRfp, phaseProgress);
             
             return `
                 <div class="phase-block ${className}" onclick="Roadmap.openPhaseDetail('${opportunity.id}', '${phaseKey}')">
@@ -107,8 +122,11 @@ const Roadmap = {
         }).join('');
     },
 
-    shouldPhaseNeedAttention(phaseKey, daysToRfp, progress) {
+    shouldPhaseNeedAttention(phaseKey, daysToRfp, phaseProgress) {
         if (!daysToRfp || daysToRfp < 0) return false;
+        
+        // If phase is 100% complete, it doesn't need attention
+        if (phaseProgress === 100) return false;
         
         // Define when phases should be completed based on days to RFP
         const phaseTimelines = {
@@ -124,24 +142,28 @@ const Roadmap = {
         if (!timeline) return false;
         
         // If we're close to RFP and progress is low, needs attention
-        return daysToRfp <= timeline.shouldCompleteBy && progress < timeline.minProgress;
+        return daysToRfp <= timeline.shouldCompleteBy && phaseProgress < timeline.minProgress;
     },
 
-    generateTooltipText(opportunity, phase, status, daysToRfp) {
+    generateTooltipText(opportunity, phase, status, daysToRfp, phaseProgress) {
         let tooltip = `${phase.title}\n${phase.steps.length} steps`;
         
         switch(status) {
             case 'completed':
-                tooltip += '\n✅ Phase completed';
+                tooltip += '\n✅ Phase completed (100%)';
                 break;
             case 'current':
-                tooltip += `\n🔄 ${opportunity.progress}% complete`;
+                tooltip += `\n🔄 ${phaseProgress}% complete`;
                 break;
             case 'needs-attention':
-                tooltip += `\n🎯 ${opportunity.progress}% - needs attention`;
+                tooltip += `\n🎯 ${phaseProgress}% - needs attention`;
                 break;
             case 'upcoming':
-                tooltip += '\n⏳ Not started';
+                if (phaseProgress > 0) {
+                    tooltip += `\n⏳ ${phaseProgress}% started`;
+                } else {
+                    tooltip += '\n⏳ Not started';
+                }
                 break;
         }
         
@@ -166,7 +188,7 @@ const Roadmap = {
         const content = document.getElementById('phase-detail-content');
         
         // Calculate phase progress
-        const completedSteps = this.getCompletedStepsForPhase(opportunityId, phaseKey);
+        const completedSteps = phase.steps.filter(step => this.getStepCompletion(opportunityId, step.id)).length;
         const totalSteps = phase.steps.length;
         const phaseProgress = Math.round((completedSteps / totalSteps) * 100);
         
@@ -314,26 +336,37 @@ const Roadmap = {
         
         let totalSteps = 0;
         let completedSteps = 0;
+        const phases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
+        let currentPhaseIndex = 0;
         
-        Object.values(DataStore.captureRoadmap).forEach(phase => {
-            phase.steps.forEach(step => {
-                totalSteps++;
-                if (this.getStepCompletion(opportunityId, step.id)) {
-                    completedSteps++;
-                }
-            });
+        // Calculate overall progress and determine current phase
+        phases.forEach((phaseKey, index) => {
+            const phase = DataStore.captureRoadmap[phaseKey];
+            const phaseSteps = phase.steps;
+            const completedStepsInPhase = phaseSteps.filter(step => 
+                this.getStepCompletion(opportunityId, step.id)
+            ).length;
+            
+            totalSteps += phaseSteps.length;
+            completedSteps += completedStepsInPhase;
+            
+            // Determine current phase: first incomplete phase or last phase if all complete
+            const phaseProgress = phaseSteps.length > 0 ? 
+                (completedStepsInPhase / phaseSteps.length) * 100 : 0;
+            
+            if (phaseProgress < 100 && currentPhaseIndex === index) {
+                // This is the first incomplete phase
+                currentPhaseIndex = index;
+            } else if (phaseProgress === 100 && currentPhaseIndex <= index) {
+                // This phase is complete, move to next phase
+                currentPhaseIndex = Math.min(index + 1, phases.length - 1);
+            }
         });
         
         opportunity.progress = Math.round((completedSteps / totalSteps) * 100);
+        opportunity.currentPhase = phases[currentPhaseIndex];
         
-        // Update current phase based on progress
-        const phases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
-        if (opportunity.progress < 15) opportunity.currentPhase = 'identification';
-        else if (opportunity.progress < 30) opportunity.currentPhase = 'qualification';
-        else if (opportunity.progress < 50) opportunity.currentPhase = 'planning';
-        else if (opportunity.progress < 70) opportunity.currentPhase = 'engagement';
-        else if (opportunity.progress < 85) opportunity.currentPhase = 'intelligence';
-        else opportunity.currentPhase = 'preparation';
+        console.log(`Updated opportunity ${opportunityId}: ${opportunity.progress}% complete, current phase: ${opportunity.currentPhase}`);
     },
 
     addPhaseAction(opportunityId, phaseKey) {
