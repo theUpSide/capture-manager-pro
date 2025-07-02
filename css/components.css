@@ -218,6 +218,21 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
+.opportunity-category-section.expanded {
+    box-shadow: 0 8px 25px rgba(42, 82, 152, 0.15);
+}
+
+/* Collapsible header styling */
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+.collapsible-header:hover {
+    background: linear-gradient(135deg, #f0f2f5 0%, #e2e6ea 100%) !important;
+}
+
 .category-header {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     padding: 1.5rem 2rem;
@@ -226,6 +241,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.category-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.collapse-icon {
+    font-size: 1.2rem;
+    color: #2a5298;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+}
+
+.collapsible-header:hover .collapse-icon {
+    transform: scale(1.1);
 }
 
 .category-header h3 {
@@ -244,6 +279,18 @@
     font-size: 0.9rem;
     font-weight: 500;
     display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.collapsible-header:hover .category-count {
+    background: #1e3c72;
+    transform: scale(1.05);
+}
+
+/* Collapsible content styling */
+.collapsible-content {
+    overflow: hidden;
+    will-change: transform, opacity;
 }
 
 /* Cards grid - horizontal layout */

@@ -56,13 +56,20 @@ const Opportunities = {
         
         Object.entries(groupedOpportunities).forEach(([status, opps]) => {
             if (opps.length > 0) {
+                // Determine if section should be collapsed by default
+                const isCollapsed = status !== 'capture' && status !== 'pursuing';
+                const collapseIcon = isCollapsed ? '▶' : '▼';
+                
                 html += `
                     <div class="opportunity-category-section" data-status="${status}">
-                        <div class="category-header">
-                            <h3>${this.getStatusDisplayName(status)}</h3>
+                        <div class="category-header collapsible-header" onclick="Opportunities.toggleSection('${status}')">
+                            <div class="category-title-section">
+                                <span class="collapse-icon" id="collapse-${status}">${collapseIcon}</span>
+                                <h3>${this.getStatusDisplayName(status)}</h3>
+                            </div>
                             <span class="category-count">${opps.length} opportunit${opps.length === 1 ? 'y' : 'ies'}</span>
                         </div>
-                        <div class="category-cards-grid">
+                        <div class="category-cards-grid collapsible-content" id="content-${status}" ${isCollapsed ? 'style="display: none;"' : ''}>
                             ${opps.map(opp => this.renderOpportunityCard(opp)).join('')}
                         </div>
                     </div>
@@ -72,6 +79,42 @@ const Opportunities = {
         
         html += `</div>`;
         container.innerHTML = html;
+    },
+
+    toggleSection(status) {
+        const content = document.getElementById(`content-${status}`);
+        const icon = document.getElementById(`collapse-${status}`);
+        const section = content.closest('.opportunity-category-section');
+        
+        if (content.style.display === 'none' || content.style.display === '') {
+            // Expand section
+            content.style.display = 'grid';
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(-20px)';
+            
+            // Smooth animation
+            requestAnimationFrame(() => {
+                content.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            });
+            
+            icon.textContent = '▼';
+            section.classList.add('expanded');
+        } else {
+            // Collapse section
+            content.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.6, 1)';
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(-10px)';
+            
+            setTimeout(() => {
+                content.style.display = 'none';
+                content.style.transition = '';
+            }, 300);
+            
+            icon.textContent = '▶';
+            section.classList.remove('expanded');
+        }
     },
 
     switchTab(status) {
