@@ -448,3 +448,61 @@ nav a:hover, nav a.active {
 .phase-block:hover .tooltip {
     opacity: 1;
 }
+
+/* Fix opportunity card size and truncate description */
+.opportunity-card {
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.opportunity-description {
+    /* Limit height to about 3 lines, hide overflow */
+    height: 3.6em; /* approx 3 lines with 1.2em line-height */
+    line-height: 1.2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #e9ecef;
+    flex-shrink: 0;
+}
+
+/* Fix action card size and truncate description */
+.action-card {
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-card p {
+    /* Limit description height to about 3 lines */
+    height: 3.6em;
+    line-height: 1.2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* Ensure buttons and footer stay visible and aligned at bottom */
+.opportunity-footer,
+.action-card > div:last-child {
+    margin-top: auto;
+}
