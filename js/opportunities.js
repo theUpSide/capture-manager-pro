@@ -504,10 +504,12 @@ const Opportunities = {
             return `
                 <div class="saved-template-item">
                     <strong>${templateTitle}</strong> - ${statusLabel} (Saved: ${Utils.formatDate(st.savedDate)})
-                    <button class="btn-small" onclick="Templates.editSavedTemplate(${st.id})">Edit</button>
+                    <button class="btn-small btn btn-secondary" onclick="Templates.editSavedTemplate(${st.id})">Edit</button>
                 </div>
             `;
-        }).join('') : '<p>No saved templates for this opportunity.</p>';
+        }).join('') : '<p class="no-saved-templates-message">No saved templates yet.</p>'
+
+;
 
         // Build actions list HTML
         const actionsHtml = actions.length > 0 ? actions.map(action => {
@@ -555,7 +557,7 @@ const Opportunities = {
 
                 <div class="opportunity-right">
                     <section class="saved-templates-section detail-section">
-                        <h3>Saved Templates</h3>
+                        <h3> </h3>
                         <div class="saved-templates-list">
                             ${savedTemplatesHtml}
                         </div>
