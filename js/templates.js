@@ -343,10 +343,6 @@ const Templates = {
 
         DataStore.savedTemplates.push(savedTemplate);
         DataStore.saveData();
-
-        const statusMessage = status === 'in-progress' ? 'Progress saved! You can continue later.' : 'Template completed and saved!';
-        alert(statusMessage);
-        
         this.closeModal();
         this.render();
     },
@@ -413,10 +409,6 @@ const Templates = {
         });
 
         DataStore.saveData();
-
-        const statusMessage = status === 'in-progress' ? 'Progress updated!' : 'Template updated and completed!';
-        alert(statusMessage);
-        
         this.closeModal();
         this.render();
     },
@@ -539,5 +531,27 @@ const Templates = {
 
     closeModal() {
         document.getElementById('templateDetailModal').style.display = 'none';
+    },
+
+    saveForm() {
+        // ... existing save logic ...
+
+        DataStore.saveData();
+        this.closeModal();
+        this.render();
+
+        // Removed alert popup for successful save
+        // alert('Template saved successfully!');
+    },
+
+    updateForm() {
+        // ... existing update logic ...
+
+        DataStore.saveData();
+        this.closeModal();
+        this.render();
+
+        // Removed alert popup for successful update
+        // alert('Template updated successfully!');
     }
 };

@@ -178,7 +178,8 @@ const Actions = {
         this.closeModal();
         this.render();
         
-        alert('Action item added successfully!');
+        // Removed alert popup for successful save
+        // alert('Action item added successfully!');
     },
 
     edit(actionId) {
@@ -232,7 +233,8 @@ const Actions = {
         // Reset form submission
         document.getElementById('actionForm').onsubmit = (e) => this.save(e);
         
-        alert('Action item updated successfully!');
+        // Removed alert popup for successful update
+        // alert('Action item updated successfully!');
     },
 
     toggleComplete(actionId) {
