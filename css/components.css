@@ -175,15 +175,6 @@
   font-size: var(--font-size-lg);
 }
 
-/* ---------- Base Badge Component ---------- */
-.badge {
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--border-radius-pill);
-  font-size: var(--font-size-xs);
-  font-weight: bold;
-  display: inline-block;
-}
-
 /* ==========================================================================
    COMPONENT VARIATIONS - Extensions of base components
    ========================================================================== */
@@ -278,6 +269,14 @@
 }
 
 /* ---------- Badge Variations ---------- */
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  display: inline-block;
+}
+
 .badge-primary {
   background: var(--color-primary);
   color: white;
@@ -307,49 +306,6 @@
   background: var(--color-light);
   color: var(--color-text);
   border: 1px solid #e9ecef;
-}
-
-/* ---------- Panel Variations ---------- */
-.panel-collapsible .panel-header {
-  cursor: pointer;
-  user-select: none;
-}
-
-.panel-category {
-  border-radius: var(--border-radius-xl);
-  transition: var(--transition-normal);
-}
-
-.panel-category:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-/* Status-specific panels */
-.panel-capture .panel-header {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-}
-
-.panel-pursuing .panel-header {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
-}
-
-.panel-won .panel-header {
-  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-}
-
-.panel-lost .panel-header {
-  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-}
-
-/* Phase-specific panels */
-.panel-phase-identification {
-  background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
-  border-left: 6px solid #2196f3;
-}
-
-.panel-phase-qualification {
-  background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%);
-  border-left: 6px solid #ff9800;
 }
 
 /* ==========================================================================
@@ -506,38 +462,11 @@
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  position: relative;
-}
-
-.modal-header {
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-title {
-  margin: 0;
-  color: var(--color-text);
-  font-size: var(--font-size-xl);
-}
-
-.modal-body {
-  margin-bottom: var(--spacing-lg);
-}
-
-.modal-footer {
-  padding-top: var(--spacing-md);
-  border-top: 1px solid #e9ecef;
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-sm);
 }
 
 .modal-close {
   color: #aaa;
+  float: right;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
@@ -1135,6 +1064,28 @@
     left: 0 !important;
 }
 
+/* Add padding inside the opportunities grid container to create space around outer cards */
+.opportunities-grid {
+    background-color: #f0f2f5; /* Light gray background */
+    padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 12px;
+    position: relative; /* Needed for pseudo-element positioning */
+    overflow: visible; /* Allow gradient to show outside if needed */
+}
+
+/* Add margin around each opportunity card for spacing between cards */
+.opportunity-card {
+    background: white; /* Ensure card has a background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    margin: 1.25rem; /* Space between cards */
+    max-width: calc(100% - 2.5rem); /* Account for horizontal margins */
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
 /* ---------- Category Sections ---------- */
 .opportunity-category-section {
     background: white;
@@ -1237,10 +1188,10 @@
 /* ---------- Opportunity Cards ---------- */
 .opportunity-card {
     background: white;
-    border: 1px solid #e9ecef;
+    border: 1px solid #7ab9f8;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px 2px rgba(0,0,0,0.25);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -1248,6 +1199,7 @@
     display: flex;
     flex-direction: column;
     min-height: 350px; /* Ensure uniform height */
+    max-height: 450px;
 }
 
 .opportunity-card::before {
@@ -2276,4 +2228,93 @@
   .metric-value {
     font-size: 1.5rem;
   }
+}
+
+/* Modal container */
+#opportunity-detail-content {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Summary card */
+.opportunity-summary-card {
+    background: #2a5298;
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.opportunity-summary-card div {
+    flex: 1;
+    text-align: center;
+}
+
+.opportunity-summary-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    color: #cbd5e1; /* lighter text for headers */
+}
+
+.opportunity-summary-card .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white; /* ensure visible */
+}
+
+/* Modal for phase steps */
+#phase-steps-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#phase-steps-modal .modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+#phase-steps-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Step item styling */
+.step-item.completed h4 {
+    color: #28a745;
+}
+
+.step-item h4 {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.step-item p {
+    margin-bottom: 0.3rem;
+    color: #555;
+}
+
+.step-item small {
+    color: #888;
 }
