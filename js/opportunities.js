@@ -450,48 +450,43 @@ const Opportunities = {
         const savedTemplates = DataStore.savedTemplates.filter(st => st.opportunityId == opportunityId);
         const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
 
-        // Build journey graphic HTML with clickable phases
-        const phases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
+        // Calculate phase progress based on completed steps
         const phaseTitles = {
             identification: 'Identification',
-            qualification: 'Qualification',
+            qualification: 'Qualification', 
             planning: 'Planning',
             engagement: 'Engagement',
             intelligence: 'Intelligence',
             preparation: 'Preparation'
         };
-
-        // Generate phase blocks with progress and status icons and onclick to open steps
-        const phaseBlocksHtml = phases.map(phaseKey => {
-            const phase = DataStore.captureRoadmap[phaseKey];
-            if (!phase) return '';
-
-            // Calculate progress for this phase based on completed steps
-            const totalSteps = phase.steps.length;
-            const completedSteps = phase.steps.filter(step => {
-                return DataStore.actions.some(action => action.opportunityId == opportunityId && action.stepId === step.id && action.completed);
-            }).length;
-            const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
-
-            // Determine status icon and class
+        
+        const completedSteps = opportunity.completedSteps || [];
+        
+        const phaseBlocksHtml = Object.entries(DataStore.captureRoadmap).map(([phaseKey, phase]) => {
+            const phaseSteps = phase.steps;
+            const completedPhaseSteps = phaseSteps.filter(step => completedSteps.includes(step.id));
+            const progressPercent = phaseSteps.length > 0 ? Math.round((completedPhaseSteps.length / phaseSteps.length) * 100) : 0;
+            
             let statusClass = 'upcoming';
             let icon = '⏳';
+            
             if (progressPercent === 100) {
                 statusClass = 'completed';
                 icon = '✅';
             } else if (phaseKey === opportunity.currentPhase) {
                 statusClass = 'current';
                 icon = '🔄';
-            } else if (phases.indexOf(phaseKey) < phases.indexOf(opportunity.currentPhase)) {
+            } else if (progressPercent > 0) {
                 statusClass = 'needs-attention';
                 icon = '🎯';
             }
 
             return `
-                <div class="phase-block ${statusClass}" title="${phase.title} - ${progressPercent}% complete" onclick="Opportunities.showPhaseSteps('${opportunityId}', '${phaseKey}')">
+                <div class="phase-block ${statusClass}" title="${phase.title} - ${progressPercent}% complete (${completedPhaseSteps.length}/${phaseSteps.length} steps)" onclick="Opportunities.showPhaseSteps('${opportunityId}', '${phaseKey}')">
                     <div class="phase-icon">${icon}</div>
                     <div class="phase-title">${phaseTitles[phaseKey]}</div>
                     <div class="phase-progress">${progressPercent}%</div>
+                    <div class="phase-steps-count">${completedPhaseSteps.length}/${phaseSteps.length}</div>
                 </div>
             `;
         }).join('');
@@ -507,9 +502,7 @@ const Opportunities = {
                     <button class="btn-small btn btn-secondary" onclick="Templates.editSavedTemplate(${st.id})">Edit</button>
                 </div>
             `;
-        }).join('') : '<p class="no-saved-templates-message">No saved templates yet.</p>'
-
-;
+        }).join('') : '<p class="no-saved-templates-message">No saved templates yet.</p>';
 
         // Build actions list HTML
         const actionsHtml = actions.length > 0 ? actions.map(action => {
@@ -526,7 +519,21 @@ const Opportunities = {
         // Calculate days until close
         const daysUntilClose = opportunity.closeDate || opportunity.rfpDate ? Utils.calculateDaysUntilDate(opportunity.closeDate || opportunity.rfpDate) : 'N/A';
 
-        // Compose full modal content with enhanced layout and styling
+        // Build notes section HTML
+        const notes = opportunity.notes || [];
+        const notesHtml = notes.length > 0 ? notes.map(note => `
+            <div class="note-item">
+                <div class="note-header">
+                    <span class="note-timestamp">${Utils.formatDateTime(note.timestamp)}</span>
+                    <button class="btn-small btn-secondary note-delete" onclick="Opportunities.deleteNote(${opportunityId}, ${note.id})" title="Delete note">
+                        🗑️
+                    </button>
+                </div>
+                <div class="note-content">${note.content}</div>
+            </div>
+        `).join('') : '<p class="no-notes-message">No notes yet. Add your first note above.</p>';
+
+        // Update the modal content to include notes section
         content.innerHTML = `
             <div class="opportunity-summary-card">
                 <div>
@@ -556,8 +563,19 @@ const Opportunities = {
                 </div>
 
                 <div class="opportunity-right">
+                    <section class="notes-section detail-section">
+                        <h3>📝 Opportunity Notes</h3>
+                        <div class="notes-input-section">
+                            <textarea id="newNoteContent" placeholder="Add a new note about this opportunity..." rows="3"></textarea>
+                            <button class="btn btn-secondary" onclick="Opportunities.addNoteFromModal(${opportunityId})">Add Note</button>
+                        </div>
+                        <div class="notes-list">
+                            ${notesHtml}
+                        </div>
+                    </section>
+
                     <section class="saved-templates-section detail-section">
-                        <h3> </h3>
+                        <h3>Templates</h3>
                         <div class="saved-templates-list">
                             ${savedTemplatesHtml}
                         </div>
@@ -585,7 +603,7 @@ const Opportunities = {
         `;
 
         modal.style.display = 'block';
-
+        
         // Add event listener to close modal when clicking outside content
         const onClickOutside = (event) => {
             if (event.target === modal) {
@@ -596,35 +614,118 @@ const Opportunities = {
         modal.addEventListener('click', onClickOutside);
     },
 
+    addNoteFromModal(opportunityId) {
+        const noteContent = document.getElementById('newNoteContent').value.trim();
+        if (!noteContent) {
+            alert('Please enter a note before adding.');
+            return;
+        }
+        
+        this.addNote(opportunityId, noteContent);
+        document.getElementById('newNoteContent').value = ''; // Clear the input
+    },
+
+    addNote(opportunityId, noteContent) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+        
+        if (!opportunity.notes) {
+            opportunity.notes = [];
+        }
+        
+        const newNote = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            content: noteContent,
+            author: "Current User" // You can expand this later for multi-user
+        };
+        
+        opportunity.notes.unshift(newNote); // Add to beginning for most recent first
+        DataStore.saveData();
+        
+        // Refresh the detail modal if it's open
+        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
+            this.openDetailModal(opportunityId);
+        }
+    },
+
+    deleteNote(opportunityId, noteId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity || !opportunity.notes) return;
+        
+        opportunity.notes = opportunity.notes.filter(note => note.id !== noteId);
+        DataStore.saveData();
+        
+        // Refresh the detail modal if it's open
+        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
+            this.openDetailModal(opportunityId);
+        }
+    },
+
     showPhaseSteps(opportunityId, phaseKey) {
         const phase = DataStore.captureRoadmap[phaseKey];
         if (!phase) return;
 
         const modal = document.getElementById('phase-steps-modal');
         const content = document.getElementById('phase-steps-content');
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        const completedSteps = opportunity.completedSteps || [];
 
         // Get actions for this opportunity and phase steps
         const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
 
-        // Build steps list with completion status and completion date if available
+        // Build steps list with checkboxes and completion status
         const stepsHtml = phase.steps.map(step => {
             const action = actions.find(a => a.stepId === step.id);
-            const completed = action ? action.completed : false;
+            const completed = completedSteps.includes(step.id);
             const completedDate = action && action.completedDate ? Utils.formatDate(action.completedDate) : 'Not completed';
 
             return `
-                <div class="step-item ${completed ? 'completed' : ''}" style="margin-bottom: 1rem; padding: 0.5rem; border-bottom: 1px solid #ddd;">
-                    <h4 style="margin: 0 0 0.3rem 0;">${completed ? '✅' : '⏳'} ${step.title}</h4>
-                    <p style="margin: 0 0 0.3rem 0; color: #666;">${step.description}</p>
-                    <small>Duration: ${step.duration} days • Start: Day ${step.daysFromStart}</small><br>
-                    <small>Completion Date: ${completedDate}</small>
+                <div class="step-item ${completed ? 'completed' : ''}" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: ${completed ? '#e8f5e9' : '#f8f9fa'}; border: 1px solid ${completed ? '#c3e6cb' : '#e9ecef'};">
+                    <div class="step-header" style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem;">
+                        <input type="checkbox" 
+                               id="step-${step.id}" 
+                               ${completed ? 'checked' : ''} 
+                               onchange="Opportunities.toggleStepCompletion(${opportunityId}, '${step.id}')"
+                               style="margin-top: 0.2rem; transform: scale(1.2);">
+                        <label for="step-${step.id}" style="flex: 1; cursor: pointer;">
+                            <h4 style="margin: 0 0 0.3rem 0; color: ${completed ? '#28a745' : '#2a5298'};">
+                                ${completed ? '✅' : '⏳'} ${step.title}
+                            </h4>
+                            <p style="margin: 0 0 0.3rem 0; color: #666; font-size: 0.9rem;">${step.description}</p>
+                        </label>
+                    </div>
+                    <div style="margin-left: 2rem; font-size: 0.8rem; color: #666;">
+                        <small>Duration: ${step.duration} days • Start: Day ${step.daysFromStart}</small><br>
+                        <small style="color: ${completed ? '#28a745' : '#6c757d'};">
+                            ${completed ? `Completed: ${completedDate}` : 'Not completed'}
+                        </small>
+                    </div>
                 </div>
             `;
         }).join('');
 
+        // Calculate phase progress
+        const phaseSteps = phase.steps;
+        const completedPhaseSteps = phaseSteps.filter(step => completedSteps.includes(step.id));
+        const phaseProgress = phaseSteps.length > 0 ? Math.round((completedPhaseSteps.length / phaseSteps.length) * 100) : 0;
+
         content.innerHTML = `
-            <h3>${phase.title} - Steps</h3>
-            <div>${stepsHtml}</div>
+            <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="margin: 0 0 0.5rem 0; color: #2a5298;">${phase.title} - Steps</h3>
+                <div style="margin-bottom: 0.5rem;">
+                    <span style="font-weight: bold; color: #28a745;">${completedPhaseSteps.length}</span> of 
+                    <span style="font-weight: bold; color: #2a5298;">${phaseSteps.length}</span> steps completed
+                </div>
+                <div class="progress-bar" style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                    <div class="progress-fill" style="width: ${phaseProgress}%; height: 100%; background: linear-gradient(90deg, #28a745 0%, #20c997 100%); transition: width 0.3s ease;"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">${phaseProgress}% Complete</div>
+            </div>
+            
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
+                ${stepsHtml}
+            </div>
         `;
 
         modal.style.display = 'block';
@@ -639,6 +740,114 @@ const Opportunities = {
         modal.addEventListener('click', onClickOutside);
     },
 
+    toggleStepCompletion(opportunityId, stepId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+        
+        if (!opportunity.completedSteps) {
+            opportunity.completedSteps = [];
+        }
+        
+        const stepIndex = opportunity.completedSteps.indexOf(stepId);
+        if (stepIndex > -1) {
+            // Step is completed, remove it
+            opportunity.completedSteps.splice(stepIndex, 1);
+        } else {
+            // Step is not completed, add it
+            opportunity.completedSteps.push(stepId);
+        }
+        
+        // Update overall progress based on completed steps
+        this.updateOpportunityProgress(opportunityId);
+        
+        DataStore.saveData();
+        
+        // Refresh the detail modal if it's open
+        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
+            this.openDetailModal(opportunityId);
+        }
+        
+        // Refresh the phase steps modal if it's open
+        if (document.getElementById('phase-steps-modal').style.display === 'block') {
+            // Get the current phase from the modal content
+            const phaseStepsModal = document.getElementById('phase-steps-modal');
+            const phaseTitle = phaseStepsModal.querySelector('h3')?.textContent;
+            if (phaseTitle) {
+                const phaseKey = this.getPhaseKeyFromTitle(phaseTitle);
+                if (phaseKey) {
+                    this.showPhaseSteps(opportunityId, phaseKey);
+                }
+            }
+        }
+    },
+    
+    updateOpportunityProgress(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+        
+        // Calculate total steps across all phases
+        let totalSteps = 0;
+        let completedSteps = opportunity.completedSteps ? opportunity.completedSteps.length : 0;
+        
+        Object.values(DataStore.captureRoadmap).forEach(phase => {
+            totalSteps += phase.steps.length;
+        });
+        
+        // Calculate progress percentage
+        const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+        
+        opportunity.progress = progressPercent;
+        
+        // Update current phase based on completed steps
+        this.updateCurrentPhase(opportunityId);
+    },
+    
+    updateCurrentPhase(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity || !opportunity.completedSteps) return;
+        
+        const phases = Object.keys(DataStore.captureRoadmap);
+        let currentPhase = 'identification';
+        
+        // Find the most advanced phase with incomplete steps
+        for (let i = 0; i < phases.length; i++) {
+            const phaseKey = phases[i];
+            const phase = DataStore.captureRoadmap[phaseKey];
+            const phaseSteps = phase.steps;
+            
+            // Check if all steps in this phase are completed
+            const allStepsCompleted = phaseSteps.every(step => 
+                opportunity.completedSteps.includes(step.id)
+            );
+            
+            if (allStepsCompleted && i < phases.length - 1) {
+                // All steps completed, move to next phase
+                currentPhase = phases[i + 1];
+            } else if (!allStepsCompleted) {
+                // Some steps incomplete, this is the current phase
+                currentPhase = phaseKey;
+                break;
+            }
+        }
+        
+        opportunity.currentPhase = currentPhase;
+    },
+    
+    getPhaseKeyFromTitle(titleWithSteps) {
+        // Extract phase key from title like "Opportunity Identification - Steps"
+        const phaseTitle = titleWithSteps.replace(' - Steps', '');
+        const phaseMap = {
+            'Opportunity Identification': 'identification',
+            'Opportunity Qualification': 'qualification',
+            'Capture Planning': 'planning',
+            'Customer Engagement': 'engagement',
+            'Competitive Intelligence': 'intelligence',
+            'Pre-RFP Preparation': 'preparation'
+        };
+        
+        return phaseMap[phaseTitle] || 'identification';
+    },
+    
     closePhaseStepsModal() {
         const modal = document.getElementById('phase-steps-modal');
         if (modal) {

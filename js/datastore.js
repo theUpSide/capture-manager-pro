@@ -15,27 +15,39 @@ const DataStore = {
     },
 
     loadData() {
-        this.opportunities = JSON.parse(localStorage.getItem('opportunities')) || [];
-        this.savedTemplates = JSON.parse(localStorage.getItem('savedTemplates')) || [];
-        this.contacts = JSON.parse(localStorage.getItem('contacts')) || [];
-        this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        
-        // Migrate existing opportunities to include status and required fields
-        this.opportunities.forEach(opp => {
-            if (!opp.status) {
-                opp.status = 'capture';
-            }
-            // Map old field names to new ones if needed
-            if (opp.pwin && !opp.probability) {
-                opp.probability = opp.pwin;
-            }
-            if (opp.rfpDate && !opp.closeDate) {
-                opp.closeDate = opp.rfpDate;
-            }
-            if (opp.customer && !opp.client) {
-                opp.client = opp.customer;
-            }
-        });
+        try {
+            this.opportunities = JSON.parse(localStorage.getItem('opportunities')) || [];
+            this.savedTemplates = JSON.parse(localStorage.getItem('savedTemplates')) || [];
+            this.contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+            this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            
+            // Migrate existing opportunities to include status and required fields
+            this.opportunities.forEach(opp => {
+                if (!opp.status) {
+                    opp.status = 'capture';
+                }
+                // Add completedSteps field if it doesn't exist
+                if (!opp.completedSteps) {
+                    opp.completedSteps = [];
+                }
+                // Add notes field if it doesn't exist
+                if (!opp.notes) {
+                    opp.notes = [];
+                }
+                // Map old field names to new ones if needed
+                if (opp.pwin && !opp.probability) {
+                    opp.probability = opp.pwin;
+                }
+                if (opp.rfpDate && !opp.closeDate) {
+                    opp.closeDate = opp.rfpDate;
+                }
+                if (opp.customer && !opp.client) {
+                    opp.client = opp.customer;
+                }
+            });
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
     },
 
     importData(jsonData) {

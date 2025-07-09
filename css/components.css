@@ -1447,6 +1447,121 @@
     margin-bottom: 2rem;
     line-height: 1.5;
 }
+/* Notes section styling */
+.notes-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.notes-input-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.notes-input-section textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    resize: vertical;
+    margin-bottom: 0.75rem;
+    font-family: inherit;
+}
+
+.notes-input-section textarea:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+}
+
+.notes-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.note-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.note-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.note-timestamp {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.note-delete {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    border: none;
+    background: #dc3545;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.note-delete:hover {
+    background: #c82333;
+}
+
+.note-content {
+    color: #495057;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.no-notes-message {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .notes-input-section {
+        padding: 0.75rem;
+    }
+    
+    .note-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .note-delete {
+        align-self: flex-end;
+    }
+}
 
 /* ==========================================================================
    5. TEMPLATE MANAGEMENT STYLES
@@ -2446,4 +2561,24 @@
 
 .step-item small {
     color: #888;
+}
+
+/* Add step count styling to phase blocks */
+.phase-steps-count {
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 0.2rem;
+    font-weight: 500;
+}
+
+.phase-block.completed .phase-steps-count {
+    color: #28a745;
+}
+
+.phase-block.current .phase-steps-count {
+    color: #856404;
+}
+
+.phase-block.needs-attention .phase-steps-count {
+    color: #dc3545;
 }

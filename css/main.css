@@ -316,7 +316,7 @@ nav a:hover, nav a.active {
     border-right: 1px solid #e9ecef;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: box-shadow 0.3s ease;
     min-height: 100px;
     display: flex;
     flex-direction: column;
@@ -330,9 +330,7 @@ nav a:hover, nav a.active {
 }
 
 .phase-block:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    z-index: 10;
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
 }
 
 .phase-block.completed {
@@ -505,4 +503,56 @@ nav a:hover, nav a.active {
 .opportunity-footer,
 .action-card > div:last-child {
     margin-top: auto;
+}
+
+/* Add styles for Smart Logic section and recommended templates */
+.smart-logic-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid #e3e8f0;
+}
+
+.recommended-template {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.recommended-template:last-child {
+    border-bottom: none;
+}
+
+.recommended-template strong {
+    font-weight: 600;
+    color: #2a5298;
+}
+
+.recommended-template em {
+    color: #6c757d;
+    margin-left: 0.5rem;
+}
+
+.recommended-template button {
+    min-width: 70px;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+}
+
+/* Make phase-block cursor pointer and hover effect */
+.phase-block {
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.phase-block:hover {
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+}
+
+/* Style step-item label cursor */
+.step-item label {
+    cursor: pointer;
 }

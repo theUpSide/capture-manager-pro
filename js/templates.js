@@ -530,7 +530,11 @@ const Templates = {
     },
 
     closeModal() {
-        document.getElementById('templateDetailModal').style.display = 'none';
+        const modal = document.getElementById('templateDetailModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.replaceWith(modal.cloneNode(true)); // Remove event listeners
+        }
     },
 
     saveForm() {
@@ -553,5 +557,84 @@ const Templates = {
 
         // Removed alert popup for successful update
         // alert('Template updated successfully!');
+    },
+
+    openNewForm(templateId, opportunityId) {
+        // Find the template definition
+        const template = this.templates.find(t => t.id === templateId);
+        if (!template) {
+            alert('Template not found.');
+            return;
+        }
+
+        // Prepare modal and form content for new form based on template
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+
+        // Store current opportunityId and templateId for saving later
+        this.currentOpportunityId = opportunityId;
+        this.currentTemplateId = templateId;
+
+        // Build form HTML dynamically based on template.fields
+        let formHtml = `<h2>New Form: ${template.title}</h2>`;
+        formHtml += `<form id="templateForm" onsubmit="Templates.saveNewForm(event)">`;
+
+        template.fields.forEach(field => {
+            formHtml += `<div class="form-group">`;
+            formHtml += `<label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>`;
+
+            if (field.type === 'textarea') {
+                formHtml += `<textarea id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''} placeholder="${field.label}"></textarea>`;
+            } else if (field.type === 'select') {
+                formHtml += `<select id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''}>`;
+                field.options.forEach(option => {
+                    formHtml += `<option value="${option}">${option}</option>`;
+                });
+                formHtml += `</select>`;
+            } else {
+                formHtml += `<input type="${field.type}" id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''} />`;
+            }
+
+            formHtml += `</div>`;
+        });
+
+        formHtml += `<button type="submit" class="btn">Save</button>`;
+        formHtml += `</form>`;
+
+        content.innerHTML = formHtml;
+        modal.style.display = 'block';
+    },
+
+    saveNewForm(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('templateForm');
+        if (!form) return;
+
+        // Collect form data
+        const formData = {};
+        Array.from(form.elements).forEach(el => {
+            if (el.name) {
+                formData[el.name] = el.value;
+            }
+        });
+
+        // Create new saved template entry
+        const newSavedTemplate = {
+            id: Date.now(),
+            opportunityId: this.currentOpportunityId,
+            templateId: this.currentTemplateId,
+            data: formData,
+            status: 'in-progress',
+            savedDate: new Date().toISOString().split('T')[0]
+        };
+
+        DataStore.savedTemplates.push(newSavedTemplate);
+        DataStore.saveData();
+
+        this.closeModal();
+        if (typeof Opportunities !== 'undefined') {
+            Opportunities.openDetailModal(this.currentOpportunityId);
+        }
     }
 };

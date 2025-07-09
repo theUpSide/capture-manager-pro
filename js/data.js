@@ -1,21 +1,32 @@
 // Data store
 const DataStore = {
     opportunities: [
-        {
-            id: 1,
-            name: "Japan AWACS E-767 Radio Upgrade",
-            customer: "Japan Air Self-Defense Force",
-            value: 25000000,
-            rfpDate: "2025-03-01",
-            pwin: 85,
-            type: "IDIQ",
-            role: "Sub",
-            incumbent: "Boeing",
-            currentPhase: "preparation",
-            progress: 85,
-            description: "Real-time information in cockpit system integration",
-            createdDate: "2024-08-20"
-        }
+        // Update the opportunities array to include step completion tracking
+{
+    id: 1,
+    name: "Test Aircraft Upgrade Program",
+    customer: "Test Customer Agency",
+    value: 25000000,
+    rfpDate: "2025-03-01",
+    pwin: 85,
+    type: "IDIQ",
+    role: "Sub",
+    incumbent: "Boeing",
+    currentPhase: "preparation",
+    progress: 85,
+    description: "Communication upgrade for test aircraft at Test Customer Agency",
+    createdDate: "2024-08-20",
+    notes: [],
+    // Add step completion tracking
+    completedSteps: [
+        "discovery",
+        "initial-assessment",
+        "strategic-fit",
+        "customer-relationship",
+        "capability-gap",
+        "bid-no-bid"
+    ] || []
+}
     ],
 
     actions: [
