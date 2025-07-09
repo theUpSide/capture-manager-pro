@@ -636,5 +636,134 @@ const Templates = {
         if (typeof Opportunities !== 'undefined') {
             Opportunities.openDetailModal(this.currentOpportunityId);
         }
+    },
+
+    renderMeetingNotesTemplate(template, savedData = {}) {
+        const fieldsHtml = template.fields.map(field => {
+            const value = savedData[field.id] || '';
+            const isRequired = field.required ? 'required' : '';
+            
+            // Group related fields into sections
+            let sectionClass = '';
+            let sectionLabel = '';
+            
+            if (['meeting_date', 'meeting_time', 'meeting_location', 'meeting_type'].includes(field.id)) {
+                sectionClass = 'meeting-logistics-section';
+                sectionLabel = field.id === 'meeting_date' ? 'Meeting Logistics' : '';
+            } else if (['our_attendees', 'customer_attendees', 'other_attendees'].includes(field.id)) {
+                sectionClass = 'meeting-attendees-section';
+                sectionLabel = field.id === 'our_attendees' ? 'Attendees' : '';
+            } else if (['action_items', 'our_commitments', 'customer_commitments', 'follow_up_needed'].includes(field.id)) {
+                sectionClass = 'action-items-section';
+                sectionLabel = field.id === 'action_items' ? 'Action Items & Commitments' : '';
+            }
+            
+            const sectionHeader = sectionLabel ? `<h4>${sectionLabel}</h4>` : '';
+            const sectionStart = sectionLabel ? `<div class="${sectionClass}">` : '';
+            const sectionEnd = sectionLabel && field.id === 'other_attendees' ? '</div>' : 
+                              sectionLabel && field.id === 'follow_up_needed' ? '</div>' : '';
+            
+            let fieldHtml = '';
+            
+            if (field.type === 'select') {
+                const options = field.options.map(option => 
+                    `<option value="${option}" ${value === option ? 'selected' : ''}>${option}</option>`
+                ).join('');
+                
+                fieldHtml = `
+                    <div class="form-group">
+                        <label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>
+                        <select id="${field.id}" ${isRequired}>
+                            <option value="">Select...</option>
+                            ${options}
+                        </select>
+                    </div>
+                `;
+            } else if (field.type === 'textarea') {
+                fieldHtml = `
+                    <div class="form-group">
+                        <label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>
+                        <textarea id="${field.id}" ${isRequired} placeholder="Enter ${field.label.toLowerCase()}...">${value}</textarea>
+                    </div>
+                `;
+            } else {
+                fieldHtml = `
+                    <div class="form-group">
+                        <label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>
+                        <input type="${field.type}" id="${field.id}" value="${value}" ${isRequired}>
+                    </div>
+                `;
+            }
+            
+            return sectionStart + sectionHeader + fieldHtml + sectionEnd;
+        }).join('');
+        
+        return `
+            <div class="meeting-notes-template">
+                <div class="worksheet-header">
+                    <h2>📝 ${template.title}</h2>
+                    <p class="template-description">${template.description}</p>
+                </div>
+                
+                <div class="template-worksheet">
+                    <form id="templateForm">
+                        ${fieldsHtml}
+                    </form>
+                </div>
+                
+                <div class="template-form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="Templates.saveTemplate(${template.id})">Save Meeting Notes</button>
+                </div>
+            </div>
+        `;
+    },
+
+    renderTemplateWorksheet(template) {
+        const activeOpportunities = DataStore.opportunities.filter(opp => 
+            !opp.status || opp.status === 'capture' || opp.status === 'pursuing'
+        );
+
+        let html = `
+            <div class="worksheet-header">
+                <h2>${template.title}</h2>
+                <p class="template-description">${template.description}</p>
+                ${template.guidance ? `<button class="btn btn-small btn-secondary" onclick="Templates.showGuidance(${template.id})">📖 View Guidance</button>` : ''}
+            </div>
+            
+            <div class="template-worksheet">
+                <form id="templateForm" onsubmit="Templates.saveTemplate(event, ${template.id})">
+                    <!-- Required fields first -->
+                    <div class="form-group">
+                        <label for="template_opportunity">Opportunity *</label>
+                        <select id="template_opportunity" required>
+                            <option value="">Select Opportunity</option>
+                            ${activeOpportunities.map(opp => `<option value="${opp.id}">${opp.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="template_employee_name">Employee Name *</label>
+                        <input type="text" id="template_employee_name" required placeholder="Enter your name">
+                    </div>
+                    
+                    <!-- Template-specific fields -->
+                    ${template.fields.map(field => `
+                        <div class="form-group">
+                            <label for="template_${field.id}">${field.label}</label>
+                            ${this.renderFormField(field)}
+                        </div>
+                    `).join('')}
+                    
+                    <div class="template-form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="Templates.saveInProgress(${template.id})">💾 Save Progress</button>
+                        <button type="submit" class="btn">✅ Save & Complete</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        return html;
     }
 };
