@@ -1,0 +1,820 @@
+/* ==========================================================================
+   EXECUTIVE-READY OPPORTUNITIES PAGE REDESIGN
+   Complete overhaul for professional demo presentation
+   ========================================================================== */
+
+/* ---------- MAIN LAYOUT IMPROVEMENTS ---------- */
+
+/* Clean up the main opportunities container - REMOVE EXCESS MARGINS */
+#opportunities-view .section {
+    overflow: visible !important;
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0.5rem !important;
+    background: #f8f9ff !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+#opportunities-view .section-header {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+}
+
+#opportunities-view .section-header h2 {
+    color: #2a5298;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Improved main layout container - TIGHTER MARGINS */
+.opportunities-sections-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+/* ---------- CATEGORY SECTIONS REDESIGN ---------- */
+
+.opportunity-category-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin: 0;
+}
+
+.opportunity-category-section:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+.opportunity-category-section.expanded {
+    box-shadow: 0 8px 25px rgba(42, 82, 152, 0.15);
+}
+
+/* Enhanced collapsible header */
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+.collapsible-header:hover {
+    background: linear-gradient(135deg, #f0f2f5 0%, #e2e6ea 100%) !important;
+}
+
+.category-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.collapse-icon {
+    font-size: 1.1rem;
+    color: #2a5298;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+}
+
+.category-header h3 {
+    margin: 0;
+    color: #2a5298;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.category-count {
+    background: #2a5298;
+    color: white;
+    padding: 0.35rem 0.9rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+/* ---------- CARD GRID LAYOUT - LIKE ACTIONS ---------- */
+
+/* NEW: Make cards similar to action cards in size and layout */
+.category-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.25rem;
+    padding: 1.5rem;
+    align-items: start; /* Align cards to top instead of stretching */
+}
+
+/* ---------- REDESIGNED OPPORTUNITY CARDS ---------- */
+
+.opportunity-card {
+    background: white;
+    border: 1px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* FIXED HEIGHT like action cards */
+    height: 320px;
+    min-height: 320px;
+    max-height: 320px;
+}
+
+.opportunity-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2a5298 0%, #4dabf7 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.opportunity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    border-color: #2a5298;
+}
+
+.opportunity-card:hover::before {
+    opacity: 1;
+}
+
+/* ---------- CARD HEADER REDESIGN ---------- */
+
+.opportunity-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.opportunity-card-header h4 {
+    margin: 0;
+    flex: 1;
+    color: #2a5298;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    padding-right: 1rem;
+    /* Limit title to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2.6em; /* Fixed height for 2 lines */
+}
+
+.opportunity-actions {
+    display: flex;
+    gap: 0.25rem;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.opportunity-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* ---------- CARD CONTENT REDESIGN ---------- */
+
+/* Key metrics in a compact grid */
+.opportunity-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.metric-item {
+    background: #f8f9ff;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #e3e8f0;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2a5298;
+    display: block;
+}
+
+/* Compact description with proper truncation */
+.opportunity-description {
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #e3e8f0;
+    flex-grow: 1; /* Takes remaining space */
+    overflow: hidden;
+    
+    /* Limit to exactly 3 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    height: 4.2em; /* 3 lines * 1.4 line-height */
+}
+
+/* Progress section */
+.opportunity-progress {
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Card footer with status and quick actions */
+.opportunity-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: auto; /* Pushes footer to bottom */
+    flex-shrink: 0;
+}
+
+.opportunity-footer .status-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.opportunity-footer .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+/* ---------- STATUS-SPECIFIC STYLING ---------- */
+
+.opportunity-card[data-status="capture"] {
+    border-left: 4px solid #2a5298;
+}
+
+.opportunity-card[data-status="pursuing"] {
+    border-left: 4px solid #ffc107;
+}
+
+.opportunity-card[data-status="won"] {
+    border-left: 4px solid #28a745;
+}
+
+.opportunity-card[data-status="lost"] {
+    border-left: 4px solid #dc3545;
+}
+
+.opportunity-card[data-status="archived"] {
+    border-left: 4px solid #6c757d;
+    opacity: 0.8;
+}
+
+/* Status badges with proper colors */
+.status-badge.status-capture {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-badge.status-pursuing {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.status-badge.status-won {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.status-badge.status-lost {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.status-badge.status-archived {
+    background: #f5f5f5;
+    color: #616161;
+}
+
+/* ---------- OPPORTUNITY DETAIL MODAL REDESIGN ---------- */
+
+/* Enhanced modal for executive presentation */
+.modal-content {
+    background: white;
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 1200px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal header with executive styling */
+.opportunity-detail-header {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3a5f 100%);
+    color: white;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Close button styling */
+.opportunity-detail-header .close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.opportunity-detail-header .close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.opportunity-detail-header h2 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.opportunity-header-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.header-metric {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.header-metric-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-metric-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Action buttons in header */
+.opportunity-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.opportunity-header-actions .btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.opportunity-header-actions .btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.opportunity-header-actions .btn-primary {
+    background: #28a745;
+    border: 1px solid #28a745;
+}
+
+.opportunity-header-actions .btn-primary:hover {
+    background: #218838;
+}
+
+/* Modal content area */
+.opportunity-detail-content {
+    flex: 1;
+    overflow-y: auto;
+    background: #f8f9ff;
+}
+
+/* Executive summary card */
+.opportunity-executive-summary {
+    background: white;
+    margin: 1.5rem;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid #2a5298;
+}
+
+.executive-summary-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.summary-details h3 {
+    color: #2a5298;
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.summary-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.summary-metric {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border: 1px solid #e3e8f0;
+}
+
+.summary-metric-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.summary-metric-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2a5298;
+}
+
+/* Two-column layout for detail content */
+.opportunity-detail-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.opportunity-left, .opportunity-right {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+.opportunity-left h3, .opportunity-right h3 {
+    color: #2a5298;
+    margin: 0 0 1.25rem 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e3e8f0;
+}
+
+/* Enhanced phase blocks */
+.phase-blocks-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.phase-block {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 10px;
+    padding: 1rem 0.75rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.phase-block:hover {
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.2);
+    transform: translateY(-2px);
+}
+
+.phase-block.current {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-color: #2a5298;
+    box-shadow: 0 2px 8px rgba(42, 82, 152, 0.2);
+}
+
+.phase-block.completed {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-color: #28a745;
+}
+
+.phase-icon {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.phase-title {
+    font-weight: 600;
+    color: #2a5298;
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.phase-progress {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Enhanced lists */
+.saved-templates-list, .actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.saved-template-item, .action-item {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.saved-template-item:hover, .action-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.saved-template-item strong, .action-item strong {
+    color: #2a5298;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* ---------- RESPONSIVE IMPROVEMENTS ---------- */
+
+@media (max-width: 1200px) {
+    .category-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1rem;
+    }
+    
+    .opportunity-header-meta {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .opportunity-card {
+        height: auto;
+        min-height: 280px;
+        max-height: none;
+    }
+    
+    .category-cards-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    .opportunity-detail-columns {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .executive-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .summary-metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .opportunity-header-meta {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .phase-blocks-container {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .opportunity-card {
+        height: auto;
+        min-height: 250px;
+    }
+    
+    .opportunity-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .opportunity-header-actions {
+        flex-direction: column;
+    }
+}
+
+/* ---------- EMPTY STATE IMPROVEMENTS ---------- */
+
+.empty-state {
+    background: white;
+    border: 2px dashed #e3e8f0;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    margin: 1rem;
+}
+
+.empty-state:hover {
+    border-color: #2a5298;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+}
+
+.empty-state-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+    color: #2a5298;
+}
+
+.empty-state h3 {
+    color: #2a5298;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* ---------- ANIMATION ENHANCEMENTS ---------- */
+
+/* Staggered animation for cards appearing */
+.opportunity-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardAppear 0.6s ease forwards;
+}
+
+.opportunity-card:nth-child(1) { animation-delay: 0.1s; }
+.opportunity-card:nth-child(2) { animation-delay: 0.2s; }
+.opportunity-card:nth-child(3) { animation-delay: 0.3s; }
+.opportunity-card:nth-child(4) { animation-delay: 0.4s; }
+.opportunity-card:nth-child(5) { animation-delay: 0.5s; }
+.opportunity-card:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes cardAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth transitions for collapsible sections */
+.collapsible-content {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effects for interactive elements */
+.opportunity-card, .phase-block, .saved-template-item, .action-item {
+    will-change: transform;
+}
+
+/* Loading states */
+.opportunity-card.loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: -100% 50%; }
+}
