@@ -15,6 +15,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/apple-icon-180.png">
     <link rel="apple-touch-startup-image" href="splash/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px)">
+    <link rel="stylesheet" href="css/presentation.css">
 </head>
 <body>
     <header>
@@ -340,6 +341,16 @@
         </div>
     </div>
 
+    <!-- Executive Presentation Modal -->
+<div id="presentationModal" class="presentation-modal">
+    <div class="presentation-modal-content">
+        <span class="presentation-close" onclick="Presentation.closePresentation()">&times;</span>
+        <div id="presentation-content">
+            <!-- Presentation content will be populated here -->
+        </div>
+    </div>
+</div>
+
     <!-- JavaScript files -->
     <script src="js/utils.js"></script>
     <script src="js/data.js"></script>
@@ -352,5 +363,6 @@
     <script src="js/reports.js"></script>
     <script src="js/gate-reviews.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/presentation.js"></script>
 </body>
 </html>

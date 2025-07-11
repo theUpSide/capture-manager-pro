@@ -152,6 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load data from localStorage
     DataStore.loadData();
     
+    // Load presentation CSS if not already loaded
+    if (!document.querySelector('link[href="css/presentation.css"]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'css/presentation.css';
+        document.head.appendChild(link);
+    }
+
     // Initialize all modules
     Dashboard.init();
     

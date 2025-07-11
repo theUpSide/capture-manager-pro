@@ -596,7 +596,9 @@ const Opportunities = {
                     <div id="phase-steps-content"></div>
                 </div>
             </div>
-
+            <button class="btn btn-primary" onclick="Presentation.openPresentation(${opportunity.id})" style="margin-left: 0.5rem;">
+    📊 Executive Presentation
+            </button>
             <div style="text-align: right; margin-top: 1rem;">
                 <button class="btn btn-secondary" onclick="Opportunities.closeDetailModal()">Close</button>
             </div>

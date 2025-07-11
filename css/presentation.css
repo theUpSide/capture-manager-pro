@@ -1,0 +1,860 @@
+/* ==========================================================================
+   PRESENTATION MODULE STYLES
+   ========================================================================== */
+
+/* ---------- Presentation Modal ---------- */
+.presentation-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.presentation-modal-content {
+    background: #ffffff;
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 1200px;
+    height: 90vh;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.presentation-close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: #666;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+    background: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.presentation-close:hover {
+    color: #2a5298;
+    transform: scale(1.1);
+}
+
+/* ---------- Presentation Navigation ---------- */
+.presentation-nav {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3a5f 100%);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.presentation-nav .btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.presentation-nav .btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.presentation-nav .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.presentation-nav .btn-primary {
+    background: #28a745;
+    border: 1px solid #28a745;
+}
+
+.presentation-nav .btn-primary:hover {
+    background: #218838;
+    border: 1px solid #218838;
+}
+
+.slide-counter {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* ---------- Presentation Content ---------- */
+.presentation-content {
+    flex: 1;
+    overflow-y: auto;
+    background: #f8f9ff;
+}
+
+/* ---------- Presentation Slides ---------- */
+.presentation-slide {
+    display: none;
+    min-height: 100%;
+    padding: 3rem;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.presentation-slide.active {
+    display: block;
+}
+
+.slide-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid #e3e8f0;
+}
+
+.slide-header h1 {
+    font-size: 2.5rem;
+    color: #2a5298;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.slide-header h2 {
+    font-size: 1.8rem;
+    color: #495057;
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.slide-date {
+    color: #6c757d;
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.slide-content {
+    flex: 1;
+}
+
+.slide-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e3e8f0;
+    text-align: center;
+    background: rgba(42, 82, 152, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+/* ---------- Executive Summary Slide ---------- */
+.executive-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.summary-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.metric-highlight {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-highlight:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(42, 82, 152, 0.15);
+    border-color: #2a5298;
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2a5298;
+}
+
+.summary-status {
+    background: #ffffff;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.status-item {
+    margin-bottom: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.1rem;
+}
+
+.status-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* ---------- Overview Slide ---------- */
+.overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.overview-section {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.overview-section h3 {
+    color: #2a5298;
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e3e8f0;
+}
+
+.detail-item {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.detail-item strong {
+    color: #495057;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.opportunity-description {
+    line-height: 1.6;
+    color: #495057;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.recent-notes {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.note-item {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.note-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.note-content {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+    color: #495057;
+}
+
+.note-author {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* ---------- Metrics Dashboard ---------- */
+.metrics-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.metric-card-large {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.metric-card-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(42, 82, 152, 0.15);
+}
+
+.metric-icon {
+    font-size: 3rem;
+    color: #2a5298;
+}
+
+.metric-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.metric-title {
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2a5298;
+}
+
+.metric-bar {
+    width: 200px;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.metric-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    border-radius: 6px;
+    transition: width 0.8s ease;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.metric-item {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.metric-item.metric-danger {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.metric-item.metric-danger .metric-value {
+    color: #dc3545;
+}
+
+/* ---------- Phase Timeline ---------- */
+.phase-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.phase-timeline-item {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.phase-timeline-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.phase-timeline-item.completed {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+.phase-timeline-item.current {
+    border-color: #2a5298;
+    background: rgba(42, 82, 152, 0.05);
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.2);
+}
+
+.phase-timeline-item.in-progress {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.phase-timeline-item .phase-icon {
+    font-size: 2rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.phase-content {
+    flex: 1;
+}
+
+.phase-content h3 {
+    margin: 0 0 1rem 0;
+    color: #2a5298;
+    font-size: 1.2rem;
+}
+
+.phase-progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.phase-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    border-radius: 10px;
+    transition: width 0.8s ease;
+}
+
+.phase-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.phase-details {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ---------- Work Summary ---------- */
+.work-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.work-section {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.work-section h3 {
+    color: #2a5298;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e3e8f0;
+}
+
+.work-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.work-item {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.work-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.work-title {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.work-meta {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.work-item-more {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* ---------- Risk Assessment ---------- */
+.risk-summary {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.risk-count {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    display: inline-block;
+}
+
+.risk-count-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #dc3545;
+    margin-bottom: 0.5rem;
+}
+
+.risk-count-label {
+    font-size: 1.1rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.risk-item {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.risk-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.risk-item.risk-high {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.risk-item.risk-medium {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.risk-indicator {
+    font-size: 1.5rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.risk-content {
+    flex: 1;
+}
+
+.risk-title {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.risk-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.no-risks {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border: 2px solid #28a745;
+    border-radius: 12px;
+}
+
+.no-risks-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-risks h3 {
+    color: #28a745;
+    margin-bottom: 1rem;
+}
+
+.no-risks p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* ---------- Recommendations ---------- */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.recommendations-section {
+    background: white;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.recommendations-section h3 {
+    color: #2a5298;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e3e8f0;
+}
+
+.action-group {
+    margin-bottom: 1.5rem;
+}
+
+.action-group h4 {
+    color: #495057;
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.action-item {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-item.urgent {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.action-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.action-due {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.recommendation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.recommendation-item {
+    background: #f8f9ff;
+    border: 1px solid #e3e8f0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.recommendation-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-icon {
+    font-size: 1.5rem;
+    min-width: 40px;
+    text-align: center;
+    color: #2a5298;
+}
+
+.recommendation-content {
+    flex: 1;
+}
+
+.recommendation-content strong {
+    display: block;
+    color: #2a5298;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.recommendation-content p {
+    margin: 0;
+    color: #495057;
+    line-height: 1.5;
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 1200px) {
+    .presentation-modal-content {
+        width: 98%;
+        margin: 1% auto;
+        height: 95vh;
+    }
+    
+    .presentation-slide {
+        padding: 2rem;
+    }
+    
+    .executive-summary-grid,
+    .overview-grid,
+    .work-summary-grid,
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .summary-metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .presentation-nav {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .presentation-slide {
+        padding: 1.5rem;
+    }
+    
+    .slide-header h1 {
+        font-size: 2rem;
+    }
+    
+    .slide-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .summary-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .metric-card-large {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .metric-bar {
+        width: 100%;
+    }
+    
+    .phase-timeline-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .recommendations-grid {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .presentation-modal-content {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .presentation-slide {
+        padding: 1rem;
+    }
+    
+    .slide-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+    }
+    
+    .slide-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    .metric-number {
+        font-size: 2rem;
+    }
+}
