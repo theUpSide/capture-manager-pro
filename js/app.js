@@ -47,6 +47,15 @@ const Navigation = {
         Templates.render();
     },
 
+    showGateReviews() {
+        this.hideAllViews();
+        document.getElementById('gate-reviews-view').style.display = 'block';
+        this.updateActiveNav('Gate Reviews');
+        if (typeof GateReviews !== 'undefined') {
+            GateReviews.render();
+        }
+    },
+
     showReports() {
         this.hideAllViews();
         document.getElementById('reports-view').style.display = 'block';
@@ -64,6 +73,7 @@ const Navigation = {
             'actions-view',
             'templates-view',
             'saved-templates-view',
+            'gate-reviews-view',
             'reports-view'
         ];
         
@@ -90,6 +100,7 @@ window.onclick = function(event) {
     const phaseModal = document.getElementById('phaseDetailModal');
     const templateModal = document.getElementById('templateDetailModal');
     const actionModal = document.getElementById('actionModal');
+    const gateReviewModal = document.getElementById('gateReviewModal');
 
     if (event.target === opportunityModal) {
         Opportunities.closeModal();
@@ -102,6 +113,9 @@ window.onclick = function(event) {
     }
     if (event.target === actionModal && typeof Actions !== 'undefined') {
         Actions.closeModal();
+    }
+    if (event.target === gateReviewModal && typeof GateReviews !== 'undefined') {
+        GateReviews.closeReviewModal();
     }
 };
 
@@ -140,6 +154,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize all modules
     Dashboard.init();
+    
+    // Initialize Gate Reviews if available
+    if (typeof GateReviews !== 'undefined') {
+        GateReviews.init();
+    }
     
     // Show dashboard by default
     Navigation.showDashboard();
