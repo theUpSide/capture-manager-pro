@@ -1144,7 +1144,71 @@ const DataStore = {
                 { id: "final_approval_status", label: "Final Approval Status", type: "select", options: ["Pending", "Approved", "Approved with Conditions", "Rejected"], required: true },
                 { id: "approval_conditions", label: "Approval Conditions/Requirements", type: "textarea", required: false }
             ]
-        }
+        },
+        // Add this new template to the templates array in DataStore
+{
+    id: 22,
+    title: "Meeting Notes Template",
+    description: "Structured template for capturing meeting notes, action items, and follow-ups from customer interactions and internal discussions.",
+    category: "engagement", // This fits well in the engagement phase
+    guidance: {
+        importance: "Effective meeting notes ensure nothing falls through the cracks and provide valuable intelligence for your capture strategy. Well-documented meetings create institutional knowledge and help track relationship building progress. Studies show teams with systematic meeting documentation have 40% better follow-through on commitments.",
+        keyConsiderations: [
+            "Capture both spoken and unspoken information (body language, tone, reactions)",
+            "Document who said what - attribution matters for credibility",
+            "Record specific action items with owners and deadlines",
+            "Note any competitive intelligence or customer priorities mentioned",
+            "Include your assessment of relationship quality and next steps"
+        ],
+        prework: [
+            "Review previous meeting notes and outstanding action items",
+            "Prepare agenda and key questions in advance",
+            "Research attendees' backgrounds and roles",
+            "Gather relevant materials and talking points",
+            "Set up note-taking system (digital or paper)"
+        ],
+        workshopGuide: {
+            duration: "Real-time during meeting + 30 min post-meeting",
+            participants: "Meeting attendees and note-taker",
+            agenda: [
+                "Document meeting logistics and attendees (5 min)",
+                "Capture key discussion points in real-time (meeting duration)",
+                "Note action items and commitments as they arise",
+                "Post-meeting: Clean up notes and distribute (15 min)",
+                "Follow-up: Schedule next steps and reminders (15 min)"
+            ],
+            facilitation: "Designate primary note-taker. Use structured format for consistency. Focus on capturing decisions and commitments, not just discussion."
+        },
+        theory: "Based on knowledge management principles and relationship building best practices. Systematic documentation enables better decision-making and stronger customer relationships through demonstrated professionalism and follow-through."
+    },
+    fields: [
+        { id: "meeting_date", label: "Meeting Date", type: "date", required: true },
+        { id: "meeting_time", label: "Meeting Time", type: "time", required: true },
+        { id: "meeting_location", label: "Meeting Location/Platform", type: "text", required: true },
+        { id: "meeting_type", label: "Meeting Type", type: "select", options: ["Initial Introduction", "Technical Discussion", "Strategy Session", "Proposal Review", "Contract Negotiation", "Status Update", "Other"], required: true },
+        { id: "our_attendees", label: "Our Attendees", type: "textarea", required: true },
+        { id: "customer_attendees", label: "Customer Attendees", type: "textarea", required: true },
+        { id: "other_attendees", label: "Other Attendees (Partners, etc.)", type: "textarea", required: false },
+        { id: "meeting_purpose", label: "Meeting Purpose/Objective", type: "textarea", required: true },
+        { id: "key_discussion_points", label: "Key Discussion Points", type: "textarea", required: true },
+        { id: "customer_priorities", label: "Customer Priorities/Concerns Mentioned", type: "textarea", required: true },
+        { id: "technical_requirements", label: "Technical Requirements Discussed", type: "textarea", required: false },
+        { id: "budget_timeline", label: "Budget/Timeline Information", type: "textarea", required: false },
+        { id: "competitive_intel", label: "Competitive Intelligence Gathered", type: "textarea", required: false },
+        { id: "customer_feedback", label: "Customer Feedback on Our Approach", type: "textarea", required: false },
+        { id: "relationship_assessment", label: "Relationship Quality Assessment", type: "select", options: ["Excellent", "Good", "Fair", "Poor", "Unknown"], required: true },
+        { id: "decision_makers", label: "Decision Makers Identified", type: "textarea", required: false },
+        { id: "action_items", label: "Action Items", type: "textarea", required: true },
+        { id: "our_commitments", label: "Our Commitments/Deliverables", type: "textarea", required: true },
+        { id: "customer_commitments", label: "Customer Commitments", type: "textarea", required: false },
+        { id: "follow_up_needed", label: "Follow-up Actions Needed", type: "textarea", required: true },
+        { id: "next_meeting", label: "Next Meeting/Contact Plans", type: "textarea", required: false },
+        { id: "strategic_insights", label: "Strategic Insights/Opportunities", type: "textarea", required: false },
+        { id: "risks_concerns", label: "Risks/Concerns Identified", type: "textarea", required: false },
+        { id: "meeting_effectiveness", label: "Meeting Effectiveness (1-5)", type: "select", options: ["1 - Poor", "2 - Below Average", "3 - Average", "4 - Good", "5 - Excellent"], required: true },
+        { id: "additional_notes", label: "Additional Notes/Observations", type: "textarea", required: false }
+    ]
+}
     ],
 
     captureRoadmap: {
