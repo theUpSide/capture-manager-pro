@@ -124,7 +124,7 @@ const GateReviews = {
                             <select id="gateOpportunitySelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
                                 <option value="">Choose opportunity...</option>
                                 ${DataStore.opportunities.map(opp => 
-                                    `<option value="${opp.id}">${opp.name} (${opp.client || opp.customer})</option>`
+                                    `<option value="${opp.id}">${opp.name} (${opp.client || opp.customer || 'Unknown'})</option>`
                                 ).join('')}
                             </select>
                         </div>
@@ -165,6 +165,12 @@ const GateReviews = {
         document.getElementById('gateOpportunitySelect').addEventListener('change', this.updateGateDescription.bind(this));
     },
 
+    // Add missing openNewGateModal function
+    openNewGateModal() {
+        // For now, just trigger the manual review
+        this.initiateManualReview();
+    },
+
     updateGateDescription() {
         const gateNumber = document.getElementById('gateNumberSelect').value;
         const opportunityId = document.getElementById('gateOpportunitySelect').value;
@@ -186,9 +192,9 @@ const GateReviews = {
                     <div style="display: flex; align-items: start; gap: 0.5rem;">
                         <span style="font-size: 1.2rem;">🤖</span>
                         <div style="font-size: 0.9rem; color: #1976d2;">
-                            <strong>AI Enhancement Available:</strong> Click "AI Generate" to automatically analyze 
+                            <strong>AI Enhancement:</strong> ${window.claude ? 'Available - Click "AI Generate"' : 'Not available (requires Claude.ai interface)'} to automatically analyze 
                             ${opportunity ? `"${opportunity.name}"` : 'the selected opportunity'} data including notes, 
-                            actions, templates, progress, and competitive intelligence to generate comprehensive gate review content.
+                            actions, templates, progress, and competitive intelligence.
                         </div>
                     </div>
                 </div>
@@ -326,6 +332,12 @@ const GateReviews = {
             return;
         }
 
+        // Check if Claude API is available
+        if (!window.claude || !window.claude.complete) {
+            alert('🤖 AI Generation Not Available\n\nThe AI-powered gate review feature requires the Claude.ai interface. You are currently running this locally.\n\nFor now, please use "Manual Review" to create gate reviews.');
+            return;
+        }
+
         // Show loading state
         const button = event.target;
         const originalText = button.textContent;
@@ -395,15 +407,15 @@ const GateReviews = {
         this.openReviewDetail(newReview.id);
     },
 
-    // Create AI-powered gate review
+    // Create AI-powered gate review (only if Claude API available)
     async createAIGateReview(opportunityId, gateNumber) {
         const opportunity = DataStore.getOpportunity(opportunityId);
         const gate = this.gateDefinitions[gateNumber];
         
-        // Gather comprehensive opportunity data
+        // Gather comprehensive opportunity data with safe fallbacks
         const savedTemplates = DataStore.savedTemplates.filter(st => st.opportunityId == opportunityId);
         const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
-        const notes = opportunity.notes || [];
+        const notes = Array.isArray(opportunity.notes) ? opportunity.notes : [];
         
         // Build comprehensive AI prompt
         const prompt = this.buildAIPrompt(opportunity, gate, gateNumber, savedTemplates, actions, notes);
@@ -422,6 +434,9 @@ const GateReviews = {
     },
 
     buildAIPrompt(opportunity, gate, gateNumber, savedTemplates, actions, notes) {
+        // Safe fallback for notes
+        const safeNotes = Array.isArray(notes) ? notes : [];
+        
         return `You are an expert business development analyst conducting a Gate ${gateNumber} review for "${opportunity.name}".
 
 GATE CONTEXT:
@@ -444,8 +459,8 @@ OPPORTUNITY DATA:
 COMPLETED STEPS:
 ${opportunity.completedSteps ? opportunity.completedSteps.map(step => `- ${step}`).join('\n') : 'No completed steps recorded'}
 
-OPPORTUNITY NOTES (${notes.length} total):
-${notes.length > 0 ? notes.map(note => 
+OPPORTUNITY NOTES (${safeNotes.length} total):
+${safeNotes.length > 0 ? safeNotes.map(note => 
     `[${Utils.formatDate(note.timestamp)}] ${note.content}`
 ).join('\n') : 'No notes available'}
 
@@ -549,7 +564,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN THE VALID JSON OBJECT. NO LEADING BACKTICKS OR
                             <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; margin-bottom: 1rem;">
                                 <div>
                                     <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Status</label>
-                                    <select onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, this.value, '${criterion.comments.replace(/'/g, "\\'")}', '${criterion.reviewer}')" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    <select onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, this.value, document.getElementById('comments_${index}').value, document.getElementById('reviewer_${index}').value)" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
                                         <option value="Pending" ${criterion.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                         <option value="Met" ${criterion.status === 'Met' ? 'selected' : ''}>Met</option>
                                         <option value="Conditional" ${criterion.status === 'Conditional' ? 'selected' : ''}>Conditional</option>
@@ -559,7 +574,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN THE VALID JSON OBJECT. NO LEADING BACKTICKS OR
                                 
                                 <div>
                                     <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Reviewer</label>
-                                    <select onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, '${criterion.status}', '${criterion.comments.replace(/'/g, "\\'")}', this.value)" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    <select id="reviewer_${index}" onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, document.querySelector('select[onchange*=\\'${index}\\']').value, document.getElementById('comments_${index}').value, this.value)" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
                                         <option value="">Select reviewer...</option>
                                         ${DataStore.gateReviewers.map(reviewer => 
                                             `<option value="${reviewer.name}" ${criterion.reviewer === reviewer.name ? 'selected' : ''}>${reviewer.name} (${reviewer.role})</option>`
@@ -569,7 +584,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN THE VALID JSON OBJECT. NO LEADING BACKTICKS OR
                                 
                                 <div>
                                     <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Comments</label>
-                                    <textarea onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, '${criterion.status}', this.value, '${criterion.reviewer}')" 
+                                    <textarea id="comments_${index}" onchange="GateReviews.updateCriteriaStatus(${reviewId}, ${index}, document.querySelector('select[onchange*=\\'${index}\\']').value, this.value, document.getElementById('reviewer_${index}').value)" 
                                               placeholder="Add comments..." 
                                               style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; min-height: 60px; resize: vertical;">${criterion.comments}</textarea>
                                 </div>
@@ -845,22 +860,6 @@ DO NOT OUTPUT ANYTHING OTHER THAN THE VALID JSON OBJECT. NO LEADING BACKTICKS OR
             Gates: ${gateStatus.completedGates}/6
             ${gateStatus.pendingReviews > 0 ? ` (${gateStatus.pendingReviews} pending)` : ''}
         </span>`;
-    },
-
-    // Initialize gate reviews for existing opportunities (migration helper)
-    migrateExistingOpportunities() {
-        DataStore.opportunities.forEach(opp => {
-            // Auto-create Gate 0 review for opportunities in capture phase
-            if (opp.currentPhase === 'identification' && opp.progress > 50) {
-                const existingReview = DataStore.gateReviews.find(r => 
-                    r.opportunityId == opp.id && r.gateNumber === 0
-                );
-                
-                if (!existingReview) {
-                    this.createGateReview(opp.id, 0, false);
-                }
-            }
-        });
     }
 };
 
