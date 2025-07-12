@@ -20,6 +20,13 @@ const Dashboard = {
         this.renderQuickStats();
     },
 
+    // Helper function to format values as millions
+    formatAsMillion(value) {
+        if (!value || value === 0) return '$0';
+        const millions = value / 1000000;
+        return '$' + Math.round(millions) + 'M';
+    },
+
     updateMetrics() {
         // Enhanced metrics calculations
         const allOpps = DataStore.opportunities;
@@ -40,10 +47,10 @@ const Dashboard = {
         const winRate = (wonOpps.length + lostOpps.length) > 0 ? 
             (wonOpps.length / (wonOpps.length + lostOpps.length)) * 100 : 0;
 
-        // Update DOM elements
-        this.updateMetricElement('total-pipeline', Utils.formatCurrency(totalPipeline));
-        this.updateMetricElement('active-pipeline', Utils.formatCurrency(activePipeline));
-        this.updateMetricElement('weighted-pipeline', Utils.formatCurrency(weightedPipeline));
+        // Update DOM elements - Format first three as millions
+        this.updateMetricElement('total-pipeline', this.formatAsMillion(totalPipeline));
+        this.updateMetricElement('active-pipeline', this.formatAsMillion(activePipeline));
+        this.updateMetricElement('weighted-pipeline', this.formatAsMillion(weightedPipeline));
         this.updateMetricElement('active-count', activeOpps.length.toString());
         this.updateMetricElement('avg-progress', Math.round(avgProgress) + '%');
         this.updateMetricElement('win-rate', Math.round(winRate) + '%');
