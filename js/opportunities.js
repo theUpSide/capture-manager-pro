@@ -163,129 +163,70 @@ const Opportunities = {
         return names[status] || status;
     },
 
-    renderOpportunityCard(opp) {
-        const progress = opp.progress || 0;
-        const probability = opp.probability || opp.pwin || 0;
-        
+    renderOpportunityCard(opportunity) {
+        const progressPercentage = opportunity.progress || 0;
+    
+        // Format values safely
+        const formatValue = (value) => {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            if (typeof value === 'number') {
+                return value >= 1000000 ? `$${(value / 1000000).toFixed(1)}M` : 
+                       value >= 1000 ? `$${(value / 1000).toFixed(0)}K` : 
+                       `$${value.toLocaleString()}`;
+            }
+            return value;
+        };
+    
+        const formatDate = (dateStr) => {
+            if (!dateStr) return 'N/A';
+            try {
+                return new Date(dateStr).toLocaleDateString();
+            } catch (e) {
+                return 'N/A';
+            }
+        };
+
         return `
-            <div class="opportunity-card" data-status="${opp.status || 'capture'}" onclick="Opportunities.openDetailModal(${opp.id})" style="cursor: pointer;">
-                <div class="opportunity-card-header" onclick="event.stopPropagation()">
-                    <h4>${opp.name}</h4>
-                    <div class="opportunity-actions">
-                        <span class="status-badge status-${opp.status || 'capture'}">
-                            ${opp.status || 'capture'}
-                        </span>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary" onclick="Opportunities.toggleDropdown(event, ${opp.id})">⋮</button>
-                            <div class="dropdown-menu" id="dropdown-${opp.id}">
-                                <button class="dropdown-item" onclick="Opportunities.edit(${opp.id})">Edit</button>
-                                <button class="dropdown-item" onclick="Opportunities.changeStatus(${opp.id}, 'capture')" ${(opp.status || 'capture') === 'capture' ? 'disabled' : ''}>Mark as Capture</button>
-                                <button class="dropdown-item" onclick="Opportunities.changeStatus(${opp.id}, 'pursuing')" ${opp.status === 'pursuing' ? 'disabled' : ''}>Mark as Pursuing</button>
-                                <button class="dropdown-item" onclick="Opportunities.changeStatus(${opp.id}, 'won')" ${opp.status === 'won' ? 'disabled' : ''}>Mark as Won</button>
-                                <button class="dropdown-item" onclick="Opportunities.changeStatus(${opp.id}, 'lost')" ${opp.status === 'lost' ? 'disabled' : ''}>Mark as Lost</button>
-                                <button class="dropdown-item" onclick="Opportunities.changeStatus(${opp.id}, 'archived')" ${opp.status === 'archived' ? 'disabled' : ''}>Archive</button>
-                                <button class="dropdown-item" onclick="Opportunities.delete(${opp.id})" style="color: #dc3545;">Delete</button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="opportunity-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; flex: 1; color: #2a5298; font-size: 1.1rem; font-weight: 600;">${opportunity.name}</h4>
+                    <span class="status-badge status-${opportunity.status || 'capture'}" style="font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 10px; font-weight: 600; text-transform: uppercase;">${(opportunity.status || 'capture').toUpperCase()}</span>
                 </div>
                 
-                <div class="opportunity-details-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">Value:</span>
-                        <span class="detail-value">${Utils.formatCurrency(opp.value || 0)}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">P(win):</span>
-                        <span class="detail-value">${probability}%</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Close Date:</span>
-                        <span class="detail-value">${Utils.formatDate(opp.closeDate || opp.rfpDate)}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Client:</span>
-                        <span class="detail-value">${opp.client || opp.customer || 'TBD'}</span>
-                    </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <div><strong>Value:</strong> ${formatValue(opportunity.value)}</div>
+                    <div><strong>P(win):</strong> ${opportunity.probability || opportunity.pwin || 0}%</div>
+                    <div><strong>Client:</strong> ${opportunity.client || opportunity.customer || 'N/A'}</div>
+                    <div><strong>Close:</strong> ${formatDate(opportunity.closeDate || opportunity.rfpDate)}</div>
                 </div>
                 
-                ${opp.description ? `<div class="opportunity-description">${opp.description}</div>` : ''}
+                <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #e9ecef; flex-grow: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                    ${opportunity.description || 'No description provided.'}
+                </div>
                 
-                <div class="opportunity-progress">
-                    <div class="progress-header">
-                        <span>Progress:</span>
-                        <span>${progress}%</span>
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: #495057;">
+                        <span>Progress</span>
+                        <span>${progressPercentage}%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
+                        <div class="progress-fill" style="width: ${progressPercentage}%"></div>
                     </div>
                 </div>
                 
-                <div class="opportunity-footer" style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn btn-secondary" onclick="event.stopPropagation(); Opportunities.edit(${opp.id})">
-                        Edit Details
-                    </button>
-                    <div class="opportunity-meta">
-                        Created: ${Utils.formatDate(opp.createdDate)}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Opportunities.editOpportunity(${opportunity.id})">Edit</button>
+                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Opportunities.initiateGateReview(${opportunity.id})">Gate Review</button>
                     </div>
+                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Opportunities.showDetailModal(${opportunity.id})">View Details</button>
                 </div>
             </div>
         `;
     },
 
     openNewModal() {
-        console.log('Opening new opportunity modal');
-        const modal = document.getElementById('opportunityModal');
-        const content = document.getElementById('opportunity-form-content');
-        
-        content.innerHTML = `
-            <h2>Add New Opportunity</h2>
-            <form id="opportunityForm" onsubmit="Opportunities.save(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppName">Opportunity Name *</label>
-                        <input type="text" id="oppName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="oppClient">Client/Customer</label>
-                        <input type="text" id="oppClient">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppValue">Contract Value ($)</label>
-                        <input type="number" id="oppValue" min="0" step="1000">
-                    </div>
-                    <div class="form-group">
-                        <label for="oppProbability">Probability of Win (%)</label>
-                        <input type="number" id="oppProbability" min="0" max="100" value="50">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="oppCloseDate">Expected Close Date</label>
-                        <input type="date" id="oppCloseDate">
-                    </div>
-                    <div class="form-group">
-                        <label for="oppStatus">Status</label>
-                        <select id="oppStatus">
-                            <option value="capture">Capture</option>
-                            <option value="pursuing">Pursuing</option>
-                            <option value="won">Won</option>
-                            <option value="lost">Lost</option>
-                            <option value="archived">Archived</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="oppDescription">Description</label>
-                    <textarea id="oppDescription" placeholder="Brief description of the opportunity..."></textarea>
-                </div>
-                <button type="submit" class="btn">Save Opportunity</button>
-            </form>
-        `;
-        
-        modal.style.display = 'block';
+        this.openEditModal(null);
     },
 
     save(event) {
@@ -439,6 +380,443 @@ const Opportunities = {
         document.getElementById('opportunityModal').style.display = 'none';
     },
 
+    showDetailModal(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) {
+            console.error('Opportunity not found:', opportunityId);
+            return;
+        }
+        
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('opportunityDetailModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'opportunityDetailModal';
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        // Format values safely
+        const formatValue = (value) => {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            if (typeof value === 'number') {
+                return value >= 1000000 ? `$${(value / 1000000).toFixed(1)}M` : 
+                       value >= 1000 ? `$${(value / 1000).toFixed(0)}K` : 
+                       `$${value.toLocaleString()}`;
+            }
+            return value;
+        };
+        
+        const formatDate = (dateStr) => {
+            if (!dateStr) return 'N/A';
+            try {
+                return new Date(dateStr).toLocaleDateString();
+            } catch (e) {
+                return 'N/A';
+            }
+        };
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="this.closest('.modal').style.display='none'">&times;</span>
+                <div id="opportunity-detail-content">
+                    <div class="opportunity-summary-card">
+                        <div>
+                            <h3>Value</h3>
+                            <div class="metric-value">${formatValue(opportunity.value)}</div>
+                        </div>
+                        <div>
+                            <h3>Probability</h3>
+                            <div class="metric-value">${opportunity.probability || opportunity.pwin || 0}%</div>
+                        </div>
+                        <div>
+                            <h3>Expected Value</h3>
+                            <div class="metric-value">${formatValue((opportunity.value || 0) * ((opportunity.probability || opportunity.pwin || 0) / 100))}</div>
+                        </div>
+                        <div>
+                            <h3>Phase</h3>
+                            <div class="metric-value">${(opportunity.currentPhase || 'identification').charAt(0).toUpperCase() + (opportunity.currentPhase || 'identification').slice(1)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="opportunity-detail-columns">
+                        <div class="opportunity-left">
+                            <h3>Opportunity Details</h3>
+                            <div style="margin-bottom: 1rem;">
+                                <strong>Name:</strong> ${opportunity.name}<br>
+                                <strong>Client:</strong> ${opportunity.client || opportunity.customer || 'N/A'}<br>
+                                <strong>Status:</strong> ${(opportunity.status || 'capture').toUpperCase()}<br>
+                                <strong>Close Date:</strong> ${formatDate(opportunity.closeDate || opportunity.rfpDate)}<br>
+                                <strong>Progress:</strong> ${opportunity.progress || 0}%
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <strong>Description:</strong><br>
+                                <div style="padding: 1rem; background: #f8f9fa; border-radius: 6px; margin-top: 0.5rem;">
+                                    ${opportunity.description || 'No description provided.'}
+                                </div>
+                            </div>
+                            
+                            ${opportunity.notes ? `
+                                <div>
+                                    <strong>Notes:</strong><br>
+                                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 6px; margin-top: 0.5rem;">
+                                        ${opportunity.notes}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="opportunity-right">
+                            <h3>Phase Progress</h3>
+                            <div class="phase-blocks-container">
+                                <div class="phase-block ${opportunity.currentPhase === 'identification' ? 'current' : ''}">
+                                    <div class="phase-icon">🔍</div>
+                                    <div class="phase-title">Identification</div>
+                                    <div class="phase-progress">Step 1</div>
+                                </div>
+                                <div class="phase-block ${opportunity.currentPhase === 'qualification' ? 'current' : ''}">
+                                    <div class="phase-icon">📋</div>
+                                    <div class="phase-title">Qualification</div>
+                                    <div class="phase-progress">Step 2</div>
+                                </div>
+                                <div class="phase-block ${opportunity.currentPhase === 'planning' ? 'current' : ''}">
+                                    <div class="phase-icon">📅</div>
+                                    <div class="phase-title">Planning</div>
+                                    <div class="phase-progress">Step 3</div>
+                                </div>
+                                <div class="phase-block ${opportunity.currentPhase === 'engagement' ? 'current' : ''}">
+                                    <div class="phase-icon">🤝</div>
+                                    <div class="phase-title">Engagement</div>
+                                    <div class="phase-progress">Step 4</div>
+                                </div>
+                                <div class="phase-block ${opportunity.currentPhase === 'intelligence' ? 'current' : ''}">
+                                    <div class="phase-icon">🧠</div>
+                                    <div class="phase-title">Intelligence</div>
+                                    <div class="phase-progress">Step 5</div>
+                                </div>
+                                <div class="phase-block ${opportunity.currentPhase === 'preparation' ? 'current' : ''}">
+                                    <div class="phase-icon">🎯</div>
+                                    <div class="phase-title">Preparation</div>
+                                    <div class="phase-progress">Step 6</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <h4>Quick Actions</h4>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button class="btn btn-secondary" onclick="Opportunities.editOpportunity(${opportunity.id})">Edit Details</button>
+                                    <button class="btn btn-secondary" onclick="Opportunities.initiateGateReview(${opportunity.id})">Gate Review</button>
+                                    <button class="btn" onclick="Navigation.showTemplates(); this.closest('.modal').style.display='none'">View Templates</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    },
+
+    editOpportunity(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) {
+            console.error('Opportunity not found:', opportunityId);
+            return;
+        }
+        
+        this.openEditModal(opportunity);
+    },
+
+    openEditModal(opportunity) {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('opportunityEditModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'opportunityEditModal';
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="this.closest('.modal').style.display='none'">&times;</span>
+                <h2>${opportunity ? 'Edit' : 'Add New'} Opportunity</h2>
+                <form id="opportunityForm" onsubmit="Opportunities.${opportunity ? 'updateOpportunity' : 'saveOpportunity'}(event)">
+                    ${opportunity ? `<input type="hidden" id="opportunityId" value="${opportunity.id}">` : ''}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opportunityName">Opportunity Name *</label>
+                            <input type="text" id="opportunityName" value="${opportunity?.name || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="opportunityStatus">Status</label>
+                            <select id="opportunityStatus">
+                                <option value="capture" ${(opportunity?.status || 'capture') === 'capture' ? 'selected' : ''}>Capture</option>
+                                <option value="pursuing" ${opportunity?.status === 'pursuing' ? 'selected' : ''}>Pursuing</option>
+                                <option value="won" ${opportunity?.status === 'won' ? 'selected' : ''}>Won</option>
+                                <option value="lost" ${opportunity?.status === 'lost' ? 'selected' : ''}>Lost</option>
+                                <option value="archived" ${opportunity?.status === 'archived' ? 'selected' : ''}>Archived</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opportunityValue">Value ($)</label>
+                            <input type="number" id="opportunityValue" value="${opportunity?.value || ''}" step="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="opportunityProbability">Probability (%)</label>
+                            <input type="number" id="opportunityProbability" value="${opportunity?.probability || opportunity?.pwin || 50}" min="0" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opportunityClient">Client</label>
+                            <input type="text" id="opportunityClient" value="${opportunity?.client || opportunity?.customer || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="opportunityCloseDate">Close Date</label>
+                            <input type="date" id="opportunityCloseDate" value="${opportunity?.closeDate || opportunity?.rfpDate || ''}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="opportunityDescription">Description</label>
+                        <textarea id="opportunityDescription" rows="3">${opportunity?.description || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opportunityProgress">Progress (%)</label>
+                            <input type="number" id="opportunityProgress" value="${opportunity?.progress || 5}" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="opportunityPhase">Current Phase</label>
+                            <select id="opportunityPhase">
+                                <option value="identification" ${(opportunity?.currentPhase || 'identification') === 'identification' ? 'selected' : ''}>Identification</option>
+                                <option value="qualification" ${opportunity?.currentPhase === 'qualification' ? 'selected' : ''}>Qualification</option>
+                                <option value="planning" ${opportunity?.currentPhase === 'planning' ? 'selected' : ''}>Planning</option>
+                                <option value="engagement" ${opportunity?.currentPhase === 'engagement' ? 'selected' : ''}>Engagement</option>
+                                <option value="intelligence" ${opportunity?.currentPhase === 'intelligence' ? 'selected' : ''}>Intelligence</option>
+                                <option value="preparation" ${opportunity?.currentPhase === 'preparation' ? 'selected' : ''}>Preparation</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="opportunityNotes">Notes</label>
+                        <textarea id="opportunityNotes" rows="3">${opportunity?.notes || ''}</textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').style.display='none'">Cancel</button>
+                        <button type="submit" class="btn">${opportunity ? 'Update' : 'Save'} Opportunity</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    },
+
+    updateOpportunity(event) {
+        event.preventDefault();
+        
+        const opportunityId = parseInt(document.getElementById('opportunityId').value);
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        
+        if (!opportunity) {
+            alert('Opportunity not found');
+            return;
+        }
+        
+        // Update opportunity with form data
+        opportunity.name = document.getElementById('opportunityName').value;
+        opportunity.status = document.getElementById('opportunityStatus').value;
+        opportunity.value = parseFloat(document.getElementById('opportunityValue').value) || 0;
+        opportunity.probability = parseInt(document.getElementById('opportunityProbability').value) || 0;
+        opportunity.client = document.getElementById('opportunityClient').value;
+        opportunity.closeDate = document.getElementById('opportunityCloseDate').value;
+        opportunity.description = document.getElementById('opportunityDescription').value;
+        opportunity.progress = parseInt(document.getElementById('opportunityProgress').value) || 0;
+        opportunity.currentPhase = document.getElementById('opportunityPhase').value;
+        opportunity.notes = document.getElementById('opportunityNotes').value;
+        opportunity.lastModified = new Date().toISOString().split('T')[0];
+        
+        // Save data and refresh view
+        DataStore.saveData();
+        document.getElementById('opportunityEditModal').style.display = 'none';
+        this.render();
+        
+        // Update dashboard if it's visible
+        if (document.getElementById('dashboard-view').style.display !== 'none') {
+            Dashboard.render();
+        }
+        
+        alert('Opportunity updated successfully!');
+    },
+
+    initiateGateReview(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) {
+            console.error('Opportunity not found:', opportunityId);
+            return;
+        }
+        
+        // Check if GateReviews module is available
+        if (typeof GateReviews !== 'undefined' && GateReviews.initiateReview) {
+            GateReviews.initiateReview(opportunityId);
+        } else {
+            // Fallback: show a simple modal
+            this.showGateReviewModal(opportunityId);
+        }
+    },
+
+    showGateReviewModal(opportunityId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('gateReviewModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'gateReviewModal';
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="this.closest('.modal').style.display='none'">&times;</span>
+                <h2>Gate Review for ${opportunity.name}</h2>
+                <p>Gate review functionality is being prepared for this opportunity.</p>
+                <div style="margin-top: 2rem;">
+                    <h3>Pre-Gate Review Checklist:</h3>
+                    <ul style="text-align: left; margin: 1rem 0; padding-left: 2rem;">
+                        <li>Complete capture plan documentation</li>
+                        <li>Validate customer requirements</li>
+                        <li>Confirm team assignments</li>
+                        <li>Review competitive positioning</li>
+                        <li>Assess technical feasibility</li>
+                        <li>Validate pricing strategy</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="this.closest('.modal').style.display='none'">Close</button>
+                    <button class="btn" onclick="Navigation.showGateReviews(); this.closest('.modal').style.display='none'">Go to Gate Reviews</button>
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    },
+
+    saveOpportunity(event) {
+        event.preventDefault();
+        
+        const newOpportunity = {
+            id: Date.now(), // Simple ID generation
+            name: document.getElementById('opportunityName').value,
+            status: document.getElementById('opportunityStatus').value,
+            value: parseFloat(document.getElementById('opportunityValue').value) || 0,
+            probability: parseInt(document.getElementById('opportunityProbability').value) || 0,
+            client: document.getElementById('opportunityClient').value,
+            closeDate: document.getElementById('opportunityCloseDate').value,
+            description: document.getElementById('opportunityDescription').value,
+            progress: parseInt(document.getElementById('opportunityProgress').value) || 0,
+            currentPhase: document.getElementById('opportunityPhase').value,
+            notes: document.getElementById('opportunityNotes').value,
+            createdDate: new Date().toISOString().split('T')[0],
+            lastModified: new Date().toISOString().split('T')[0]
+        };
+        
+        // Add to DataStore
+        DataStore.opportunities.push(newOpportunity);
+        DataStore.saveData();
+        this.closeModal();
+        this.render();
+        
+        // Update dashboard if it's visible
+        if (document.getElementById('dashboard-view').style.display !== 'none') {
+            Dashboard.render();
+        }
+        
+        alert('Opportunity saved successfully!');
+    },
+
+    addNoteFromModal(opportunityId) {
+        const noteContent = document.getElementById('newNoteContent').value.trim();
+        if (!noteContent) {
+            alert('Please enter a note before adding.');
+            return;
+        }
+        
+        this.addNote(opportunityId, noteContent);
+        document.getElementById('newNoteContent').value = ''; // Clear the input
+    },
+
+    addNote(opportunityId, noteContent) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+        
+        if (!opportunity.notes) {
+            opportunity.notes = [];
+        }
+        
+        const newNote = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            content: noteContent,
+            author: "Current User" // You can expand this later for multi-user
+        };
+        
+        opportunity.notes.unshift(newNote); // Add to beginning for most recent first
+        DataStore.saveData();
+        
+        // Refresh the detail modal if it's open
+        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
+            this.showDetailModal(opportunityId);
+        }
+    },
+
+    deleteNote(opportunityId, noteId) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity || !opportunity.notes) return;
+        
+        opportunity.notes = opportunity.notes.filter(note => note.id !== noteId);
+        DataStore.saveData();
+        
+        // Refresh the detail modal if it's open
+        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
+            this.showDetailModal(opportunityId);
+        }
+    },
+
     openDetailModal(opportunityId) {
         const opportunity = DataStore.getOpportunity(opportunityId);
         if (!opportunity) return;
@@ -464,7 +842,9 @@ const Opportunities = {
         
         const phaseBlocksHtml = Object.entries(DataStore.captureRoadmap).map(([phaseKey, phase]) => {
             const phaseSteps = phase.steps;
-            const completedPhaseSteps = phaseSteps.filter(step => completedSteps.includes(step.id));
+            const completedPhaseSteps = phaseSteps.filter(step => 
+                completedSteps.includes(step.id)
+            );
             const progressPercent = phaseSteps.length > 0 ? Math.round((completedPhaseSteps.length / phaseSteps.length) * 100) : 0;
             
             let statusClass = 'upcoming';
@@ -495,10 +875,9 @@ const Opportunities = {
         const savedTemplatesHtml = savedTemplates.length > 0 ? savedTemplates.map(st => {
             const templateDef = DataStore.templates.find(t => t.id === st.templateId);
             const templateTitle = templateDef ? templateDef.title : 'Unknown Template';
-            const statusLabel = st.status === 'in-progress' ? 'In Progress' : 'Completed';
             return `
                 <div class="saved-template-item">
-                    <strong>${templateTitle}</strong> - ${statusLabel} (Saved: ${Utils.formatDate(st.savedDate)})
+                    <strong>${templateTitle}</strong> - ${st.status === 'in-progress' ? 'In Progress' : 'Completed'} (Saved: ${Utils.formatDate(st.savedDate)})
                     <button class="btn-small btn btn-secondary" onclick="Templates.editSavedTemplate(${st.id})">Edit</button>
                 </div>
             `;
@@ -597,7 +976,7 @@ const Opportunities = {
                 </div>
             </div>
             <button class="btn btn-primary" onclick="Presentation.openPresentation(${opportunity.id})" style="margin-left: 0.5rem;">
-    📊 Executive Presentation
+                📊 Executive Presentation
             </button>
             <div style="text-align: right; margin-top: 1rem;">
                 <button class="btn btn-secondary" onclick="Opportunities.closeDetailModal()">Close</button>
@@ -616,254 +995,102 @@ const Opportunities = {
         modal.addEventListener('click', onClickOutside);
     },
 
-    addNoteFromModal(opportunityId) {
-        const noteContent = document.getElementById('newNoteContent').value.trim();
-        if (!noteContent) {
-            alert('Please enter a note before adding.');
-            return;
-        }
-        
-        this.addNote(opportunityId, noteContent);
-        document.getElementById('newNoteContent').value = ''; // Clear the input
-    },
-
-    addNote(opportunityId, noteContent) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity) return;
-        
-        if (!opportunity.notes) {
-            opportunity.notes = [];
-        }
-        
-        const newNote = {
-            id: Date.now(),
-            timestamp: new Date().toISOString(),
-            content: noteContent,
-            author: "Current User" // You can expand this later for multi-user
-        };
-        
-        opportunity.notes.unshift(newNote); // Add to beginning for most recent first
-        DataStore.saveData();
-        
-        // Refresh the detail modal if it's open
-        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
-            this.openDetailModal(opportunityId);
-        }
-    },
-
-    deleteNote(opportunityId, noteId) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity || !opportunity.notes) return;
-        
-        opportunity.notes = opportunity.notes.filter(note => note.id !== noteId);
-        DataStore.saveData();
-        
-        // Refresh the detail modal if it's open
-        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
-            this.openDetailModal(opportunityId);
-        }
-    },
-
-    showPhaseSteps(opportunityId, phaseKey) {
-        const phase = DataStore.captureRoadmap[phaseKey];
-        if (!phase) return;
-
-        const modal = document.getElementById('phase-steps-modal');
-        const content = document.getElementById('phase-steps-content');
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        const completedSteps = opportunity.completedSteps || [];
-
-        // Get actions for this opportunity and phase steps
-        const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
-
-        // Build steps list with checkboxes and completion status
-        const stepsHtml = phase.steps.map(step => {
-            const action = actions.find(a => a.stepId === step.id);
-            const completed = completedSteps.includes(step.id);
-            const completedDate = action && action.completedDate ? Utils.formatDate(action.completedDate) : 'Not completed';
-
-            return `
-                <div class="step-item ${completed ? 'completed' : ''}" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: ${completed ? '#e8f5e9' : '#f8f9fa'}; border: 1px solid ${completed ? '#c3e6cb' : '#e9ecef'};">
-                    <div class="step-header" style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem;">
-                        <input type="checkbox" 
-                               id="step-${step.id}" 
-                               ${completed ? 'checked' : ''} 
-                               onchange="Opportunities.toggleStepCompletion(${opportunityId}, '${step.id}')"
-                               style="margin-top: 0.2rem; transform: scale(1.2);">
-                        <label for="step-${step.id}" style="flex: 1; cursor: pointer;">
-                            <h4 style="margin: 0 0 0.3rem 0; color: ${completed ? '#28a745' : '#2a5298'};">
-                                ${completed ? '✅' : '⏳'} ${step.title}
-                            </h4>
-                            <p style="margin: 0 0 0.3rem 0; color: #666; font-size: 0.9rem;">${step.description}</p>
-                        </label>
-                    </div>
-                    <div style="margin-left: 2rem; font-size: 0.8rem; color: #666;">
-                        <small>Duration: ${step.duration} days • Start: Day ${step.daysFromStart}</small><br>
-                        <small style="color: ${completed ? '#28a745' : '#6c757d'};">
-                            ${completed ? `Completed: ${completedDate}` : 'Not completed'}
-                        </small>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Calculate phase progress
-        const phaseSteps = phase.steps;
-        const completedPhaseSteps = phaseSteps.filter(step => completedSteps.includes(step.id));
-        const phaseProgress = phaseSteps.length > 0 ? Math.round((completedPhaseSteps.length / phaseSteps.length) * 100) : 0;
-
-        content.innerHTML = `
-            <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                <h3 style="margin: 0 0 0.5rem 0; color: #2a5298;">${phase.title} - Steps</h3>
-                <div style="margin-bottom: 0.5rem;">
-                    <span style="font-weight: bold; color: #28a745;">${completedPhaseSteps.length}</span> of 
-                    <span style="font-weight: bold; color: #2a5298;">${phaseSteps.length}</span> steps completed
-                </div>
-                <div class="progress-bar" style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
-                    <div class="progress-fill" style="width: ${phaseProgress}%; height: 100%; background: linear-gradient(90deg, #28a745 0%, #20c997 100%); transition: width 0.3s ease;"></div>
-                </div>
-                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">${phaseProgress}% Complete</div>
-            </div>
-            
-            <div style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
-                ${stepsHtml}
-            </div>
-        `;
-
-        modal.style.display = 'block';
-
-        // Close modal on clicking outside content
-        const onClickOutside = (event) => {
-            if (event.target === modal) {
-                this.closePhaseStepsModal();
-                modal.removeEventListener('click', onClickOutside);
-            }
-        };
-        modal.addEventListener('click', onClickOutside);
-    },
-
-    toggleStepCompletion(opportunityId, stepId) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity) return;
-        
-        if (!opportunity.completedSteps) {
-            opportunity.completedSteps = [];
-        }
-        
-        const stepIndex = opportunity.completedSteps.indexOf(stepId);
-        if (stepIndex > -1) {
-            // Step is completed, remove it
-            opportunity.completedSteps.splice(stepIndex, 1);
-        } else {
-            // Step is not completed, add it
-            opportunity.completedSteps.push(stepId);
-        }
-        
-        // Update overall progress based on completed steps
-        this.updateOpportunityProgress(opportunityId);
-        
-        DataStore.saveData();
-        
-        // Refresh the detail modal if it's open
-        if (document.getElementById('opportunityDetailModal').style.display === 'block') {
-            this.openDetailModal(opportunityId);
-        }
-        
-        // Refresh the phase steps modal if it's open
-        if (document.getElementById('phase-steps-modal').style.display === 'block') {
-            // Get the current phase from the modal content
-            const phaseStepsModal = document.getElementById('phase-steps-modal');
-            const phaseTitle = phaseStepsModal.querySelector('h3')?.textContent;
-            if (phaseTitle) {
-                const phaseKey = this.getPhaseKeyFromTitle(phaseTitle);
-                if (phaseKey) {
-                    this.showPhaseSteps(opportunityId, phaseKey);
-                }
-            }
-        }
-    },
-    
-    updateOpportunityProgress(opportunityId) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity) return;
-        
-        // Calculate total steps across all phases
-        let totalSteps = 0;
-        let completedSteps = opportunity.completedSteps ? opportunity.completedSteps.length : 0;
-        
-        Object.values(DataStore.captureRoadmap).forEach(phase => {
-            totalSteps += phase.steps.length;
-        });
-        
-        // Calculate progress percentage
-        const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
-        
-        opportunity.progress = progressPercent;
-        
-        // Update current phase based on completed steps
-        this.updateCurrentPhase(opportunityId);
-    },
-    
-    updateCurrentPhase(opportunityId) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity || !opportunity.completedSteps) return;
-        
-        const phases = Object.keys(DataStore.captureRoadmap);
-        let currentPhase = 'identification';
-        
-        // Find the most advanced phase with incomplete steps
-        for (let i = 0; i < phases.length; i++) {
-            const phaseKey = phases[i];
-            const phase = DataStore.captureRoadmap[phaseKey];
-            const phaseSteps = phase.steps;
-            
-            // Check if all steps in this phase are completed
-            const allStepsCompleted = phaseSteps.every(step => 
-                opportunity.completedSteps.includes(step.id)
-            );
-            
-            if (allStepsCompleted && i < phases.length - 1) {
-                // All steps completed, move to next phase
-                currentPhase = phases[i + 1];
-            } else if (!allStepsCompleted) {
-                // Some steps incomplete, this is the current phase
-                currentPhase = phaseKey;
-                break;
-            }
-        }
-        
-        opportunity.currentPhase = currentPhase;
-    },
-    
-    getPhaseKeyFromTitle(titleWithSteps) {
-        // Extract phase key from title like "Opportunity Identification - Steps"
-        const phaseTitle = titleWithSteps.replace(' - Steps', '');
-        const phaseMap = {
-            'Opportunity Identification': 'identification',
-            'Opportunity Qualification': 'qualification',
-            'Capture Planning': 'planning',
-            'Customer Engagement': 'engagement',
-            'Competitive Intelligence': 'intelligence',
-            'Pre-RFP Preparation': 'preparation'
-        };
-        
-        return phaseMap[phaseTitle] || 'identification';
-    },
-    
-    closePhaseStepsModal() {
-        const modal = document.getElementById('phase-steps-modal');
-        if (modal) {
-            modal.style.display = 'none';
-            modal.replaceWith(modal.cloneNode(true)); // Remove event listeners
-        }
-    },
-
     closeDetailModal() {
         const modal = document.getElementById('opportunityDetailModal');
         if (modal) {
             modal.style.display = 'none';
             // Remove any click listeners to avoid memory leaks
             modal.replaceWith(modal.cloneNode(true));
+        }
+    },
+
+    renderOpportunitiesByStatus() {
+        const container = document.getElementById('opportunities-grid');
+        if (!container) return;
+
+        const statusGroups = {
+            'capture': DataStore.opportunities.filter(opp => !opp.status || opp.status === 'capture'),
+            'pursuing': DataStore.opportunities.filter(opp => opp.status === 'pursuing'),
+            'won': DataStore.opportunities.filter(opp => opp.status === 'won'),
+            'lost': DataStore.opportunities.filter(opp => opp.status === 'lost'),
+            'archived': DataStore.opportunities.filter(opp => opp.status === 'archived')
+        };
+
+        let html = '';
+
+        // Create sections like actions page but using your existing card rendering
+        Object.entries(statusGroups).forEach(([status, opportunities]) => {
+            if (opportunities.length > 0) {
+                const statusDisplayName = status.charAt(0).toUpperCase() + status.slice(1);
+                const statusColor = this.getStatusColor(status);
+                
+                html += `
+                    <div class="opportunities-section" style="margin-bottom: 2rem;">
+                        <h3 style="color: ${statusColor}; margin: 0 0 1rem 0;">
+                            ${this.getStatusIcon(status)} ${statusDisplayName} Opportunities (${opportunities.length})
+                        </h3>
+                        <div class="opportunities-grid">
+                            ${opportunities.map(opp => this.renderOpportunityCard(opp)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if (html === '') {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #666;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
+                    <h3>No opportunities yet</h3>
+                    <p>Add your first opportunity to get started</p>
+                    <button class="btn" onclick="Opportunities.openNewModal()" style="margin-top: 1rem;">Add Opportunity</button>
+                </div>
+            `;
+        } else {
+            container.innerHTML = html;
+        }
+    },
+
+    getStatusColor(status) {
+        const colors = {
+            'capture': '#2a5298',
+            'pursuing': '#ffc107',
+            'won': '#28a745',
+            'lost': '#dc3545',
+            'archived': '#6c757d'
+        };
+        return colors[status] || '#2a5298';
+    },
+
+    getStatusIcon(status) {
+        const icons = {
+            'capture': '🎯',
+            'pursuing': '🏃',
+            'won': '✅',
+            'lost': '❌',
+            'archived': '📁'
+        };
+        return icons[status] || '💼';
+    },
+
+    toggleSection(status) {
+        const section = document.getElementById(`${status}-opportunities`);
+        const toggle = document.getElementById(`${status}-toggle`);
+        
+        if (section.style.display === 'none') {
+            section.style.display = 'grid';
+            toggle.textContent = '▼';
+        } else {
+            section.style.display = 'none';
+            toggle.textContent = '▶';
+        }
+    },
+
+    closePhaseStepsModal() {
+        const modal = document.getElementById('phase-steps-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.replaceWith(modal.cloneNode(true)); // Remove event listeners
         }
     }
 };
