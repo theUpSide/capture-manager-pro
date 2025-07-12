@@ -69,7 +69,8 @@ const Opportunities = {
         sectionOrder.forEach(status => {
             const opportunities = groupedOpportunities[status] || [];
             if (opportunities.length > 0) {
-                const isCollapsed = status === 'lost' || status === 'archived';
+                // FIX: Updated collapsing logic - only 'capture' and 'pursuing' open by default
+                const isCollapsed = status !== 'capture' && status !== 'pursuing';
                 const collapseIcon = isCollapsed ? '▶' : '▼';
                 
                 html += `
@@ -209,10 +210,12 @@ const Opportunities = {
         const modal = document.getElementById('opportunityDetailModal');
         const content = document.getElementById('opportunity-detail-content');
 
-        // Build phase blocks for roadmap
+        // FIXED: Build phase blocks using roadmap logic instead of opportunity.completedSteps
         const phaseBlocksHtml = Object.entries(DataStore.captureRoadmap).map(([key, phase]) => {
-            const completedSteps = opportunity.completedSteps || [];
-            const phaseStepsCompleted = phase.steps.filter(step => completedSteps.includes(step.id)).length;
+            // Use the same getStepCompletion logic as roadmap.js
+            const phaseStepsCompleted = phase.steps.filter(step => 
+                this.getStepCompletion(opportunityId, step.id)
+            ).length;
             const phaseProgress = Math.round((phaseStepsCompleted / phase.steps.length) * 100);
             
             let statusClass = 'upcoming';
@@ -539,15 +542,15 @@ const Opportunities = {
         const modal = document.getElementById('phase-steps-modal');
         const content = document.getElementById('phase-steps-content');
         const opportunity = DataStore.getOpportunity(opportunityId);
-        const completedSteps = opportunity.completedSteps || [];
-
+        
         // Get actions for this opportunity and phase steps
         const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
 
         // Build steps list with checkboxes and completion status
         const stepsHtml = phase.steps.map(step => {
             const action = actions.find(a => a.stepId === step.id);
-            const completed = completedSteps.includes(step.id);
+            // FIX: Use the new getStepCompletion method
+            const completed = this.getStepCompletion(opportunityId, step.id);
             const completedDate = action && action.completedDate ? Utils.formatDate(action.completedDate) : 'Not completed';
 
             return `
@@ -556,7 +559,7 @@ const Opportunities = {
                         <input type="checkbox" 
                                id="step-${step.id}" 
                                ${completed ? 'checked' : ''} 
-                               onchange="Opportunities.toggleStepCompletion(${opportunityId}, '${step.id}')"
+                               onchange="Opportunities.toggleStepCompletionViaAction(${opportunityId}, '${step.id}')"
                                style="margin-top: 0.25rem;">
                         <div style="flex: 1;">
                             <h4 style="margin: 0; color: ${completed ? '#28a745' : '#495057'};">${step.title}</h4>
@@ -580,25 +583,44 @@ const Opportunities = {
         modal.style.display = 'block';
     },
 
-    toggleStepCompletion(opportunityId, stepId) {
-        const opportunity = DataStore.getOpportunity(opportunityId);
-        if (!opportunity) return;
+    // FIX: Add new method for step completion checking
+    getStepCompletion(opportunityId, stepId) {
+        return DataStore.actions.some(action => 
+            action.opportunityId == opportunityId && 
+            action.stepId === stepId && 
+            action.completed
+        );
+    },
+
+    // FIX: Add new method for step completion via actions
+    toggleStepCompletionViaAction(opportunityId, stepId) {
+        // Find existing action or create new one
+        let action = DataStore.actions.find(a => a.opportunityId == opportunityId && a.stepId === stepId);
         
-        if (!opportunity.completedSteps) {
-            opportunity.completedSteps = [];
-        }
-        
-        const stepIndex = opportunity.completedSteps.indexOf(stepId);
-        if (stepIndex > -1) {
-            // Remove step from completed list
-            opportunity.completedSteps.splice(stepIndex, 1);
+        if (!action) {
+            // Create new action for this step
+            const stepInfo = this.findStepInfo(stepId);
+            action = {
+                id: Date.now(),
+                opportunityId: parseInt(opportunityId),
+                title: stepInfo.title,
+                dueDate: new Date().toISOString().split('T')[0],
+                priority: "Medium",
+                phase: this.getCurrentPhaseForStep(stepId),
+                stepId: stepId,
+                completed: true,
+                completedDate: new Date().toISOString()
+            };
+            DataStore.actions.push(action);
         } else {
-            // Add step to completed list
-            opportunity.completedSteps.push(stepId);
+            // Toggle completion status
+            action.completed = !action.completed;
+            if (action.completed) {
+                action.completedDate = new Date().toISOString();
+            } else {
+                delete action.completedDate;
+            }
         }
-        
-        // Update progress
-        this.updateOpportunityProgress(opportunityId);
         
         DataStore.saveData();
         
@@ -618,16 +640,38 @@ const Opportunities = {
         }
     },
 
+    // FIX: Add helper methods
+    findStepInfo(stepId) {
+        for (const phase of Object.values(DataStore.captureRoadmap)) {
+            const step = phase.steps.find(s => s.id === stepId);
+            if (step) return step;
+        }
+        return { title: "Unknown Step", description: "" };
+    },
+
+    getCurrentPhaseForStep(stepId) {
+        for (const [phaseKey, phase] of Object.entries(DataStore.captureRoadmap)) {
+            if (phase.steps.some(s => s.id === stepId)) {
+                return phaseKey;
+            }
+        }
+        return "unknown";
+    },
+
     updateOpportunityProgress(opportunityId) {
         const opportunity = DataStore.getOpportunity(opportunityId);
         if (!opportunity) return;
         
         // Calculate total steps across all phases
         let totalSteps = 0;
-        let completedSteps = opportunity.completedSteps ? opportunity.completedSteps.length : 0;
+        let completedSteps = 0;
         
         Object.values(DataStore.captureRoadmap).forEach(phase => {
             totalSteps += phase.steps.length;
+            // FIX: Use the new completion checking method
+            completedSteps += phase.steps.filter(step => 
+                this.getStepCompletion(opportunityId, step.id)
+            ).length;
         });
         
         // Calculate progress percentage
