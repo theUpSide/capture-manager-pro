@@ -383,53 +383,85 @@
 
 /* ---------- OPPORTUNITY DETAIL MODAL REDESIGN ---------- */
 
-/* Enhanced modal for executive presentation */
+/* Enhanced modal for executive presentation - WIDER FOR BETTER VISIBILITY */
 .modal-content {
     background: white;
-    margin: 2% auto;
+    margin: 1% auto;
     padding: 0;
     border-radius: 16px;
-    width: 95%;
-    max-width: 1200px;
+    width: 98%;
+    max-width: 1400px; /* INCREASED from 1200px */
     box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    max-height: 90vh;
+    max-height: 95vh; /* INCREASED from 90vh */
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
-
-/* Modal header with executive styling */
-.opportunity-detail-header {
-    background: linear-gradient(135deg, #2a5298 0%, #1e3a5f 100%);
-    color: white;
-    padding: 2rem;
     position: relative;
 }
 
-/* Close button styling */
+/* PROMINENT CLOSE BUTTON - ALWAYS VISIBLE */
+.modal .close {
+    position: absolute !important;
+    right: 20px !important;
+    top: 20px !important;
+    z-index: 9999 !important;
+    color: white !important;
+    font-size: 32px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    background: rgba(220, 53, 69, 0.8) !important;
+    border-radius: 50% !important;
+    width: 45px !important;
+    height: 45px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid white !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+.modal .close:hover {
+    background: rgba(220, 53, 69, 1) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+
+/* Modal header with executive styling - WIDER AND CLOSE BUTTON SPACE */
+.opportunity-detail-header {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3a5f 100%);
+    color: white;
+    padding: 2rem 80px 2rem 2rem; /* EXTRA RIGHT PADDING for close button */
+    position: relative;
+}
+
+/* Close button styling - ENHANCED VISIBILITY */
 .opportunity-detail-header .close {
     position: absolute;
     right: 20px;
     top: 20px;
     color: white;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     cursor: pointer;
     z-index: 10;
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(220, 53, 69, 0.8);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .opportunity-detail-header .close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(220, 53, 69, 1);
     transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .opportunity-detail-header h2 {

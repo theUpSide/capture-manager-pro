@@ -302,9 +302,24 @@ const Opportunities = {
             preparation: 'Preparation'
         };
 
-        let html = '<div class="phase-blocks-container">';
+        let html = `
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: #2a5298;">Current Phase: ${this.getPhaseTitle(opportunity.currentPhase || 'identification')}</h4>
+                    <select id="currentPhaseSelect" onchange="Opportunities.updateCurrentPhase(${opportunity.id}, this.value)" 
+                            style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: #f8f9ff;">
+                        ${phases.map(phase => `
+                            <option value="${phase}" ${phase === opportunity.currentPhase ? 'selected' : ''}>
+                                ${phaseNames[phase]}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            </div>
+            <div class="phase-blocks-container">
+        `;
         
-        phases.forEach(phase => {
+        phases.forEach((phase, index) => {
             const phaseSteps = DataStore.captureRoadmap[phase]?.steps || [];
             const completedSteps = opportunity.phaseSteps?.[phase] || [];
             const progress = phaseSteps.length > 0 ? 
@@ -329,6 +344,15 @@ const Opportunities = {
                     <div class="phase-icon">${icon}</div>
                     <div class="phase-title">${phaseNames[phase]}</div>
                     <div class="phase-progress">${progress}%</div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 0.25rem;">
+                        ${completedSteps.length}/${phaseSteps.length} steps
+                    </div>
+                    ${phase === opportunity.currentPhase ? 
+                        `<button onclick="event.stopPropagation(); Opportunities.updatePhaseProgress('${opportunity.id}', '${phase}')" 
+                                style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.7rem; background: #2a5298; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                            Update Progress
+                        </button>` : ''
+                    }
                 </div>
             `;
         });
@@ -513,5 +537,124 @@ const Opportunities = {
         if (modal) {
             modal.style.display = 'none';
         }
+        
+        // Also handle the other opportunity modal if it exists
+        const opportunityModal = document.getElementById('opportunityModal');
+        if (opportunityModal) {
+            opportunityModal.style.display = 'none';
+        }
+    },
+
+    // NEW: Update current phase function
+    updateCurrentPhase(opportunityId, newPhase) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+
+        opportunity.currentPhase = newPhase;
+        DataStore.saveData();
+
+        // Refresh the modal content
+        this.openDetailModal(opportunityId);
+        
+        // Show success message
+        const phaseTitle = this.getPhaseTitle(newPhase);
+        alert(`Current phase updated to: ${phaseTitle}`);
+    },
+
+    // NEW: Update phase progress function
+    updatePhaseProgress(opportunityId, phase) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+
+        const phaseSteps = DataStore.captureRoadmap[phase]?.steps || [];
+        if (phaseSteps.length === 0) {
+            alert('No steps defined for this phase.');
+            return;
+        }
+
+        // Initialize phaseSteps if not exists
+        if (!opportunity.phaseSteps) {
+            opportunity.phaseSteps = {};
+        }
+        if (!opportunity.phaseSteps[phase]) {
+            opportunity.phaseSteps[phase] = [];
+        }
+
+        const completedSteps = opportunity.phaseSteps[phase];
+        
+        // Create a modal for step selection
+        const stepSelectionHtml = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" id="phaseProgressModal">
+                <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 500px; max-height: 70vh; overflow-y: auto;">
+                    <h3 style="margin: 0 0 1rem 0; color: #2a5298;">Update ${this.getPhaseTitle(phase)} Progress</h3>
+                    <p style="margin-bottom: 1.5rem; color: #666;">Select completed steps:</p>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        ${phaseSteps.map((step, index) => {
+                            const isCompleted = completedSteps.includes(index);
+                            return `
+                                <label style="display: flex; align-items: center; margin-bottom: 0.75rem; cursor: pointer;">
+                                    <input type="checkbox" ${isCompleted ? 'checked' : ''} value="${index}" 
+                                           style="margin-right: 0.5rem; transform: scale(1.2);">
+                                    <span style="line-height: 1.4;">${step.title}</span>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button onclick="document.getElementById('phaseProgressModal').remove()" 
+                                style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="Opportunities.savePhaseProgress(${opportunityId}, '${phase}')" 
+                                style="padding: 0.5rem 1rem; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Save Progress
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', stepSelectionHtml);
+    },
+
+    // NEW: Save phase progress function
+    savePhaseProgress(opportunityId, phase) {
+        const opportunity = DataStore.getOpportunity(opportunityId);
+        if (!opportunity) return;
+
+        const modal = document.getElementById('phaseProgressModal');
+        const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+        
+        // Update completed steps
+        opportunity.phaseSteps[phase] = [];
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                opportunity.phaseSteps[phase].push(parseInt(checkbox.value));
+            }
+        });
+
+        // Calculate overall progress
+        const allPhases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
+        let totalSteps = 0;
+        let completedSteps = 0;
+        
+        allPhases.forEach(p => {
+            const phaseSteps = DataStore.captureRoadmap[p]?.steps || [];
+            const completed = opportunity.phaseSteps?.[p] || [];
+            totalSteps += phaseSteps.length;
+            completedSteps += completed.length;
+        });
+        
+        opportunity.progress = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+        DataStore.saveData();
+        
+        // Close the modal and refresh
+        modal.remove();
+        this.openDetailModal(opportunityId);
+        
+        alert('Phase progress updated successfully!');
     }
 };
