@@ -381,50 +381,92 @@
     color: #616161;
 }
 
-/* ---------- OPPORTUNITY DETAIL MODAL REDESIGN ---------- */
+/* ---------- PRESENTATION MODAL FIXES ---------- */
 
-/* Enhanced modal for executive presentation - WIDER FOR BETTER VISIBILITY */
-.modal-content {
-    background: white;
-    margin: 1% auto;
+/* Make presentation modal properly scrollable */
+.presentation-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    overflow-y: auto; /* ENABLE VERTICAL SCROLLING */
+}
+
+.presentation-modal-content {
+    background: #ffffff;
+    margin: 2% auto;
     padding: 0;
-    border-radius: 16px;
-    width: 98%;
-    max-width: 1400px; /* INCREASED from 1200px */
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    max-height: 95vh; /* INCREASED from 90vh */
-    overflow: hidden;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 1200px;
+    min-height: 90vh; /* MINIMUM HEIGHT */
+    max-height: none; /* REMOVE MAX HEIGHT RESTRICTION */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    position: relative;
+    overflow: visible; /* ALLOW CONTENT TO FLOW */
+    margin-bottom: 4rem; /* SPACE AT BOTTOM FOR SCROLLING */
 }
 
-/* PROMINENT CLOSE BUTTON - ALWAYS VISIBLE */
-.modal .close {
-    position: absolute !important;
-    right: 20px !important;
-    top: 20px !important;
-    z-index: 9999 !important;
-    color: white !important;
-    font-size: 32px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-    background: rgba(220, 53, 69, 0.8) !important;
-    border-radius: 50% !important;
-    width: 45px !important;
-    height: 45px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-    border: 2px solid white !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+.presentation-content {
+    flex: 1;
+    overflow: visible; /* REMOVE OVERFLOW RESTRICTION */
+    background: #f8f9ff;
+    min-height: auto; /* ALLOW NATURAL HEIGHT */
 }
 
-.modal .close:hover {
-    background: rgba(220, 53, 69, 1) !important;
-    transform: scale(1.1) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+/* MAKE SLIDES STACK VERTICALLY WHEN SCROLLING */
+.presentation-slide {
+    display: none;
+    min-height: 80vh; /* MINIMUM SLIDE HEIGHT */
+    padding: 3rem;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.presentation-slide.active {
+    display: block;
+}
+
+/* IMPROVE SLIDE NAVIGATION FOR SCROLLING */
+.presentation-nav {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3a5f 100%);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky; /* KEEP NAV VISIBLE WHILE SCROLLING */
+    top: 0;
+    z-index: 10;
+}
+
+/* RESPONSIVE PRESENTATION FIXES */
+@media (max-width: 768px) {
+    .presentation-modal-content {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .presentation-slide {
+        padding: 1.5rem;
+        min-height: 90vh;
+    }
+    
+    .presentation-nav {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
 }
 
 /* Modal header with executive styling - WIDER AND CLOSE BUTTON SPACE */

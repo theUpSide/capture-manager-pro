@@ -96,84 +96,93 @@ const Opportunities = {
         container.innerHTML = html;
     },
 
-    renderOpportunityCard(opportunity) {
-        const value = opportunity.value || 0;
-        const probability = opportunity.probability || opportunity.pwin || 0;
-        const expectedValue = (value * probability) / 100;
-        const daysUntilClose = opportunity.closeDate ? Utils.calculateDaysUntilDate(opportunity.closeDate) : 'TBD';
-        const progress = Math.round(opportunity.progress || 0);
-        
-        // Truncate description to fit card
-        const description = opportunity.description || 'No description provided';
-        const truncatedDescription = description.length > 150 ? 
-            description.substring(0, 150) + '...' : description;
-        
-        // Determine status badge class
-        const statusClass = `status-${(opportunity.status || 'capture').toLowerCase()}`;
-        const statusLabel = opportunity.status || 'Capture';
-        
-        return `
-            <div class="opportunity-card" data-status="${opportunity.status || 'capture'}" onclick="Opportunities.openDetailModal(${opportunity.id})">
-                <div class="opportunity-card-header">
-                    <h4>${opportunity.name}</h4>
-                    <div class="opportunity-actions" onclick="event.stopPropagation()">
-                        <button class="btn btn-sm btn-secondary" onclick="Opportunities.editOpportunity(${opportunity.id})" title="Edit">
-                            ✏️
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="opportunity-metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-label">Value</span>
-                        <span class="metric-value">${value.toLocaleString()}</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">P-Win</span>
-                        <span class="metric-value">${probability}%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Expected</span>
-                        <span class="metric-value">${expectedValue.toLocaleString()}</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">Close</span>
-                        <span class="metric-value">${daysUntilClose === 'TBD' ? 'TBD' : daysUntilClose + 'd'}</span>
-                    </div>
-                </div>
-                
-                <div class="opportunity-description">
+    // Updated renderOpportunityCard function for opportunities.js
+renderOpportunityCard(opportunity) {
+    const value = opportunity.value || 0;
+    const probability = opportunity.probability || opportunity.pwin || 0;
+    const expectedValue = (value * probability) / 100;
+    const daysUntilClose = opportunity.closeDate ? Utils.calculateDaysUntilDate(opportunity.closeDate) : 'TBD';
+    const progress = Math.round(opportunity.progress || 0);
+    
+    // Truncate description
+    const description = opportunity.description || 'No description provided';
+    const truncatedDescription = description.length > 120 ? 
+        description.substring(0, 120) + '...' : description;
+    
+    // Status styling
+    const statusClass = `status-${(opportunity.status || 'capture').toLowerCase()}`;
+    const statusLabel = opportunity.status || 'Capture';
+    
+    return `
+        <div class="card-base opportunity-card" data-status="${opportunity.status || 'capture'}" onclick="Opportunities.openDetailModal(${opportunity.id})">
+            <div class="card-header-unified">
+                <h3 class="card-title-unified">${opportunity.name}</h3>
+                <div class="card-subtitle-unified">${opportunity.client || 'Client TBD'}</div>
+            </div>
+            
+            <div class="card-content-unified">
+                <div class="card-description-unified">
                     ${truncatedDescription}
                 </div>
                 
-                <div class="opportunity-progress">
-                    <div class="progress-header">
-                        <span>Progress</span>
-                        <span>${progress}%</span>
+                <div class="card-metrics-unified">
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Value</span>
+                        <span class="card-metric-value">$${value.toLocaleString()}</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">P-Win</span>
+                        <span class="card-metric-value">${probability}%</span>
+                    </div>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Expected</span>
+                        <span class="card-metric-value">$${expectedValue.toLocaleString()}</span>
+                    </div>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Close</span>
+                        <span class="card-metric-value">${daysUntilClose === 'TBD' ? 'TBD' : daysUntilClose + 'd'}</span>
                     </div>
                 </div>
                 
-                <div class="opportunity-footer">
-                    <span class="status-badge ${statusClass}">${statusLabel}</span>
-                    <div onclick="event.stopPropagation()">
-                        <button class="btn btn-sm btn-primary" onclick="Opportunities.openDetailModal(${opportunity.id})">
-                            View Details
-                        </button>
+                <div class="card-progress-unified">
+                    <div class="card-progress-header">
+                        <span>Progress</span>
+                        <span>${progress}%</span>
+                    </div>
+                    <div class="card-progress-bar">
+                        <div class="card-progress-fill" style="width: ${progress}%"></div>
                     </div>
                 </div>
             </div>
-        `;
-    },
+            
+            <div class="card-footer-unified">
+                <div class="card-status-unified">
+                    <span class="status-badge-unified ${statusClass}">${statusLabel}</span>
+                </div>
+                <div class="card-actions-unified" onclick="event.stopPropagation()">
+                    <button class="btn-card btn-card-secondary btn-card-icon" onclick="Opportunities.editOpportunity(${opportunity.id})" title="Edit">
+                        ✏️
+                    </button>
+                    <button class="btn-card btn-card-primary" onclick="Opportunities.openDetailModal(${opportunity.id})">
+                        View
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+},
 
     openDetailModal(opportunityId) {
+        console.log('openDetailModal called with ID:', opportunityId);
+        
         const opportunity = DataStore.getOpportunity(opportunityId);
         if (!opportunity) {
+            console.error('Opportunity not found with ID:', opportunityId);
             alert('Opportunity not found');
             return;
         }
+
+        console.log('Found opportunity:', opportunity.name);
 
         // Get related data
         const actions = DataStore.actions.filter(a => a.opportunityId == opportunityId);
@@ -198,9 +207,12 @@ const Opportunities = {
 
         const modal = document.getElementById('opportunityDetailModal');
         if (!modal) {
-            console.error('Opportunity detail modal not found');
+            console.error('Opportunity detail modal not found in DOM');
+            alert('Modal not found - check HTML structure');
             return;
         }
+
+        console.log('Modal found, populating content...');
 
         const content = document.getElementById('opportunity-detail-content');
         content.innerHTML = `
@@ -289,6 +301,18 @@ const Opportunities = {
         `;
 
         modal.style.display = 'block';
+        console.log('Modal should now be visible');
+        
+        // Add click outside to close
+        setTimeout(() => {
+            const onClickOutside = (event) => {
+                if (event.target === modal) {
+                    this.closeModal();
+                    modal.removeEventListener('click', onClickOutside);
+                }
+            };
+            modal.addEventListener('click', onClickOutside);
+        }, 100);
     },
 
     renderPhaseProgress(opportunity) {
@@ -347,12 +371,11 @@ const Opportunities = {
                     <div style="font-size: 0.7rem; color: #666; margin-top: 0.25rem;">
                         ${completedSteps.length}/${phaseSteps.length} steps
                     </div>
-                    ${phase === opportunity.currentPhase ? 
-                        `<button onclick="event.stopPropagation(); Opportunities.updatePhaseProgress('${opportunity.id}', '${phase}')" 
-                                style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.7rem; background: #2a5298; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                            Update Progress
-                        </button>` : ''
-                    }
+                    <!-- UPDATE PROGRESS BUTTON FOR ALL PHASES -->
+                    <button onclick="event.stopPropagation(); Opportunities.updatePhaseProgress('${opportunity.id}', '${phase}')" 
+                            style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.7rem; background: ${phase === opportunity.currentPhase ? '#2a5298' : '#6c757d'}; color: white; border: none; border-radius: 3px; cursor: pointer; width: 100%;">
+                        ${progress === 100 ? 'Review Steps' : 'Update Progress'}
+                    </button>
                 </div>
             `;
         });
@@ -545,6 +568,11 @@ const Opportunities = {
         }
     },
 
+    // Add this function to match the HTML close button
+    closeDetailModal() {
+        this.closeModal();
+    },
+
     // NEW: Update current phase function
     updateCurrentPhase(opportunityId, newPhase) {
         const opportunity = DataStore.getOpportunity(opportunityId);
@@ -561,7 +589,7 @@ const Opportunities = {
         alert(`Current phase updated to: ${phaseTitle}`);
     },
 
-    // NEW: Update phase progress function
+    // ENHANCED: Update phase progress function - works for ALL phases
     updatePhaseProgress(opportunityId, phase) {
         const opportunity = DataStore.getOpportunity(opportunityId);
         if (!opportunity) return;
@@ -581,22 +609,54 @@ const Opportunities = {
         }
 
         const completedSteps = opportunity.phaseSteps[phase];
+        const phaseTitle = this.getPhaseTitle(phase);
+        const isCurrentPhase = phase === opportunity.currentPhase;
         
         // Create a modal for step selection
         const stepSelectionHtml = `
             <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" id="phaseProgressModal">
-                <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 500px; max-height: 70vh; overflow-y: auto;">
-                    <h3 style="margin: 0 0 1rem 0; color: #2a5298;">Update ${this.getPhaseTitle(phase)} Progress</h3>
-                    <p style="margin-bottom: 1.5rem; color: #666;">Select completed steps:</p>
+                <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e3e8f0;">
+                        <div>
+                            <h3 style="margin: 0; color: #2a5298;">${phaseTitle} Progress</h3>
+                            <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem;">
+                                ${isCurrentPhase ? '⭐ Current Phase' : phase === 'identification' ? '📋 Foundation Phase' : '📊 Previous/Future Phase'}
+                            </p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #2a5298;">
+                                ${Math.round((completedSteps.length / phaseSteps.length) * 100)}%
+                            </div>
+                            <div style="font-size: 0.8rem; color: #666;">
+                                ${completedSteps.length}/${phaseSteps.length} Complete
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div style="margin-bottom: 1.5rem;">
+                    <p style="margin-bottom: 1.5rem; color: #666; line-height: 1.5;">
+                        Select the steps you have completed for <strong>${phaseTitle}</strong>. 
+                        ${isCurrentPhase ? 'This is your current active phase.' : 'You can update progress for any phase at any time.'}
+                    </p>
+                    
+                    <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; border: 1px solid #e3e8f0; border-radius: 8px; padding: 1rem;">
                         ${phaseSteps.map((step, index) => {
                             const isCompleted = completedSteps.includes(index);
                             return `
-                                <label style="display: flex; align-items: center; margin-bottom: 0.75rem; cursor: pointer;">
+                                <label style="display: flex; align-items: start; margin-bottom: 1rem; cursor: pointer; padding: 0.75rem; border-radius: 6px; transition: background-color 0.2s ease; ${isCompleted ? 'background: #e8f5e9;' : ''}" 
+                                       onmouseover="this.style.backgroundColor='#f8f9ff'" 
+                                       onmouseout="this.style.backgroundColor='${isCompleted ? '#e8f5e9' : 'transparent'}'">
                                     <input type="checkbox" ${isCompleted ? 'checked' : ''} value="${index}" 
-                                           style="margin-right: 0.5rem; transform: scale(1.2);">
-                                    <span style="line-height: 1.4;">${step.title}</span>
+                                           style="margin-right: 0.75rem; margin-top: 0.25rem; transform: scale(1.3);">
+                                    <div>
+                                        <div style="font-weight: 600; color: #2a5298; margin-bottom: 0.25rem;">
+                                            ${step.title}
+                                        </div>
+                                        ${step.description ? `
+                                            <div style="font-size: 0.85rem; color: #666; line-height: 1.4;">
+                                                ${step.description}
+                                            </div>
+                                        ` : ''}
+                                    </div>
                                 </label>
                             `;
                         }).join('')}
@@ -604,11 +664,11 @@ const Opportunities = {
                     
                     <div style="display: flex; gap: 1rem; justify-content: flex-end;">
                         <button onclick="document.getElementById('phaseProgressModal').remove()" 
-                                style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                style="padding: 0.75rem 1.25rem; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
                             Cancel
                         </button>
                         <button onclick="Opportunities.savePhaseProgress(${opportunityId}, '${phase}')" 
-                                style="padding: 0.5rem 1rem; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                style="padding: 0.75rem 1.5rem; background: #2a5298; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
                             Save Progress
                         </button>
                     </div>
@@ -619,13 +679,16 @@ const Opportunities = {
         document.body.insertAdjacentHTML('beforeend', stepSelectionHtml);
     },
 
-    // NEW: Save phase progress function
+    // ENHANCED: Save phase progress function with better feedback
     savePhaseProgress(opportunityId, phase) {
         const opportunity = DataStore.getOpportunity(opportunityId);
         if (!opportunity) return;
 
         const modal = document.getElementById('phaseProgressModal');
         const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+        
+        // Count previous completed steps
+        const previousCompleted = opportunity.phaseSteps[phase] ? opportunity.phaseSteps[phase].length : 0;
         
         // Update completed steps
         opportunity.phaseSteps[phase] = [];
@@ -635,19 +698,32 @@ const Opportunities = {
             }
         });
 
-        // Calculate overall progress
+        const newCompleted = opportunity.phaseSteps[phase].length;
+        const totalSteps = checkboxes.length;
+        const progressPercent = Math.round((newCompleted / totalSteps) * 100);
+
+        // Calculate overall progress across all phases
         const allPhases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
-        let totalSteps = 0;
-        let completedSteps = 0;
+        let totalStepsAllPhases = 0;
+        let completedStepsAllPhases = 0;
         
         allPhases.forEach(p => {
             const phaseSteps = DataStore.captureRoadmap[p]?.steps || [];
             const completed = opportunity.phaseSteps?.[p] || [];
-            totalSteps += phaseSteps.length;
-            completedSteps += completed.length;
+            totalStepsAllPhases += phaseSteps.length;
+            completedStepsAllPhases += completed.length;
         });
         
-        opportunity.progress = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+        opportunity.progress = totalStepsAllPhases > 0 ? Math.round((completedStepsAllPhases / totalStepsAllPhases) * 100) : 0;
+
+        // Auto-advance current phase if this phase is 100% complete and is current phase
+        if (progressPercent === 100 && phase === opportunity.currentPhase) {
+            const currentPhaseIndex = allPhases.indexOf(phase);
+            if (currentPhaseIndex < allPhases.length - 1) {
+                const nextPhase = allPhases[currentPhaseIndex + 1];
+                opportunity.currentPhase = nextPhase;
+            }
+        }
 
         DataStore.saveData();
         
@@ -655,6 +731,46 @@ const Opportunities = {
         modal.remove();
         this.openDetailModal(opportunityId);
         
-        alert('Phase progress updated successfully!');
+        // Show informative success message
+        const phaseTitle = this.getPhaseTitle(phase);
+        const changeText = newCompleted > previousCompleted ? 
+            `Added ${newCompleted - previousCompleted} completed steps` :
+            newCompleted < previousCompleted ?
+            `Removed ${previousCompleted - newCompleted} completed steps` :
+            'No changes made';
+        
+        const advanceText = progressPercent === 100 && phase === opportunity.currentPhase && 
+                           allPhases.indexOf(phase) < allPhases.length - 1 ?
+                           `\n🎉 ${phaseTitle} completed! Advanced to next phase.` : '';
+        
+        alert(`${phaseTitle} Progress Updated!\n\n` +
+              `${changeText}\n` +
+              `Phase Progress: ${progressPercent}% (${newCompleted}/${totalSteps})\n` +
+              `Overall Progress: ${opportunity.progress}%${advanceText}`);
+    },
+
+    renderOpportunitySection(status, opportunities, expanded = false) {
+        const statusConfig = this.getStatusConfig(status);
+        const sectionId = `section-${status}`;
+        const contentId = `content-${status}`;
+        
+        let html = `
+            <div class="opportunity-category-section" data-status="${status}">
+                <div class="category-header collapsible-header" onclick="Opportunities.toggleSection('${status}')">
+                    <div class="category-title-section">
+                        <span class="collapse-icon" id="icon-${status}">${expanded ? '▼' : '▶'}</span>
+                        <h3>${statusConfig.title}</h3>
+                    </div>
+                    <span class="category-count">${opportunities.length}</span>
+                </div>
+                <div class="collapsible-content" id="${contentId}" style="display: ${expanded ? 'block' : 'none'};">
+                    <div class="cards-grid-unified">
+                        ${opportunities.map(opp => this.renderOpportunityCard(opp)).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return html;
     }
 };

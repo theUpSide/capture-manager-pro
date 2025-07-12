@@ -36,7 +36,7 @@ const Actions = {
             html += `
                 <div class="actions-section" style="margin-bottom: 2rem;">
                     <h3 style="color: #dc3545; margin-bottom: 1rem;">🚨 Urgent Actions (${urgentActions.length})</h3>
-                    <div class="actions-grid">
+                    <div class="cards-grid-unified">
                         ${urgentActions.map(action => this.renderActionCard(action, true)).join('')}
                     </div>
                 </div>
@@ -49,7 +49,7 @@ const Actions = {
             html += `
                 <div class="actions-section" style="margin-bottom: 2rem;">
                     <h3 style="color: #007bff; margin-bottom: 1rem;">📝 Active Actions (${regularActions.length})</h3>
-                    <div class="actions-grid">
+                    <div class="cards-grid-unified">
                         ${regularActions.map(action => this.renderActionCard(action)).join('')}
                     </div>
                 </div>
@@ -63,7 +63,7 @@ const Actions = {
                     <div class="section-header" style="cursor: pointer;" onclick="Actions.toggleCompleted()">
                         <h3 style="color: #28a745; margin: 0;">✅ Completed Actions (${completedActions.length}) <span id="completed-toggle">▼</span></h3>
                     </div>
-                    <div id="completed-actions" class="actions-grid" style="display: none; margin-top: 1rem;">
+                    <div id="completed-actions" class="cards-grid-unified" style="display: none; margin-top: 1rem;">
                         ${completedActions.map(action => this.renderActionCard(action)).join('')}
                     </div>
                 </div>
@@ -73,58 +73,100 @@ const Actions = {
         container.innerHTML = html;
     },
 
-    renderActionCard(action, isUrgent = false) {
-        const opportunity = DataStore.opportunities.find(opp => opp.id == action.opportunityId);
-        const oppName = opportunity ? opportunity.name : 'Unknown Opportunity';
-        const isOverdue = this.isOverdue(action.dueDate);
-        const daysUntil = Utils.getDaysUntil(action.dueDate);
-        
-        let priorityColor = '#6c757d';
-        if (action.priority === 'High') priorityColor = '#dc3545';
-        else if (action.priority === 'Medium') priorityColor = '#ffc107';
-        else if (action.priority === 'Low') priorityColor = '#28a745';
-        
-        return `
-            <div class="action-card ${isUrgent ? 'urgent' : ''} ${action.completed ? 'completed' : ''}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                    <h4 style="margin: 0; flex: 1;">${action.title}</h4>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <span style="background: ${priorityColor}; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">
-                            ${action.priority}
-                        </span>
-                        ${action.completed ? '<span style="background: #28a745; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">✅ Done</span>' : ''}
-                    </div>
+    // Updated renderActionCard function for actions.js
+renderActionCard(action) {
+    const isOverdue = !action.completed && new Date(action.dueDate) < new Date();
+    const isDueSoon = !action.completed && !isOverdue && 
+        new Date(action.dueDate) <= new Date(Date.now() + 3*24*60*60*1000); // 3 days
+    
+    const priorityClass = `priority-${action.priority.toLowerCase()}`;
+    const statusClass = action.completed ? 'completed' : (isOverdue ? 'overdue' : 'active');
+    
+    const description = action.description || 'No description provided';
+    const truncatedDescription = description.length > 120 ? 
+        description.substring(0, 120) + '...' : description;
+    
+    // Get opportunity name
+    const opportunity = DataStore.getOpportunity(action.opportunityId);
+    const opportunityName = opportunity ? opportunity.name : 'Unknown Opportunity';
+    
+    // Due date styling
+    let dueDateClass = '';
+    let dueDateText = Utils.formatDate(action.dueDate);
+    if (isOverdue) {
+        dueDateClass = 'overdue';
+        dueDateText = '⚠️ Overdue';
+    } else if (isDueSoon) {
+        dueDateClass = 'due-soon';
+        dueDateText = '⏰ Due Soon';
+    }
+    
+    return `
+        <div class="card-base action-card ${priorityClass} ${statusClass}">
+            <div class="action-due-date ${dueDateClass}">
+                ${dueDateText}
+            </div>
+            
+            <div class="card-header-unified">
+                <h3 class="card-title-unified">${action.title}</h3>
+                <div class="card-subtitle-unified">${opportunityName}</div>
+            </div>
+            
+            <div class="card-content-unified">
+                <div class="card-description-unified">
+                    ${truncatedDescription}
                 </div>
                 
-                <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">${oppName}</p>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
-                    <div><strong>Due Date:</strong> ${Utils.formatDate(action.dueDate)}</div>
-                    <div style="color: ${isOverdue ? '#dc3545' : daysUntil <= 3 ? '#ffc107' : '#666'};">
-                        <strong>Status:</strong> ${isOverdue ? 'Overdue' : daysUntil <= 0 ? 'Due Today' : `${daysUntil} days left`}
+                <div class="card-metrics-unified">
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Priority</span>
+                        <span class="card-metric-value">${action.priority}</span>
                     </div>
-                    <div><strong>Phase:</strong> ${action.phase || 'N/A'}</div>
-                    <div><strong>Category:</strong> ${action.category || 'N/A'}</div>
-                </div>
-                
-                ${action.description ? `<p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">${action.description}</p>` : ''}
-                
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Actions.edit(${action.id})">
-                            Edit
-                        </button>
-                        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Actions.delete(${action.id})">
-                            Delete
-                        </button>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Phase</span>
+                        <span class="card-metric-value">${action.phase || 'General'}</span>
                     </div>
-                    <button class="btn ${action.completed ? 'btn-secondary' : ''}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="Actions.toggleComplete(${action.id})">
-                        ${action.completed ? 'Mark Incomplete' : 'Mark Complete'}
-                    </button>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Category</span>
+                        <span class="card-metric-value">${action.category || 'Task'}</span>
+                    </div>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Due Date</span>
+                        <span class="card-metric-value">${Utils.formatDate(action.dueDate)}</span>
+                    </div>
                 </div>
             </div>
-        `;
-    },
+            
+            <div class="card-footer-unified">
+                <div class="card-status-unified">
+                    <span class="status-badge-unified status-${action.priority.toLowerCase()}">
+                        ${action.priority} Priority
+                    </span>
+                    ${action.completed ? 
+                        '<span class="status-badge-unified status-completed">✅ Completed</span>' :
+                        isOverdue ? 
+                        '<span class="status-badge-unified status-overdue">🔴 Overdue</span>' :
+                        '<span class="status-badge-unified status-active">📋 Active</span>'
+                    }
+                </div>
+                <div class="card-actions-unified">
+                    <button class="btn-card btn-card-secondary btn-card-icon" onclick="Actions.editAction(${action.id})" title="Edit">
+                        ✏️
+                    </button>
+                    ${!action.completed ? `
+                        <button class="btn-card btn-card-primary" onclick="Actions.markComplete(${action.id})">
+                            Complete
+                        </button>
+                    ` : `
+                        <button class="btn-card btn-card-secondary" onclick="Actions.markIncomplete(${action.id})">
+                            Reopen
+                        </button>
+                    `}
+                </div>
+            </div>
+        </div>
+    `;
+},
 
     isOverdue(dueDate) {
         return new Date(dueDate) < new Date();

@@ -2835,3 +2835,31 @@
     max-height: 90vh !important;
     overflow-y: auto !important;
 }
+
+/* Add this to your components.css file */
+.cards-grid-unified {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    gap: 1.5rem !important;
+    margin-top: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure cards within unified grid maintain consistent sizing */
+.cards-grid-unified .opportunity-card,
+.cards-grid-unified .template-card,
+.cards-grid-unified .action-card {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 350px !important;
+    box-sizing: border-box !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .cards-grid-unified {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}

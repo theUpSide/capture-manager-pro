@@ -163,9 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize all modules
     Dashboard.init();
     
-    // Initialize Gate Reviews if available
-    if (typeof GateReviews !== 'undefined') {
-        GateReviews.init();
+    // Initialize unified cards if available
+    if (window.UnifiedCards) {
+        UnifiedCards.initializeUnifiedCards();
     }
     
     // Show dashboard by default

@@ -184,43 +184,136 @@ const Templates = {
             const templates = templatesByCategory[phase.key] || [];
             if (templates.length === 0) return '';
 
-            return `
-                <div class="template-phase-section" data-phase="${phase.key}">
-                    <div class="phase-panel">
-                        <div class="phase-header">
-                            <h3 class="phase-title">${phase.title}</h3>
-                            <p class="phase-description">${phase.description}</p>
-                            <div class="template-count">${templates.length} template${templates.length !== 1 ? 's' : ''}</div>
-                        </div>
-                        <div class="template-cards-grid">
-                            ${templates.map(template => this.renderTemplateCard(template)).join('')}
-                        </div>
-                    </div>
-                </div>
-            `;
+            return this.renderTemplatesByCategory(phase.key, templates);
         }).join('');
     },
 
-    renderTemplateCard(template) {
-        const savedCount = DataStore.savedTemplates.filter(st => st.templateId === template.id).length;
-        
+    getPhaseConfig(phaseKey) {
+        const phaseOrder = [
+            {
+                key: 'identification',
+                title: '🔍 Opportunity Identification',
+                description: 'Discover and initially assess opportunities'
+            },
+            {
+                key: 'qualification',
+                title: '⚖️ Opportunity Qualification',
+                description: 'Formal bid/no-bid decision process'
+            },
+            {
+                key: 'planning',
+                title: '📋 Capture Planning',
+                description: 'Develop comprehensive capture strategy'
+            },
+            {
+                key: 'engagement',
+                title: '🤝 Customer Engagement',
+                description: 'Build relationships and shape opportunity'
+            },
+            {
+                key: 'intelligence',
+                title: '🔎 Competitive Intelligence',
+                description: 'Analyze competition and refine strategy'
+            },
+            {
+                key: 'preparation',
+                title: '🎯 Pre-RFP Preparation',
+                description: 'Final preparations before RFP release'
+            }
+        ];
+
+        return phaseOrder.find(phase => phase.key === phaseKey);
+    },
+
+    renderTemplatesByCategory(category, templates) {
+        const categoryConfig = this.getPhaseConfig(category);
+    
         return `
-            <div class="template-card">
-                <h4>${template.title}</h4>
-                <p>${template.description}</p>
-                <div class="template-meta">
-                    <span class="field-count">${template.fields.length} fields</span>
-                    <span class="category-badge">${template.category}</span>
-                    ${savedCount > 0 ? `<span class="data-badge">${savedCount} saved</span>` : '<span class="no-data-badge">No data</span>'}
-                </div>
-                <div class="template-actions">
-                    <button class="btn" onclick="Templates.openTemplate(${template.id})">
-                        ${template.guidance ? '📖 Use Template' : 'Use Template'}
-                    </button>
+            <div class="template-phase-section" data-phase="${category}">
+                <div class="phase-panel">
+                    <div class="phase-header">
+                        <h3 class="phase-title">${categoryConfig.title}</h3>
+                        <p class="phase-description">${categoryConfig.description}</p>
+                        <span class="template-count">${templates.length} templates</span>
+                    </div>
+                    <div class="cards-grid-unified">
+                        ${templates.map(template => this.renderTemplateCard(template)).join('')}
+                    </div>
                 </div>
             </div>
         `;
     },
+
+    // Updated renderTemplateCard function for templates.js
+renderTemplateCard(template) {
+    const phaseColors = {
+        identification: '#2196f3',
+        qualification: '#ff9800', 
+        planning: '#4caf50',
+        engagement: '#9c27b0',
+        intelligence: '#f44336',
+        preparation: '#607d8b'
+    };
+    
+    const phaseColor = phaseColors[template.category] || '#17a2b8';
+    const description = template.description || 'No description available';
+    const truncatedDescription = description.length > 120 ? 
+        description.substring(0, 120) + '...' : description;
+    
+    return `
+        <div class="card-base template-card" onclick="Templates.openTemplate(${template.id})">
+            <div class="template-phase-indicator" style="background: ${phaseColor};">
+                ${template.category}
+            </div>
+            
+            <div class="card-header-unified">
+                <h3 class="card-title-unified">${template.title}</h3>
+                <div class="card-subtitle-unified">${template.category.charAt(0).toUpperCase() + template.category.slice(1)} Phase</div>
+            </div>
+            
+            <div class="card-content-unified">
+                <div class="card-description-unified">
+                    ${truncatedDescription}
+                </div>
+                
+                <div class="card-metrics-unified">
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Fields</span>
+                        <span class="card-metric-value">${template.fields ? template.fields.length : 0}</span>
+                    </div>
+                    <div class="card-metric-item">
+                        <span class="card-metric-label">Required</span>
+                        <span class="card-metric-value">${template.fields ? template.fields.filter(f => f.required).length : 0}</span>
+                    </div>
+                </div>
+                
+                ${template.guidance ? `
+                    <div style="background: var(--info-bg); border-radius: var(--radius-md); padding: var(--space-sm); margin-top: var(--space-md);">
+                        <div style="font-size: var(--font-size-xs); color: var(--info-dark); font-weight: var(--font-weight-medium);">
+                            💡 Includes guidance and best practices
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="card-footer-unified">
+                <div class="card-status-unified">
+                    <span class="status-badge-unified" style="background: ${phaseColor}20; color: ${phaseColor};">
+                        ${template.category}
+                    </span>
+                </div>
+                <div class="card-actions-unified" onclick="event.stopPropagation()">
+                    <button class="btn-card btn-card-secondary" onclick="Templates.previewTemplate(${template.id})">
+                        Preview
+                    </button>
+                    <button class="btn-card btn-card-primary" onclick="Templates.openTemplate(${template.id})">
+                        Use Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+},
 
     openTemplate(templateId) {
         const template = DataStore.templates.find(t => t.id === templateId);

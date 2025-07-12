@@ -1,0 +1,539 @@
+/* ==========================================================================
+   UNIFIED CARD SYSTEM - Professional, consistent cards across all pages
+   Makes all cards (opportunities, templates, actions) look polished & cohesive
+   ========================================================================== */
+
+/* ==========================================================================
+   BASE CARD SYSTEM - Foundation for all card types
+   ========================================================================== */
+
+.card-base {
+    background: var(--bg-surface);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition-normal);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    
+    /* UNIFIED CARD DIMENSIONS */
+    width: 100%;
+    height: 340px; /* Consistent height across all card types */
+    min-height: 340px;
+    max-height: 340px;
+}
+
+.card-base:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    border-color: var(--primary);
+}
+
+.card-base::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    opacity: 0;
+    transition: var(--transition-normal);
+}
+
+.card-base:hover::before {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   CARD HEADER - Consistent header across all card types
+   ========================================================================== */
+
+.card-header-unified {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--gray-100);
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+    flex-shrink: 0;
+}
+
+.card-title-unified {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary);
+    line-height: var(--line-height-tight);
+    
+    /* Consistent title truncation */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2.5em; /* Fixed height for 2 lines */
+}
+
+.card-subtitle-unified {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: var(--font-weight-medium);
+}
+
+/* ==========================================================================
+   CARD CONTENT - Flexible content area
+   ========================================================================== */
+
+.card-content-unified {
+    padding: var(--space-lg);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    overflow: hidden;
+}
+
+.card-description-unified {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    
+    /* Consistent description truncation */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 4.2em; /* Fixed height for 3 lines */
+    margin-bottom: var(--space-md);
+}
+
+/* ==========================================================================
+   CARD METRICS - Data display grid
+   ========================================================================== */
+
+.card-metrics-unified {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.card-metric-item {
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--gray-50) 100%);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm);
+    text-align: center;
+    transition: var(--transition-fast);
+}
+
+.card-metric-item:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-metric-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+.card-metric-value {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary);
+    display: block;
+}
+
+/* ==========================================================================
+   CARD FOOTER - Actions and status
+   ========================================================================== */
+
+.card-footer-unified {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--gray-100);
+    background: var(--gray-50);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.card-status-unified {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.card-actions-unified {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+/* ==========================================================================
+   STATUS BADGES - Consistent status indicators
+   ========================================================================== */
+
+.status-badge-unified {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Status color variants */
+.status-capture { background: var(--primary-bg); color: var(--primary); }
+.status-pursuing { background: var(--warning-bg); color: var(--warning-dark); }
+.status-won { background: var(--success-bg); color: var(--success-dark); }
+.status-lost { background: var(--danger-bg); color: var(--danger-dark); }
+.status-archived { background: var(--gray-100); color: var(--gray-600); }
+.status-active { background: var(--info-bg); color: var(--info-dark); }
+.status-completed { background: var(--success-bg); color: var(--success-dark); }
+.status-overdue { background: var(--danger-bg); color: var(--danger-dark); }
+.status-high { background: var(--danger-bg); color: var(--danger-dark); }
+.status-medium { background: var(--warning-bg); color: var(--warning-dark); }
+.status-low { background: var(--gray-100); color: var(--gray-600); }
+
+/* ==========================================================================
+   PROGRESS INDICATORS - Consistent progress bars
+   ========================================================================== */
+
+.card-progress-unified {
+    margin-top: var(--space-md);
+}
+
+.card-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+}
+
+.card-progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.card-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, var(--success-light) 100%);
+    border-radius: var(--radius-sm);
+    transition: width 0.8s ease;
+}
+
+/* ==========================================================================
+   OPPORTUNITY CARDS - Specific styling
+   ========================================================================== */
+
+.opportunity-card {
+    @extend .card-base;
+    cursor: pointer;
+}
+
+.opportunity-card[data-status="capture"] { border-left: 4px solid var(--primary); }
+.opportunity-card[data-status="pursuing"] { border-left: 4px solid var(--warning); }
+.opportunity-card[data-status="won"] { border-left: 4px solid var(--success); }
+.opportunity-card[data-status="lost"] { border-left: 4px solid var(--danger); }
+.opportunity-card[data-status="archived"] { border-left: 4px solid var(--gray-500); opacity: 0.8; }
+
+/* ==========================================================================
+   TEMPLATE CARDS - Specific styling
+   ========================================================================== */
+
+.template-card {
+    @extend .card-base;
+    cursor: pointer;
+    border-left: 4px solid var(--info);
+}
+
+.template-card:hover {
+    border-left-color: var(--info-dark);
+}
+
+.template-phase-indicator {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    background: var(--info);
+    color: var(--white);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   ACTION CARDS - Specific styling
+   ========================================================================== */
+
+.action-card {
+    @extend .card-base;
+    border-left: 4px solid var(--secondary);
+}
+
+.action-card.priority-high { border-left-color: var(--danger); }
+.action-card.priority-medium { border-left-color: var(--warning); }
+.action-card.priority-low { border-left-color: var(--gray-400); }
+.action-card.completed { opacity: 0.7; background: var(--gray-50); }
+.action-card.overdue { border-left-color: var(--danger); background: rgba(220, 53, 69, 0.02); }
+
+.action-due-date {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.action-due-date.overdue {
+    background: var(--danger-bg);
+    color: var(--danger-dark);
+    animation: pulse 2s infinite;
+}
+
+.action-due-date.due-soon {
+    background: var(--warning-bg);
+    color: var(--warning-dark);
+}
+
+/* ==========================================================================
+   CARD GRIDS - Consistent grid layouts
+   ========================================================================== */
+
+.cards-grid-unified {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: var(--space-xl);
+    padding: var(--space-lg);
+}
+
+.cards-grid-dense {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-lg);
+    padding: var(--space-md);
+}
+
+/* ==========================================================================
+   BUTTON SYSTEM - Consistent card buttons
+   ========================================================================== */
+
+.btn-card {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: var(--transition-fast);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-card-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-card-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-card-secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.btn-card-secondary:hover {
+    background: var(--gray-300);
+    transform: translateY(-1px);
+}
+
+.btn-card-icon {
+    padding: var(--space-xs);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+}
+
+/* ==========================================================================
+   ANIMATIONS - Smooth micro-interactions
+   ========================================================================== */
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-base {
+    animation: cardAppear 0.4s ease-out;
+}
+
+.card-base:nth-child(1) { animation-delay: 0.05s; }
+.card-base:nth-child(2) { animation-delay: 0.1s; }
+.card-base:nth-child(3) { animation-delay: 0.15s; }
+.card-base:nth-child(4) { animation-delay: 0.2s; }
+.card-base:nth-child(5) { animation-delay: 0.25s; }
+.card-base:nth-child(6) { animation-delay: 0.3s; }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN - Mobile-friendly cards
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .cards-grid-unified {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+        padding: var(--space-md);
+    }
+    
+    .cards-grid-dense {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        padding: var(--space-sm);
+    }
+    
+    .card-base {
+        height: auto;
+        min-height: 280px;
+        max-height: none;
+    }
+    
+    .card-metrics-unified {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-footer-unified {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: stretch;
+    }
+    
+    .card-actions-unified {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-header-unified,
+    .card-content-unified,
+    .card-footer-unified {
+        padding: var(--space-md);
+    }
+    
+    .card-title-unified {
+        font-size: var(--font-size-base);
+    }
+    
+    .btn-card {
+        padding: var(--space-sm) var(--space-md);
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY - Ensure cards are accessible
+   ========================================================================== */
+
+.card-base:focus-within {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.card-base[tabindex] {
+    cursor: pointer;
+}
+
+.card-base[tabindex]:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .card-base {
+        border-width: 2px;
+    }
+    
+    .card-metric-item {
+        border-width: 2px;
+    }
+    
+    .status-badge-unified {
+        border: 1px solid currentColor;
+    }
+}
+
+/* ==========================================================================
+   DARK MODE SUPPORT - Future-proofing
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .card-base {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .card-header-unified {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-color: #333;
+    }
+    
+    .card-footer-unified {
+        background: #2a2a2a;
+        border-color: #333;
+    }
+    
+    .card-title-unified {
+        color: #4a9eff;
+    }
+    
+    .card-metric-item {
+        background: #2a2a2a;
+        border-color: #333;
+    }
+}
