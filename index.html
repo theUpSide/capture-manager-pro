@@ -381,17 +381,28 @@
         </div>
     </div>
 
+    <div id="presentationModal" class="modal presentation-modal">
+    <div class="modal-content presentation-modal-content">
+        <span class="close" onclick="Presentation.closePresentation()">&times;</span>
+        <div id="presentation-content">
+            <!-- Presentation slides will be populated here by presentation.js -->
+        </div>
+    </div>
+</div>
+
     <!-- JavaScript files -->
-    <script src="js/utils.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/data-manager.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/opportunities.js"></script>
-    <script src="js/roadmap.js"></script>
-    <script src="js/templates.js"></script>
-    <script src="js/actions.js"></script>
-    <script src="js/reports.js"></script>
-    <script src="js/gate-reviews.js"></script>
-    <script src="js/app.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/data-manager.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/opportunities.js"></script>
+<script src="js/presentation.js"></script>  <!-- ADD THIS LINE -->
+<script src="js/roadmap.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/gate-reviews.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>
