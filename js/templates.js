@@ -91,32 +91,65 @@ const Templates = {
             `;
         }
 
-        return activeSavedTemplates.map(savedTemplate => {
-            const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
-            const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
-            
-            return `
-                <div class="saved-template-card">
-                    <h4>${savedTemplate.title || template?.title || 'Unknown Template'}</h4>
-                    <p>${opportunity ? opportunity.name : 'Unknown Opportunity'}</p>
-                    <div class="saved-template-meta">
-                        <span>Saved: ${savedTemplate.savedDate}</span>
-                        <span>Status: ${savedTemplate.status || 'Draft'}</span>
-                    </div>
-                    <div class="saved-template-actions">
-                        <button class="btn btn-small" onclick="Templates.editSavedTemplate(${savedTemplate.id})">
-                            ${savedTemplate.status === 'completed' ? 'View' : 'Continue'}
-                        </button>
-                        <button class="btn btn-small btn-secondary" onclick="Templates.exportSavedTemplate(${savedTemplate.id})">
-                            Export
-                        </button>
-                        <button class="btn btn-small" onclick="Templates.deleteSavedTemplate(${savedTemplate.id})" style="background: #dc3545;">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        // Use unified card grid system
+        return `
+            <div class="cards-grid-unified">
+                ${activeSavedTemplates.map(savedTemplate => {
+                    const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+                    const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
+                    
+                    // Determine status styling
+                    const statusClass = savedTemplate.status === 'completed' ? 'status-completed' : 'status-in-progress';
+                    const statusIcon = savedTemplate.status === 'completed' ? '✅' : '⏳';
+                    const statusText = savedTemplate.status === 'completed' ? 'Completed' : 'In Progress';
+                    
+                    return `
+                        <div class="card-unified saved-template-card ${statusClass}">
+                            <div class="card-header-unified">
+                                <h3 class="card-title-unified">${savedTemplate.title || template?.title || 'Unknown Template'}</h3>
+                                <div class="card-subtitle-unified">${opportunity ? opportunity.name : 'Unknown Opportunity'}</div>
+                            </div>
+                            
+                            <div class="card-content-unified">
+                                <div class="card-meta-unified">
+                                    <div class="saved-template-meta">
+                                        <span class="meta-item">
+                                            <strong>📅 Saved:</strong> ${savedTemplate.savedDate}
+                                        </span>
+                                        <span class="meta-item">
+                                            <strong>👤 By:</strong> ${savedTemplate.data?.employee_name || 'Unknown'}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-description-unified">
+                                    ${template?.description || 'No description available'}
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer-unified">
+                                <div class="card-status-unified">
+                                    <span class="status-badge-unified ${statusClass}">
+                                        ${statusIcon} ${statusText}
+                                    </span>
+                                </div>
+                                <div class="card-actions-unified">
+                                    <button class="btn-card btn-card-secondary" onclick="Templates.exportSavedTemplate(${savedTemplate.id})">
+                                        📤 Export
+                                    </button>
+                                    <button class="btn-card btn-card-primary" onclick="Templates.editSavedTemplate(${savedTemplate.id})">
+                                        ${savedTemplate.status === 'completed' ? '👁️ View' : '✏️ Continue'}
+                                    </button>
+                                    <button class="btn-card btn-card-icon" onclick="Templates.deleteSavedTemplate(${savedTemplate.id})" style="background: #dc3545; color: white;" title="Delete">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
     },
 
     renderTemplatesByCategory(category, templates) {
