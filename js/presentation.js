@@ -37,6 +37,15 @@ const Presentation = {
         }
     },
 
+    // FIXED: Add getStepCompletion method to presentation.js
+    getStepCompletion(opportunityId, stepId) {
+        return DataStore.actions.some(action => 
+            action.opportunityId == opportunityId && 
+            action.stepId === stepId && 
+            action.completed
+        );
+    },
+
     // Generate comprehensive presentation data
     generatePresentationData(opportunity) {
         // Get related data
@@ -60,7 +69,7 @@ const Presentation = {
         const notes = opportunity.notes || [];
         const recentNotes = notes.slice(-5); // Last 5 notes
         
-        // Phase analysis
+        // Phase analysis - FIXED
         const phaseProgress = this.calculatePhaseProgress(opportunity);
         
         // Risk assessment
@@ -103,25 +112,46 @@ const Presentation = {
         };
     },
 
-    // Calculate progress across all phases
+    // FIXED: Calculate progress across all phases using phase.title
     calculatePhaseProgress(opportunity) {
         const phases = ['identification', 'qualification', 'planning', 'engagement', 'intelligence', 'preparation'];
         const phaseProgress = {};
         
-        phases.forEach(phase => {
-            const phaseSteps = DataStore.captureRoadmap[phase]?.steps || [];
-            const completedSteps = opportunity.phaseSteps?.[phase] || [];
-            const progress = phaseSteps.length > 0 ? 
-                Math.round((completedSteps.length / phaseSteps.length) * 100) : 0;
+        phases.forEach(phaseKey => {
+            const phase = DataStore.captureRoadmap[phaseKey];
+            if (!phase) {
+                phaseProgress[phaseKey] = {
+                    title: this.getPhaseTitle(phaseKey),
+                    progress: 0,
+                    completed: 0,
+                    total: 0,
+                    status: 'upcoming'
+                };
+                return;
+            }
             
-            phaseProgress[phase] = {
-                title: this.getPhaseTitle(phase),
+            const phaseSteps = phase.steps || [];
+            const completedStepsInPhase = phaseSteps.filter(step => 
+                this.getStepCompletion(opportunity.id, step.id)
+            ).length;
+            const progress = phaseSteps.length > 0 ? 
+                Math.round((completedStepsInPhase / phaseSteps.length) * 100) : 0;
+            
+            let status = 'upcoming';
+            if (progress === 100) {
+                status = 'completed';
+            } else if (progress > 0) {
+                status = 'in-progress';
+            } else if (phaseKey === opportunity.currentPhase) {
+                status = 'current';
+            }
+            
+            phaseProgress[phaseKey] = {
+                title: phase.title, // FIXED: Use phase.title instead of phase.name
                 progress,
-                completed: completedSteps.length,
+                completed: completedStepsInPhase,
                 total: phaseSteps.length,
-                status: phase === opportunity.currentPhase ? 'current' : 
-                       progress === 100 ? 'completed' : 
-                       progress > 0 ? 'in-progress' : 'upcoming'
+                status: status
             };
         });
         
@@ -176,17 +206,24 @@ const Presentation = {
         return risks;
     },
 
-    // Get user-friendly phase titles
-    getPhaseTitle(phase) {
-        const titles = {
+    // FIXED: Get user-friendly phase titles using DataStore
+    getPhaseTitle(phaseKey) {
+        // Use the actual phase title from DataStore if available
+        const phase = DataStore.captureRoadmap[phaseKey];
+        if (phase && phase.title) {
+            return phase.title;
+        }
+        
+        // Fallback titles if phase not found
+        const fallbackTitles = {
             identification: 'Opportunity Identification',
-            qualification: 'Opportunity Qualification',
+            qualification: 'Opportunity Qualification', 
             planning: 'Capture Planning',
             engagement: 'Customer Engagement',
             intelligence: 'Competitive Intelligence',
             preparation: 'Pre-RFP Preparation'
         };
-        return titles[phase] || phase;
+        return fallbackTitles[phaseKey] || phaseKey;
     },
 
     // Render complete presentation slides
@@ -416,7 +453,7 @@ const Presentation = {
         `;
     },
 
-    // Slide 4: Phase Progress
+    // Slide 4: Phase Progress - FIXED
     renderPhaseProgressSlide(data) {
         const { phaseProgress } = data;
         
@@ -715,6 +752,7 @@ const Presentation = {
             this.updateSlideNavigation();
         }
     },
+// ... existing code from previous response ...
 
     previousSlide() {
         if (this.currentSlide > 0) {
@@ -776,9 +814,9 @@ Generated: ${new Date().toLocaleDateString()}
 EXECUTIVE SUMMARY
 ================================================================
 
-Contract Value: ${metrics.value.toLocaleString()}
+Contract Value: $${metrics.value.toLocaleString()}
 Win Probability: ${metrics.probability}%
-Expected Value: ${metrics.expectedValue.toLocaleString()}
+Expected Value: $${metrics.expectedValue.toLocaleString()}
 Days to Close: ${metrics.daysUntilClose}
 
 Current Status: ${opportunity.status || 'Active'}
@@ -793,7 +831,7 @@ OPPORTUNITY OVERVIEW
 ================================================================
 
 Client: ${opportunity.client || 'TBD'}
-Contract Value: ${metrics.value.toLocaleString()}
+Contract Value: $${metrics.value.toLocaleString()}
 Close Date: ${opportunity.closeDate ? Utils.formatDate(opportunity.closeDate) : 'TBD'}
 Type: ${opportunity.type || 'Not specified'}
 Our Role: ${opportunity.role || 'Not specified'}
@@ -816,6 +854,14 @@ Actions:
 
 Templates: ${metrics.completedTemplates}/${metrics.totalTemplates} completed
 Gate Reviews: ${metrics.completedGates}/${metrics.totalGates} completed
+
+================================================================
+PHASE PROGRESS
+================================================================
+
+${Object.entries(data.phaseProgress).map(([phase, info]) => 
+    `${info.title}: ${info.progress}% (${info.completed}/${info.total} steps)`
+).join('\n')}
 
 ================================================================
 RISK ASSESSMENT
