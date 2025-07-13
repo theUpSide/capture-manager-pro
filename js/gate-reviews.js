@@ -97,8 +97,14 @@ const GateReviews = {
         }
     },
 
-    // Render the main gate reviews view
+    // Render the main gate reviews view with safety checks
     render() {
+        // FIXED: Only render if we're actually on the gate reviews view
+        const gateReviewsView = document.getElementById('gate-reviews-view');
+        if (!gateReviewsView || gateReviewsView.style.display === 'none') {
+            return; // Don't render if not on gate reviews page
+        }
+
         const container = document.getElementById('gate-reviews-view');
         if (!container) return;
 
@@ -166,127 +172,142 @@ const GateReviews = {
     },
 
     // Update the openNewGateModal function in gate-reviews.js:
-openNewGateModal(opportunityId = null) {
-    const modal = document.getElementById('gateReviewModal');
-    if (!modal) {
-        alert('Gate review modal not found. Please ensure the gate review system is properly initialized.');
-        return;
-    }
+    openNewGateModal(opportunityId = null) {
+        // Only show if on gate reviews page
+        if (document.getElementById('gate-reviews-view').style.display === 'none') {
+            return;
+        }
 
-    this.init(); // Ensure gate reviews are initialized
+        const modal = document.getElementById('gateReviewModal');
+        if (!modal) {
+            alert('Gate review modal not found. Please ensure the gate review system is properly initialized.');
+            return;
+        }
 
-    const content = document.getElementById('gate-review-content');
-    
-    // Get opportunities for dropdown
-    const opportunities = DataStore.opportunities || [];
-    const opportunityOptions = opportunities.map(opp => 
-        `<option value="${opp.id}" ${opportunityId && opp.id == opportunityId ? 'selected' : ''}>${opp.name}</option>`
-    ).join('');
+        this.init(); // Ensure gate reviews are initialized
 
-    content.innerHTML = `
-        <div style="padding: 2rem;">
-            <h2 style="color: #2a5298; margin-bottom: 1.5rem;">🚪 Initiate Gate Review</h2>
-            
-            <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e3e8f0; margin-bottom: 1.5rem;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label for="gateOpportunitySelect" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #2a5298;">
-                            Select Opportunity:
-                        </label>
-                        <select id="gateOpportunitySelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="">Choose an opportunity...</option>
-                            ${opportunityOptions}
-                        </select>
+        const content = document.getElementById('gate-review-content');
+        
+        // Get opportunities for dropdown
+        const opportunities = DataStore.opportunities || [];
+        const opportunityOptions = opportunities.map(opp => 
+            `<option value="${opp.id}" ${opportunityId && opp.id == opportunityId ? 'selected' : ''}>${opp.name}</option>`
+        ).join('');
+
+        content.innerHTML = `
+            <div style="padding: 2rem;">
+                <h2 style="color: #2a5298; margin-bottom: 1.5rem;">🚪 Initiate Gate Review</h2>
+                
+                <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e3e8f0; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label for="gateOpportunitySelect" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #2a5298;">
+                                Select Opportunity:
+                            </label>
+                            <select id="gateOpportunitySelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Choose an opportunity...</option>
+                                ${opportunityOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="gateNumberSelect" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #2a5298;">
+                                Gate Number:
+                            </label>
+                            <select id="gateNumberSelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Select gate...</option>
+                                <option value="0">Gate 0: Opportunity Assessment</option>
+                                <option value="1">Gate 1: Qualification Review</option>
+                                <option value="2">Gate 2: Capture Planning</option>
+                                <option value="3">Gate 3: Engagement Strategy</option>
+                                <option value="4">Gate 4: Intelligence Review</option>
+                                <option value="5">Gate 5: Proposal Readiness</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label for="gateNumberSelect" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #2a5298;">
-                            Gate Number:
-                        </label>
-                        <select id="gateNumberSelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="">Select gate...</option>
-                            <option value="0">Gate 0: Opportunity Assessment</option>
-                            <option value="1">Gate 1: Qualification Review</option>
-                            <option value="2">Gate 2: Capture Planning</option>
-                            <option value="3">Gate 3: Engagement Strategy</option>
-                            <option value="4">Gate 4: Intelligence Review</option>
-                            <option value="5">Gate 5: Proposal Readiness</option>
-                        </select>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="btn btn-secondary" onclick="GateReviews.initiateManualReview()" style="padding: 0.75rem 1.5rem;">
+                            📝 Manual Review
+                        </button>
+                        <button class="btn btn-primary" onclick="GateReviews.initiateAIReview()" style="padding: 0.75rem 1.5rem; background: #28a745;">
+                            🤖 AI Enhanced Review
+                        </button>
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <button class="btn btn-secondary" onclick="GateReviews.initiateManualReview()" style="padding: 0.75rem 1.5rem;">
-                        📝 Manual Review
-                    </button>
-                    <button class="btn btn-primary" onclick="GateReviews.initiateAIReview()" style="padding: 0.75rem 1.5rem; background: #28a745;">
-                        🤖 AI Enhanced Review
+                <div id="gateDescription" style="margin-top: 1rem; padding: 1rem; background: #e3f2fd; border-radius: 4px; display: none;">
+                    <!-- Gate description will be populated here -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="GateReviews.closeReviewModal()">
+                        Cancel
                     </button>
                 </div>
             </div>
-            
-            <div id="gateDescription" style="margin-top: 1rem; padding: 1rem; background: #e3f2fd; border-radius: 4px; display: none;">
-                <!-- Gate description will be populated here -->
-            </div>
-            
-            <div style="text-align: center; margin-top: 2rem;">
-                <button class="btn btn-secondary" onclick="GateReviews.closeReviewModal()">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    `;
+        `;
 
-    modal.style.display = 'block';
-    
-    // Add event listeners for the select elements
-    document.getElementById('gateNumberSelect').addEventListener('change', this.updateGateDescription.bind(this));
-    document.getElementById('gateOpportunitySelect').addEventListener('change', this.updateGateDescription.bind(this));
-},
+        modal.style.display = 'block';
+        
+        // Add event listeners for the select elements
+        document.getElementById('gateNumberSelect').addEventListener('change', this.updateGateDescription.bind(this));
+        document.getElementById('gateOpportunitySelect').addEventListener('change', this.updateGateDescription.bind(this));
+    },
 
-// Also add these helper functions if they don't exist:
-initiateManualReview() {
-    const opportunityId = document.getElementById('gateOpportunitySelect').value;
-    const gateNumber = document.getElementById('gateNumberSelect').value;
-    
-    if (!opportunityId || gateNumber === '') {
-        alert('Please select both an opportunity and gate number.');
-        return;
-    }
-    
-    // Create a manual gate review
-    this.createGateReview(parseInt(opportunityId), parseInt(gateNumber), false);
-    
-    // Close the modal and show success
-    this.closeReviewModal();
-    alert(`Gate ${gateNumber} review initiated successfully!`);
-    
-    // Refresh the gate reviews view if we're on it
-    if (document.getElementById('gate-reviews-view').style.display !== 'none') {
-        this.render();
-    }
-},
+    // Also add these helper functions if they don't exist:
+    initiateManualReview() {
+        // Only execute if on gate reviews page
+        if (document.getElementById('gate-reviews-view').style.display === 'none') {
+            return;
+        }
 
-initiateAIReview() {
-    const opportunityId = document.getElementById('gateOpportunitySelect').value;
-    const gateNumber = document.getElementById('gateNumberSelect').value;
-    
-    if (!opportunityId || gateNumber === '') {
-        alert('Please select both an opportunity and gate number.');
-        return;
-    }
-    
-    // Create an AI-enhanced gate review
-    this.createGateReview(parseInt(opportunityId), parseInt(gateNumber), true);
-    
-    // Close the modal and show success
-    this.closeReviewModal();
-    alert(`AI-enhanced Gate ${gateNumber} review initiated successfully!`);
-    
-    // Refresh the gate reviews view if we're on it
-    if (document.getElementById('gate-reviews-view').style.display !== 'none') {
-        this.render();
-    }
-},
+        const opportunityId = document.getElementById('gateOpportunitySelect').value;
+        const gateNumber = document.getElementById('gateNumberSelect').value;
+        
+        if (!opportunityId || gateNumber === '') {
+            alert('Please select both an opportunity and gate number.');
+            return;
+        }
+        
+        // Create a manual gate review
+        this.createGateReview(parseInt(opportunityId), parseInt(gateNumber), false);
+        
+        // Close the modal and show success
+        this.closeReviewModal();
+        alert(`Gate ${gateNumber} review initiated successfully!`);
+        
+        // Refresh the gate reviews view if we're on it
+        if (document.getElementById('gate-reviews-view').style.display !== 'none') {
+            this.render();
+        }
+    },
+
+    initiateAIReview() {
+        // Only execute if on gate reviews page
+        if (document.getElementById('gate-reviews-view').style.display === 'none') {
+            return;
+        }
+
+        const opportunityId = document.getElementById('gateOpportunitySelect').value;
+        const gateNumber = document.getElementById('gateNumberSelect').value;
+        
+        if (!opportunityId || gateNumber === '') {
+            alert('Please select both an opportunity and gate number.');
+            return;
+        }
+        
+        // Create an AI-enhanced gate review
+        this.createGateReview(parseInt(opportunityId), parseInt(gateNumber), true);
+        
+        // Close the modal and show success
+        this.closeReviewModal();
+        alert(`AI-enhanced Gate ${gateNumber} review initiated successfully!`);
+        
+        // Refresh the gate reviews view if we're on it
+        if (document.getElementById('gate-reviews-view').style.display !== 'none') {
+            this.render();
+        }
+    },
 
     updateGateDescription() {
         const gateNumber = document.getElementById('gateNumberSelect').value;
@@ -424,19 +445,6 @@ initiateAIReview() {
             case 'Rejected': return { bg: '#f8d7da', text: '#721c24' };
             default: return { bg: '#f8f9fa', text: '#6c757d' };
         }
-    },
-
-    // Initiate manual gate review
-    initiateManualReview() {
-        const opportunityId = document.getElementById('gateOpportunitySelect').value;
-        const gateNumber = parseInt(document.getElementById('gateNumberSelect').value);
-        
-        if (!opportunityId) {
-            alert('Please select an opportunity first');
-            return;
-        }
-
-        this.createGateReview(opportunityId, gateNumber, false);
     },
 
     // Initiate AI-powered gate review
