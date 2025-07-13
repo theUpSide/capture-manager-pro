@@ -3,6 +3,19 @@ const Templates = {
         const container = document.getElementById('templates-grid');
         if (!container) return;
 
+        // Debug: Check if DataStore.templates exists
+        if (!DataStore || !DataStore.templates) {
+            console.error('DataStore.templates is not available');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <h3>⚠️ Templates not loaded</h3>
+                    <p>There was an error loading the templates. Please refresh the page.</p>
+                    <button class="btn" onclick="location.reload()">Refresh Page</button>
+                </div>
+            `;
+            return;
+        }
+
         let html = `
             <!-- Saved Templates Section -->
             <div class="saved-templates-section">
@@ -21,7 +34,7 @@ const Templates = {
             <!-- Available Templates Section -->
             <div class="available-templates-section">
                 <h3 style="color: #2a5298; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e9ecef;">
-                    📚 Available Templates
+                    📚 Available Templates (${DataStore.templates.length} total)
                 </h3>
                 ${this.renderTemplatesByCategory()}
             </div>
@@ -31,6 +44,8 @@ const Templates = {
     },
 
     getSavedTemplatesCount() {
+        if (!DataStore || !DataStore.opportunities || !DataStore.savedTemplates) return 0;
+        
         const activeOpportunityIds = DataStore.opportunities
             .filter(opp => !opp.status || opp.status === 'capture' || opp.status === 'pursuing')
             .map(opp => opp.id);
@@ -44,16 +59,22 @@ const Templates = {
         const content = document.getElementById('saved-templates-content');
         const icon = document.getElementById('saved-templates-icon');
         
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            icon.textContent = '▼';
-        } else {
-            content.style.display = 'none';
-            icon.textContent = '▶';
+        if (content && icon) {
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }
         }
     },
 
     renderSavedTemplates() {
+        if (!DataStore || !DataStore.opportunities || !DataStore.savedTemplates) {
+            return `<div class="no-saved-templates"><p>No saved templates available.</p></div>`;
+        }
+
         const activeOpportunityIds = DataStore.opportunities
             .filter(opp => !opp.status || opp.status === 'capture' || opp.status === 'pursuing')
             .map(opp => opp.id);
@@ -65,62 +86,26 @@ const Templates = {
         if (activeSavedTemplates.length === 0) {
             return `
                 <div class="no-saved-templates">
-                    <p>No saved templates yet. Fill out a template below to get started.</p>
+                    <p>No saved templates yet. Fill out some templates to see them here.</p>
                 </div>
             `;
         }
 
-        // Sort by project name alphabetically, with in-progress templates first
-        const sortedTemplates = activeSavedTemplates.sort((a, b) => {
-            // In-progress templates first
-            if (a.status === 'in-progress' && b.status !== 'in-progress') return -1;
-            if (b.status === 'in-progress' && a.status !== 'in-progress') return 1;
+        return activeSavedTemplates.map(savedTemplate => {
+            const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+            const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
             
-            // Then alphabetical by project name
-            const aOpportunity = DataStore.opportunities.find(opp => opp.id == a.opportunityId);
-            const bOpportunity = DataStore.opportunities.find(opp => opp.id == b.opportunityId);
-            const aName = aOpportunity ? aOpportunity.name : 'Unknown';
-            const bName = bOpportunity ? bOpportunity.name : 'Unknown';
-            
-            return aName.localeCompare(bName);
-        });
-
-        return `
-            <div class="saved-templates-list">
-                ${sortedTemplates.map(template => this.renderSavedTemplateRibbon(template)).join('')}
-            </div>
-        `;
-    },
-
-    renderSavedTemplateRibbon(savedTemplate) {
-        const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
-        const templateDef = DataStore.templates.find(t => t.id === savedTemplate.templateId);
-        const opportunityName = opportunity ? opportunity.name : 'Unknown Opportunity';
-        const templateTitle = templateDef ? templateDef.title : 'Unknown Template';
-        
-        const statusIcon = savedTemplate.status === 'in-progress' ? '🔄' : '✅';
-        const statusLabel = savedTemplate.status === 'in-progress' ? 'In Progress' : 'Completed';
-        const statusClass = savedTemplate.status === 'in-progress' ? 'in-progress' : 'completed';
-
-        return `
-            <div class="saved-template-ribbon ${statusClass}">
-                <div class="ribbon-main-content">
-                    <div class="ribbon-info">
-                        <div class="ribbon-title">
-                            <strong>${opportunityName}</strong>
-                            <span class="template-type">• ${templateTitle}</span>
-                        </div>
-                        <div class="ribbon-meta">
-                            <span class="employee-name">👤 ${savedTemplate.data.employee_name || 'No name'}</span>
-                            <span class="save-date">📅 ${Utils.formatDate(savedTemplate.savedDate)}</span>
-                            <span class="template-status ${statusClass}">
-                                ${statusIcon} ${statusLabel}
-                            </span>
-                        </div>
+            return `
+                <div class="saved-template-card">
+                    <h4>${savedTemplate.title || template?.title || 'Unknown Template'}</h4>
+                    <p>${opportunity ? opportunity.name : 'Unknown Opportunity'}</p>
+                    <div class="saved-template-meta">
+                        <span>Saved: ${savedTemplate.savedDate}</span>
+                        <span>Status: ${savedTemplate.status || 'Draft'}</span>
                     </div>
-                    <div class="ribbon-actions">
-                        <button class="btn btn-small btn-secondary" onclick="Templates.editSavedTemplate(${savedTemplate.id})">
-                            ${savedTemplate.status === 'in-progress' ? 'Continue' : 'Edit'}
+                    <div class="saved-template-actions">
+                        <button class="btn btn-small" onclick="Templates.editSavedTemplate(${savedTemplate.id})">
+                            ${savedTemplate.status === 'completed' ? 'View' : 'Continue'}
                         </button>
                         <button class="btn btn-small btn-secondary" onclick="Templates.exportSavedTemplate(${savedTemplate.id})">
                             Export
@@ -130,12 +115,63 @@ const Templates = {
                         </button>
                     </div>
                 </div>
+            `;
+        }).join('');
+    },
+
+    renderTemplatesByCategory(category, templates) {
+        const categoryConfig = this.getPhaseConfig(category);
+        
+        // Fix: Handle undefined category properly
+        const categoryName = category || 'other';
+        const displayName = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+        
+        if (!categoryConfig) {
+            console.warn(`Unknown category: ${category}`);
+            return `
+                <div class="template-phase-section" data-phase="${categoryName}">
+                    <div class="phase-panel">
+                        <div class="phase-header">
+                            <h3 class="phase-title">📂 ${displayName}</h3>
+                            <p class="phase-description">Additional templates</p>
+                            <span class="template-count">${templates.length} template${templates.length === 1 ? '' : 's'}</span>
+                        </div>
+                        <div class="cards-grid-unified">
+                            ${templates.map(template => this.renderTemplateCard(template)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="template-phase-section" data-phase="${categoryName}">
+                <div class="phase-panel">
+                    <div class="phase-header">
+                        <h3 class="phase-title">${categoryConfig.title}</h3>
+                        <p class="phase-description">${categoryConfig.description}</p>
+                        <span class="template-count">${templates.length} template${templates.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="cards-grid-unified">
+                        ${templates.map(template => this.renderTemplateCard(template)).join('')}
+                    </div>
+                </div>
             </div>
         `;
     },
 
     renderTemplatesByCategory() {
-        // Define the roadmap phase order and display information
+        if (!DataStore || !DataStore.templates || DataStore.templates.length === 0) {
+            return `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <h3>📄 No Templates Available</h3>
+                    <p>Templates are not loaded. This might be due to a data loading issue.</p>
+                    <button class="btn" onclick="location.reload()">Refresh Page</button>
+                </div>
+            `;
+        }
+
+        // Define the complete phase configuration with fallbacks
         const phaseOrder = [
             {
                 key: 'identification',
@@ -169,23 +205,54 @@ const Templates = {
             }
         ];
 
-        // Group templates by category
+        // Group templates by category with better error handling
         const templatesByCategory = {};
         DataStore.templates.forEach(template => {
-            const category = template.category;
-            if (!templatesByCategory[category]) {
-                templatesByCategory[category] = [];
+            if (template) {
+                // Fix: Handle undefined category
+                const category = template.category ? template.category.toLowerCase() : 'other';
+                if (!templatesByCategory[category]) {
+                    templatesByCategory[category] = [];
+                }
+                templatesByCategory[category].push(template);
             }
-            templatesByCategory[category].push(template);
         });
 
-        // Render in phase order
-        return phaseOrder.map(phase => {
-            const templates = templatesByCategory[phase.key] || [];
-            if (templates.length === 0) return '';
+        // Debug info
+        console.log('Templates by category:', templatesByCategory);
+        console.log('Total templates found:', DataStore.templates.length);
 
-            return this.renderTemplatesByCategory(phase.key, templates);
-        }).join('');
+        // Render in phase order with proper error handling
+        let html = '';
+        phaseOrder.forEach(phase => {
+            const templates = templatesByCategory[phase.key] || [];
+            if (templates.length > 0) {
+                html += this.renderCategorySection(phase, templates);
+            }
+        });
+
+        // Handle templates with unknown categories (including undefined)
+        const unknownTemplates = DataStore.templates.filter(template => {
+            if (!template) return false;
+            const category = template.category ? template.category.toLowerCase() : 'other';
+            return !phaseOrder.some(phase => phase.key === category);
+        });
+
+        if (unknownTemplates.length > 0) {
+            const unknownPhase = {
+                key: 'other',
+                title: '📂 Other Templates',
+                description: 'Additional templates and resources'
+            };
+            html += this.renderCategorySection(unknownPhase, unknownTemplates);
+        }
+
+        return html || `
+            <div style="text-align: center; padding: 2rem; color: #666;">
+                <h3>📄 No Templates Found</h3>
+                <p>No templates are available in any category.</p>
+            </div>
+        `;
     },
 
     getPhaseConfig(phaseKey) {
@@ -225,16 +292,14 @@ const Templates = {
         return phaseOrder.find(phase => phase.key === phaseKey);
     },
 
-    renderTemplatesByCategory(category, templates) {
-        const categoryConfig = this.getPhaseConfig(category);
-    
+    renderCategorySection(phase, templates) {
         return `
-            <div class="template-phase-section" data-phase="${category}">
+            <div class="template-phase-section" data-phase="${phase.key}">
                 <div class="phase-panel">
                     <div class="phase-header">
-                        <h3 class="phase-title">${categoryConfig.title}</h3>
-                        <p class="phase-description">${categoryConfig.description}</p>
-                        <span class="template-count">${templates.length} templates</span>
+                        <h3 class="phase-title">${phase.title}</h3>
+                        <p class="phase-description">${phase.description}</p>
+                        <span class="template-count">${templates.length} template${templates.length === 1 ? '' : 's'}</span>
                     </div>
                     <div class="cards-grid-unified">
                         ${templates.map(template => this.renderTemplateCard(template)).join('')}
@@ -244,85 +309,103 @@ const Templates = {
         `;
     },
 
-    // Updated renderTemplateCard function for templates.js
-renderTemplateCard(template) {
-    const phaseColors = {
-        identification: '#2196f3',
-        qualification: '#ff9800', 
-        planning: '#4caf50',
-        engagement: '#9c27b0',
-        intelligence: '#f44336',
-        preparation: '#607d8b'
-    };
-    
-    const phaseColor = phaseColors[template.category] || '#17a2b8';
-    const description = template.description || 'No description available';
-    const truncatedDescription = description.length > 120 ? 
-        description.substring(0, 120) + '...' : description;
-    
-    return `
-        <div class="card-base template-card" onclick="Templates.openTemplate(${template.id})">
-            <div class="template-phase-indicator" style="background: ${phaseColor};">
-                ${template.category}
-            </div>
-            
-            <div class="card-header-unified">
-                <h3 class="card-title-unified">${template.title}</h3>
-                <div class="card-subtitle-unified">${template.category.charAt(0).toUpperCase() + template.category.slice(1)} Phase</div>
-            </div>
-            
-            <div class="card-content-unified">
-                <div class="card-description-unified">
-                    ${truncatedDescription}
+    renderTemplateCard(template) {
+        if (!template) return '';
+
+        const phaseColors = {
+            identification: '#2196f3',
+            qualification: '#ff9800', 
+            planning: '#4caf50',
+            engagement: '#9c27b0',
+            intelligence: '#f44336',
+            preparation: '#607d8b',
+            other: '#6c757d'
+        };
+        
+        const category = template.category ? template.category.toLowerCase() : 'other';
+        const phaseColor = phaseColors[category] || '#17a2b8';
+        const description = template.description || 'No description available';
+        const truncatedDescription = description.length > 120 ? 
+            description.substring(0, 120) + '...' : description;
+        
+        return `
+            <div class="card-base template-card" onclick="Templates.openTemplate(${template.id})">
+                <div class="template-phase-indicator" style="background: ${phaseColor};">
+                    ${category}
                 </div>
                 
-                <div class="card-metrics-unified">
-                    <div class="card-metric-item">
-                        <span class="card-metric-label">Fields</span>
-                        <span class="card-metric-value">${template.fields ? template.fields.length : 0}</span>
-                    </div>
-                    <div class="card-metric-item">
-                        <span class="card-metric-label">Required</span>
-                        <span class="card-metric-value">${template.fields ? template.fields.filter(f => f.required).length : 0}</span>
-                    </div>
+                <div class="card-header-unified">
+                    <h3 class="card-title-unified">${template.title || 'Untitled Template'}</h3>
+                    <div class="card-subtitle-unified">${category.charAt(0).toUpperCase() + category.slice(1)} Phase</div>
                 </div>
                 
-                ${template.guidance ? `
-                    <div style="background: var(--info-bg); border-radius: var(--radius-md); padding: var(--space-sm); margin-top: var(--space-md);">
-                        <div style="font-size: var(--font-size-xs); color: var(--info-dark); font-weight: var(--font-weight-medium);">
-                            💡 Includes guidance and best practices
+                <div class="card-content-unified">
+                    <div class="card-description-unified">
+                        ${truncatedDescription}
+                    </div>
+                    
+                    <div class="card-metrics-unified">
+                        <div class="card-metric-item">
+                            <span class="card-metric-label">Fields</span>
+                            <span class="card-metric-value">${template.fields ? template.fields.length : 0}</span>
+                        </div>
+                        <div class="card-metric-item">
+                            <span class="card-metric-label">Required</span>
+                            <span class="card-metric-value">${template.fields ? template.fields.filter(f => f.required).length : 0}</span>
                         </div>
                     </div>
-                ` : ''}
-            </div>
-            
-            <div class="card-footer-unified">
-                <div class="card-status-unified">
-                    <span class="status-badge-unified" style="background: ${phaseColor}20; color: ${phaseColor};">
-                        ${template.category}
-                    </span>
+                    
+                    ${template.guidance ? `
+                        <div style="background: #e3f2fd; border-radius: 4px; padding: 0.5rem; margin-top: 0.5rem;">
+                            <div style="font-size: 0.8rem; color: #1976d2; font-weight: 500;">
+                                💡 Includes guidance and best practices
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="card-actions-unified" onclick="event.stopPropagation()">
-                    <button class="btn-card btn-card-secondary" onclick="Templates.previewTemplate(${template.id})">
-                        Preview
-                    </button>
-                    <button class="btn-card btn-card-primary" onclick="Templates.openTemplate(${template.id})">
-                        Use Template
-                    </button>
+                
+                <div class="card-footer-unified">
+                    <div class="card-status-unified">
+                        <span class="status-badge-unified" style="background: ${phaseColor}20; color: ${phaseColor};">
+                            ${category}
+                        </span>
+                    </div>
+                    <div class="card-actions-unified" onclick="event.stopPropagation()">
+                        <button class="btn-card btn-card-secondary" onclick="Templates.previewTemplate(${template.id})">
+                            Preview
+                        </button>
+                        <button class="btn-card btn-card-primary" onclick="Templates.openTemplate(${template.id})">
+                            Use Template
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-},
+        `;
+    },
 
-    openTemplate(templateId) {
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template) return;
-
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
+    renderFormField(field) {
+        const required = field.required ? 'required' : '';
         
-        // Get active opportunities for dropdown
+        switch (field.type) {
+            case 'select':
+                return `
+                    <select id="template_${field.id}" ${required}>
+                        <option value="">Select...</option>
+                        ${field.options ? field.options.map(option => `<option value="${option}">${option}</option>`).join('') : ''}
+                    </select>
+                `;
+            case 'textarea':
+                return `<textarea id="template_${field.id}" ${required} placeholder="${field.label}"></textarea>`;
+            case 'number':
+                return `<input type="number" id="template_${field.id}" ${required}>`;
+            case 'date':
+                return `<input type="date" id="template_${field.id}" ${required}>`;
+            default:
+                return `<input type="text" id="template_${field.id}" ${required} placeholder="${field.label}">`;
+        }
+    },
+
+    renderTemplateWorksheet(template) {
         const activeOpportunities = DataStore.opportunities.filter(opp => 
             !opp.status || opp.status === 'capture' || opp.status === 'pursuing'
         );
@@ -331,11 +414,17 @@ renderTemplateCard(template) {
             <div class="worksheet-header">
                 <h2>${template.title}</h2>
                 <p class="template-description">${template.description}</p>
-                ${template.guidance ? `<button class="btn btn-small btn-secondary" onclick="Templates.showGuidance(${templateId})">📖 View Guidance</button>` : ''}
+                ${template.guidance ? `
+                    <div class="guidance-info">
+                        <button type="button" class="btn btn-secondary" onclick="Templates.showGuidance(${template.id})">
+                            💡 Show Guidance
+                        </button>
+                    </div>
+                ` : ''}
             </div>
             
             <div class="template-worksheet">
-                <form id="templateForm" onsubmit="Templates.saveTemplate(event, ${templateId})">
+                <form id="templateForm" onsubmit="Templates.saveTemplate(event, ${template.id})">
                     <!-- Required fields first -->
                     <div class="form-group">
                         <label for="template_opportunity">Opportunity *</label>
@@ -351,384 +440,23 @@ renderTemplateCard(template) {
                     </div>
                     
                     <!-- Template-specific fields -->
-                    ${template.fields.map(field => `
+                    ${template.fields ? template.fields.map(field => `
                         <div class="form-group">
-                            <label for="template_${field.id}">${field.label}</label>
+                            <label for="template_${field.id}">${field.label}${field.required ? ' *' : ''}</label>
                             ${this.renderFormField(field)}
                         </div>
-                    `).join('')}
+                    `).join('') : ''}
                     
                     <div class="template-form-actions">
                         <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
-                        <button type="button" class="btn btn-secondary" onclick="Templates.saveInProgress(${templateId})">💾 Save Progress</button>
+                        <button type="button" class="btn btn-secondary" onclick="Templates.saveInProgress(${template.id})">💾 Save Progress</button>
                         <button type="submit" class="btn">✅ Save & Complete</button>
                     </div>
                 </form>
             </div>
         `;
 
-        content.innerHTML = html;
-        modal.style.display = 'block';
-    },
-
-    renderFormField(field) {
-        switch (field.type) {
-            case 'select':
-                return `
-                    <select id="template_${field.id}">
-                        <option value="">Select...</option>
-                        ${field.options.map(option => `<option value="${option}">${option}</option>`).join('')}
-                    </select>
-                `;
-            case 'textarea':
-                return `<textarea id="template_${field.id}" placeholder="${field.label}"></textarea>`;
-            case 'number':
-                return `<input type="number" id="template_${field.id}" placeholder="Enter number">`;
-            case 'date':
-                return `<input type="date" id="template_${field.id}">`;
-            default:
-                return `<input type="text" id="template_${field.id}" placeholder="${field.label}">`;
-        }
-    },
-
-    saveInProgress(templateId) {
-        this.saveTemplateData(templateId, 'in-progress');
-    },
-
-    saveTemplate(event, templateId) {
-        event.preventDefault();
-        this.saveTemplateData(templateId, 'completed');
-    },
-
-    saveTemplateData(templateId, status) {
-        const template = DataStore.templates.find(t => t.id === templateId);
-        const opportunityId = document.getElementById('template_opportunity').value;
-        const employeeName = document.getElementById('template_employee_name').value;
-
-        if (!opportunityId || !employeeName) {
-            alert('Please select an opportunity and enter your name.');
-            return;
-        }
-
-        // Collect all form data
-        const data = {
-            opportunity_id: opportunityId,
-            employee_name: employeeName
-        };
-
-        template.fields.forEach(field => {
-            const element = document.getElementById(`template_${field.id}`);
-            if (element) {
-                data[field.id] = element.value;
-            }
-        });
-
-        // Create saved template record
-        const savedTemplate = {
-            id: Date.now(),
-            templateId: templateId,
-            opportunityId: opportunityId,
-            data: data,
-            status: status,
-            savedDate: new Date().toISOString().split('T')[0],
-            lastModified: new Date().toISOString().split('T')[0]
-        };
-
-        DataStore.savedTemplates.push(savedTemplate);
-        DataStore.saveData();
-        this.closeModal();
-        this.render();
-    },
-
-    editSavedTemplate(savedTemplateId) {
-        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
-        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
-        
-        if (!savedTemplate || !template) return;
-
-        this.openTemplate(template.id);
-        
-        // Populate form with saved data
-        setTimeout(() => {
-            document.getElementById('template_opportunity').value = savedTemplate.opportunityId;
-            document.getElementById('template_employee_name').value = savedTemplate.data.employee_name || '';
-            
-            template.fields.forEach(field => {
-                const element = document.getElementById(`template_${field.id}`);
-                if (element && savedTemplate.data[field.id]) {
-                    element.value = savedTemplate.data[field.id];
-                }
-            });
-            
-            // Update form submission to update existing record
-            const form = document.getElementById('templateForm');
-            form.onsubmit = (e) => {
-                e.preventDefault();
-                this.updateSavedTemplate(savedTemplateId, 'completed');
-            };
-            
-            // Update save progress button
-            const saveProgressBtn = form.querySelector('button[onclick*="saveInProgress"]');
-            if (saveProgressBtn) {
-                saveProgressBtn.onclick = () => this.updateSavedTemplate(savedTemplateId, 'in-progress');
-            }
-        }, 100);
-    },
-
-    updateSavedTemplate(savedTemplateId, status) {
-        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
-        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
-        
-        const opportunityId = document.getElementById('template_opportunity').value;
-        const employeeName = document.getElementById('template_employee_name').value;
-
-        if (!opportunityId || !employeeName) {
-            alert('Please select an opportunity and enter your name.');
-            return;
-        }
-
-        // Update saved data
-        savedTemplate.data.opportunity_id = opportunityId;
-        savedTemplate.data.employee_name = employeeName;
-        savedTemplate.opportunityId = opportunityId;
-        savedTemplate.status = status;
-        savedTemplate.lastModified = new Date().toISOString().split('T')[0];
-
-        template.fields.forEach(field => {
-            const element = document.getElementById(`template_${field.id}`);
-            if (element) {
-                savedTemplate.data[field.id] = element.value;
-            }
-        });
-
-        DataStore.saveData();
-        this.closeModal();
-        this.render();
-    },
-
-    exportSavedTemplate(savedTemplateId) {
-        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
-        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
-        const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
-        
-        if (!savedTemplate || !template) return;
-
-        const exportData = {
-            templateTitle: template.title,
-            opportunityName: opportunity ? opportunity.name : 'Unknown',
-            employeeName: savedTemplate.data.employee_name,
-            savedDate: savedTemplate.savedDate,
-            status: savedTemplate.status,
-            data: savedTemplate.data
-        };
-
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${template.title.replace(/[^a-z0-9]/gi, '_')}_${opportunity ? opportunity.name.replace(/[^a-z0-9]/gi, '_') : 'export'}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    },
-
-    deleteSavedTemplate(savedTemplateId) {
-        if (!confirm('Are you sure you want to delete this saved template?')) return;
-        
-        DataStore.savedTemplates = DataStore.savedTemplates.filter(st => st.id !== savedTemplateId);
-        DataStore.saveData();
-        this.render();
-    },
-
-    showGuidance(templateId) {
-        // Existing guidance functionality
-        const template = DataStore.templates.find(t => t.id === templateId);
-        if (!template || !template.guidance) return;
-
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-        
-        const guidance = template.guidance;
-        
-        content.innerHTML = `
-            <div class="template-guidance">
-                <h2>${template.title}</h2>
-                <p class="template-description">${template.description}</p>
-                
-                <div class="guidance-section">
-                    <h3>🎯 Why This Template Matters</h3>
-                    <p class="guidance-text">${guidance.importance}</p>
-                </div>
-                
-                <div class="guidance-section">
-                    <h3>🤔 Key Considerations</h3>
-                    <ul class="guidance-list">
-                        ${guidance.keyConsiderations.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>
-                
-                <div class="guidance-section">
-                    <h3>📋 Pre-Work Checklist</h3>
-                    <ul class="guidance-checklist">
-                        ${guidance.prework.map(item => `
-                            <li>
-                                <label class="checklist-item">
-                                    <input type="checkbox"> ${item}
-                                </label>
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
-                
-                ${guidance.workshopGuide ? `
-                    <div class="guidance-section">
-                        <h3>🏗️ Workshop Facilitation Guide</h3>
-                        <div class="workshop-details">
-                            <div class="workshop-meta">
-                                <span><strong>Duration:</strong> ${guidance.workshopGuide.duration}</span>
-                                <span><strong>Participants:</strong> ${guidance.workshopGuide.participants}</span>
-                            </div>
-                            
-                            <h4>Suggested Agenda:</h4>
-                            <ol class="agenda-list">
-                                ${guidance.workshopGuide.agenda.map(item => `<li>${item}</li>`).join('')}
-                            </ol>
-                            
-                            <div class="facilitation-tip">
-                                <h4>💡 Facilitation Tips:</h4>
-                                <p>${guidance.workshopGuide.facilitation}</p>
-                            </div>
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <div class="guidance-section">
-                    <h3>📚 Theory & Best Practices</h3>
-                    <p class="guidance-text">${guidance.theory}</p>
-                </div>
-                
-                <div class="guidance-cta-section">
-                    <div class="cta-content">
-                        <h3>Ready to Get Started?</h3>
-                        <p>Now that you understand the framework and best practices, click below to open the interactive worksheet and begin documenting your capture strategy.</p>
-                    </div>
-                    <div class="template-form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Not Right Now</button>
-                        <button type="button" class="btn btn-large" onclick="Templates.openTemplate(${template.id})">Open Template</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        modal.style.display = 'block';
-    },
-
-    closeModal() {
-        const modal = document.getElementById('templateDetailModal');
-        if (modal) {
-            modal.style.display = 'none';
-            modal.replaceWith(modal.cloneNode(true)); // Remove event listeners
-        }
-    },
-
-    saveForm() {
-        // ... existing save logic ...
-
-        DataStore.saveData();
-        this.closeModal();
-        this.render();
-
-        // Removed alert popup for successful save
-        // alert('Template saved successfully!');
-    },
-
-    updateForm() {
-        // ... existing update logic ...
-
-        DataStore.saveData();
-        this.closeModal();
-        this.render();
-
-        // Removed alert popup for successful update
-        // alert('Template updated successfully!');
-    },
-
-    openNewForm(templateId, opportunityId) {
-        // Find the template definition
-        const template = this.templates.find(t => t.id === templateId);
-        if (!template) {
-            alert('Template not found.');
-            return;
-        }
-
-        // Prepare modal and form content for new form based on template
-        const modal = document.getElementById('templateDetailModal');
-        const content = document.getElementById('template-detail-content');
-
-        // Store current opportunityId and templateId for saving later
-        this.currentOpportunityId = opportunityId;
-        this.currentTemplateId = templateId;
-
-        // Build form HTML dynamically based on template.fields
-        let formHtml = `<h2>New Form: ${template.title}</h2>`;
-        formHtml += `<form id="templateForm" onsubmit="Templates.saveNewForm(event)">`;
-
-        template.fields.forEach(field => {
-            formHtml += `<div class="form-group">`;
-            formHtml += `<label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>`;
-
-            if (field.type === 'textarea') {
-                formHtml += `<textarea id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''} placeholder="${field.label}"></textarea>`;
-            } else if (field.type === 'select') {
-                formHtml += `<select id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''}>`;
-                field.options.forEach(option => {
-                    formHtml += `<option value="${option}">${option}</option>`;
-                });
-                formHtml += `</select>`;
-            } else {
-                formHtml += `<input type="${field.type}" id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''} />`;
-            }
-
-            formHtml += `</div>`;
-        });
-
-        formHtml += `<button type="submit" class="btn">Save</button>`;
-        formHtml += `</form>`;
-
-        content.innerHTML = formHtml;
-        modal.style.display = 'block';
-    },
-
-    saveNewForm(event) {
-        event.preventDefault();
-
-        const form = document.getElementById('templateForm');
-        if (!form) return;
-
-        // Collect form data
-        const formData = {};
-        Array.from(form.elements).forEach(el => {
-            if (el.name) {
-                formData[el.name] = el.value;
-            }
-        });
-
-        // Create new saved template entry
-        const newSavedTemplate = {
-            id: Date.now(),
-            opportunityId: this.currentOpportunityId,
-            templateId: this.currentTemplateId,
-            data: formData,
-            status: 'in-progress',
-            savedDate: new Date().toISOString().split('T')[0]
-        };
-
-        DataStore.savedTemplates.push(newSavedTemplate);
-        DataStore.saveData();
-
-        this.closeModal();
-        if (typeof Opportunities !== 'undefined') {
-            Opportunities.openDetailModal(this.currentOpportunityId);
-        }
+        return html;
     },
 
     renderMeetingNotesTemplate(template, savedData = {}) {
@@ -739,40 +467,41 @@ renderTemplateCard(template) {
             // Group related fields into sections
             let sectionClass = '';
             let sectionLabel = '';
+            let sectionStart = '';
+            let sectionEnd = '';
+            let sectionHeader = '';
             
             if (['meeting_date', 'meeting_time', 'meeting_location', 'meeting_type'].includes(field.id)) {
                 sectionClass = 'meeting-logistics-section';
-                sectionLabel = field.id === 'meeting_date' ? 'Meeting Logistics' : '';
+                if (field.id === 'meeting_date') {
+                    sectionStart = '<div class="meeting-logistics-section">';
+                    sectionHeader = '<h3>Meeting Logistics</h3>';
+                }
+                if (field.id === 'meeting_type') {
+                    sectionEnd = '</div>';
+                }
             } else if (['our_attendees', 'customer_attendees', 'other_attendees'].includes(field.id)) {
                 sectionClass = 'meeting-attendees-section';
-                sectionLabel = field.id === 'our_attendees' ? 'Attendees' : '';
+                if (field.id === 'our_attendees') {
+                    sectionStart = '<div class="meeting-attendees-section">';
+                    sectionHeader = '<h3>Attendees</h3>';
+                }
+                if (field.id === 'other_attendees') {
+                    sectionEnd = '</div>';
+                }
             } else if (['action_items', 'our_commitments', 'customer_commitments', 'follow_up_needed'].includes(field.id)) {
                 sectionClass = 'action-items-section';
-                sectionLabel = field.id === 'action_items' ? 'Action Items & Commitments' : '';
+                if (field.id === 'action_items') {
+                    sectionStart = '<div class="action-items-section">';
+                    sectionHeader = '<h3>Action Items & Follow-up</h3>';
+                }
+                if (field.id === 'follow_up_needed') {
+                    sectionEnd = '</div>';
+                }
             }
             
-            const sectionHeader = sectionLabel ? `<h4>${sectionLabel}</h4>` : '';
-            const sectionStart = sectionLabel ? `<div class="${sectionClass}">` : '';
-            const sectionEnd = sectionLabel && field.id === 'other_attendees' ? '</div>' : 
-                              sectionLabel && field.id === 'follow_up_needed' ? '</div>' : '';
-            
             let fieldHtml = '';
-            
-            if (field.type === 'select') {
-                const options = field.options.map(option => 
-                    `<option value="${option}" ${value === option ? 'selected' : ''}>${option}</option>`
-                ).join('');
-                
-                fieldHtml = `
-                    <div class="form-group">
-                        <label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>
-                        <select id="${field.id}" ${isRequired}>
-                            <option value="">Select...</option>
-                            ${options}
-                        </select>
-                    </div>
-                `;
-            } else if (field.type === 'textarea') {
+            if (field.type === 'textarea') {
                 fieldHtml = `
                     <div class="form-group">
                         <label for="${field.id}">${field.label}${field.required ? ' *' : ''}</label>
@@ -812,51 +541,359 @@ renderTemplateCard(template) {
         `;
     },
 
-    renderTemplateWorksheet(template) {
-        const activeOpportunities = DataStore.opportunities.filter(opp => 
-            !opp.status || opp.status === 'capture' || opp.status === 'pursuing'
-        );
+    openTemplate(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) {
+            alert('Template not found');
+            return;
+        }
 
-        let html = `
-            <div class="worksheet-header">
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        if (!modal || !content) {
+            alert('Template modal not found');
+            return;
+        }
+
+        // Handle special templates
+        if (template.id === 22) { // Meeting Notes Template
+            content.innerHTML = this.renderMeetingNotesTemplate(template);
+        } else {
+            content.innerHTML = this.renderTemplateWorksheet(template);
+        }
+
+        modal.style.display = 'block';
+
+        // Handle form submission
+        const form = document.getElementById('templateForm');
+        if (form && !form.onsubmit) {
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                this.saveTemplate(e, templateId);
+            };
+        }
+    },
+
+    previewTemplate(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) return;
+
+        let previewText = `Template: ${template.title}\n\nDescription: ${template.description}\n\nCategory: ${template.category}\n\nFields (${template.fields ? template.fields.length : 0}):\n`;
+        
+        if (template.fields) {
+            template.fields.forEach((field, index) => {
+                previewText += `${index + 1}. ${field.label} (${field.type})${field.required ? ' *' : ''}\n`;
+            });
+        }
+
+        if (template.guidance) {
+            previewText += `\nIncludes guidance and best practices.`;
+        }
+
+        alert(previewText);
+    },
+
+    saveTemplate(event, templateId) {
+        if (event) event.preventDefault();
+        
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) return;
+
+        const opportunityId = document.getElementById('template_opportunity').value;
+        const employeeName = document.getElementById('template_employee_name').value;
+
+        if (!opportunityId || !employeeName) {
+            alert('Please select an opportunity and enter your name');
+            return;
+        }
+
+        this.saveTemplateData(templateId, 'completed');
+    },
+
+    saveInProgress(templateId) {
+        const opportunityId = document.getElementById('template_opportunity').value;
+        const employeeName = document.getElementById('template_employee_name').value;
+
+        if (!opportunityId || !employeeName) {
+            alert('Please select an opportunity and enter your name before saving progress');
+            return;
+        }
+
+        this.saveTemplateData(templateId, 'in-progress');
+    },
+
+    saveTemplateData(templateId, status) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        const opportunityId = document.getElementById('template_opportunity').value;
+        const employeeName = document.getElementById('template_employee_name').value;
+
+        // Collect all form data
+        const data = {
+            opportunity_id: opportunityId,
+            employee_name: employeeName
+        };
+
+        if (template.fields) {
+            template.fields.forEach(field => {
+                const element = document.getElementById(`template_${field.id}`);
+                if (element) {
+                    data[field.id] = element.value;
+                }
+            });
+        }
+
+        // Create saved template record
+        const savedTemplate = {
+            id: Date.now(),
+            templateId: templateId,
+            opportunityId: opportunityId,
+            title: `${template.title} - ${employeeName}`,
+            data: data,
+            status: status,
+            savedDate: new Date().toISOString().split('T')[0],
+            lastModified: new Date().toISOString().split('T')[0]
+        };
+
+        DataStore.savedTemplates.push(savedTemplate);
+        DataStore.saveData();
+        this.closeModal();
+        
+        // Show success message
+        const statusText = status === 'completed' ? 'completed' : 'saved as in-progress';
+        alert(`Template ${statusText} successfully!`);
+        
+        this.render();
+    },
+
+    editSavedTemplate(savedTemplateId) {
+        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        
+        if (!savedTemplate || !template) return;
+
+        this.openTemplate(template.id);
+        
+        // Populate form with saved data
+        setTimeout(() => {
+            document.getElementById('template_opportunity').value = savedTemplate.opportunityId;
+            document.getElementById('template_employee_name').value = savedTemplate.data.employee_name || '';
+            
+            if (template.fields) {
+                template.fields.forEach(field => {
+                    const element = document.getElementById(`template_${field.id}`);
+                    if (element && savedTemplate.data[field.id]) {
+                        element.value = savedTemplate.data[field.id];
+                    }
+                });
+            }
+            
+            // Update form submission to update existing record
+            const form = document.getElementById('templateForm');
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                this.updateSavedTemplate(savedTemplateId, 'completed');
+            };
+            
+            // Update save progress button
+            const saveProgressBtn = form.querySelector('button[onclick*="saveInProgress"]');
+            if (saveProgressBtn) {
+                saveProgressBtn.onclick = () => this.updateSavedTemplate(savedTemplateId, 'in-progress');
+            }
+        }, 100);
+    },
+
+    updateSavedTemplate(savedTemplateId, status) {
+        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        
+        const opportunityId = document.getElementById('template_opportunity').value;
+        const employeeName = document.getElementById('template_employee_name').value;
+
+        if (!opportunityId || !employeeName) {
+            alert('Please select an opportunity and enter your name');
+            return;
+        }
+
+        // Update saved data
+        savedTemplate.data.opportunity_id = opportunityId;
+        savedTemplate.data.employee_name = employeeName;
+        savedTemplate.opportunityId = opportunityId;
+        savedTemplate.status = status;
+        savedTemplate.lastModified = new Date().toISOString().split('T')[0];
+
+        if (template.fields) {
+            template.fields.forEach(field => {
+                const element = document.getElementById(`template_${field.id}`);
+                if (element) {
+                    savedTemplate.data[field.id] = element.value;
+                }
+            });
+        }
+
+        DataStore.saveData();
+        this.closeModal();
+        
+        const statusText = status === 'completed' ? 'updated' : 'saved as in-progress';
+        alert(`Template ${statusText} successfully!`);
+        
+        this.render();
+    },
+
+    exportSavedTemplate(savedTemplateId) {
+        const savedTemplate = DataStore.savedTemplates.find(st => st.id === savedTemplateId);
+        const template = DataStore.templates.find(t => t.id === savedTemplate.templateId);
+        const opportunity = DataStore.opportunities.find(opp => opp.id == savedTemplate.opportunityId);
+        
+        if (!savedTemplate || !template) return;
+
+        const exportData = {
+            templateTitle: template.title,
+            opportunityName: opportunity ? opportunity.name : 'Unknown',
+            employeeName: savedTemplate.data.employee_name,
+            savedDate: savedTemplate.savedDate,
+            status: savedTemplate.status,
+            data: savedTemplate.data
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${template.title.replace(/[^a-z0-9]/gi, '_')}_${opportunity ? opportunity.name.replace(/[^a-z0-9]/gi, '_') : 'export'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    },
+
+    deleteSavedTemplate(savedTemplateId) {
+        if (!confirm('Are you sure you want to delete this saved template?')) return;
+        
+        DataStore.savedTemplates = DataStore.savedTemplates.filter(st => st.id !== savedTemplateId);
+        DataStore.saveData();
+        this.render();
+    },
+
+    showGuidance(templateId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template || !template.guidance) return;
+
+        const modal = document.getElementById('templateDetailModal');
+        const content = document.getElementById('template-detail-content');
+        
+        const guidance = template.guidance;
+        
+        content.innerHTML = `
+            <div class="template-guidance">
                 <h2>${template.title}</h2>
                 <p class="template-description">${template.description}</p>
-                ${template.guidance ? `<button class="btn btn-small btn-secondary" onclick="Templates.showGuidance(${template.id})">📖 View Guidance</button>` : ''}
-            </div>
-            
-            <div class="template-worksheet">
-                <form id="templateForm" onsubmit="Templates.saveTemplate(event, ${template.id})">
-                    <!-- Required fields first -->
-                    <div class="form-group">
-                        <label for="template_opportunity">Opportunity *</label>
-                        <select id="template_opportunity" required>
-                            <option value="">Select Opportunity</option>
-                            ${activeOpportunities.map(opp => `<option value="${opp.id}">${opp.name}</option>`).join('')}
-                        </select>
+                
+                <div class="guidance-section">
+                    <h3>🎯 Why This Template Matters</h3>
+                    <p class="guidance-text">${guidance.importance}</p>
+                </div>
+                
+                ${guidance.keyConsiderations ? `
+                    <div class="guidance-section">
+                        <h3>🤔 Key Considerations</h3>
+                        <ul class="guidance-list">
+                            ${guidance.keyConsiderations.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="template_employee_name">Employee Name *</label>
-                        <input type="text" id="template_employee_name" required placeholder="Enter your name">
+                ` : ''}
+                
+                ${guidance.prework ? `
+                    <div class="guidance-section">
+                        <h3>📋 Pre-Work Checklist</h3>
+                        <ul class="guidance-checklist">
+                            ${guidance.prework.map(item => `
+                                <li>
+                                    <label class="checklist-item">
+                                        <input type="checkbox"> ${item}
+                                    </label>
+                                </li>
+                            `).join('')}
+                        </ul>
                     </div>
-                    
-                    <!-- Template-specific fields -->
-                    ${template.fields.map(field => `
-                        <div class="form-group">
-                            <label for="template_${field.id}">${field.label}</label>
-                            ${this.renderFormField(field)}
+                ` : ''}
+                
+                ${guidance.workshopGuide ? `
+                    <div class="guidance-section">
+                        <h3>🏗️ Workshop Facilitation Guide</h3>
+                        <div class="workshop-details">
+                            <div class="workshop-meta">
+                                <span><strong>Duration:</strong> ${guidance.workshopGuide.duration}</span>
+                                <span><strong>Participants:</strong> ${guidance.workshopGuide.participants}</span>
+                            </div>
+                            
+                            <h4>Suggested Agenda:</h4>
+                            <ol class="agenda-list">
+                                ${guidance.workshopGuide.agenda.map(item => `<li>${item}</li>`).join('')}
+                            </ol>
+                            
+                            <div class="facilitation-tip">
+                                <h4>💡 Facilitation Tips:</h4>
+                                <p>${guidance.workshopGuide.facilitation}</p>
+                            </div>
                         </div>
-                    `).join('')}
-                    
-                    <div class="template-form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Cancel</button>
-                        <button type="button" class="btn btn-secondary" onclick="Templates.saveInProgress(${template.id})">💾 Save Progress</button>
-                        <button type="submit" class="btn">✅ Save & Complete</button>
                     </div>
-                </form>
+                ` : ''}
+                
+                ${guidance.theory ? `
+                    <div class="guidance-section">
+                        <h3>📚 Theory & Best Practices</h3>
+                        <p class="guidance-text">${guidance.theory}</p>
+                    </div>
+                ` : ''}
+                
+                <div class="guidance-cta-section">
+                    <div class="cta-content">
+                        <h3>Ready to Get Started?</h3>
+                        <p>Now that you understand the framework and best practices, click below to open the interactive worksheet and begin documenting your capture strategy.</p>
+                    </div>
+                    <div class="template-form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="Templates.closeModal()">Not Right Now</button>
+                        <button type="button" class="btn btn-large" onclick="Templates.openTemplate(${template.id})">Open Template</button>
+                    </div>
+                </div>
             </div>
         `;
+        
+        modal.style.display = 'block';
+    },
 
-        return html;
+    closeModal() {
+        const modal = document.getElementById('templateDetailModal');
+        if (modal) {
+            modal.style.display = 'none';
+            // Clean up event listeners
+            const clonedModal = modal.cloneNode(true);
+            modal.parentNode.replaceChild(clonedModal, modal);
+        }
+    },
+
+    // Additional utility functions for completeness
+    openNewForm(templateId, opportunityId) {
+        const template = DataStore.templates.find(t => t.id === templateId);
+        if (!template) {
+            alert('Template not found.');
+            return;
+        }
+
+        this.currentOpportunityId = opportunityId;
+        this.currentTemplateId = templateId;
+        this.openTemplate(templateId);
+        
+        // Pre-select the opportunity
+        setTimeout(() => {
+            const oppSelect = document.getElementById('template_opportunity');
+            if (oppSelect) {
+                oppSelect.value = opportunityId;
+            }
+        }, 100);
+    },
+
+    saveNewForm(event) {
+        event.preventDefault();
+        this.saveTemplate(event, this.currentTemplateId);
     }
 };
