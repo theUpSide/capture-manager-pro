@@ -8,12 +8,15 @@ const GatePackageSlides = {
         const slidesHTML = `
             <!-- Slide Navigation -->
             <div class="gate-package-nav">
-                <button class="btn btn-secondary" onclick="GatePackageGenerator.previousSlide()" id="prevBtn">← Previous</button>
-                <span class="slide-counter" id="slideCounter">1 / 8</span>
-                <button class="btn btn-secondary" onclick="GatePackageGenerator.nextSlide()" id="nextBtn">Next →</button>
+                <div class="nav-controls">
+                    <button class="btn btn-secondary" onclick="GatePackageGenerator.previousSlide()" id="prevBtn">← Previous</button>
+                    <span class="slide-counter" id="slideCounter">1 / 8</span>
+                    <button class="btn btn-secondary" onclick="GatePackageGenerator.nextSlide()" id="nextBtn">Next →</button>
+                </div>
                 <div class="gate-package-actions">
                     <button class="btn btn-primary" onclick="GatePackageGenerator.saveGatePackage()">💾 Save</button>
                     <button class="btn btn-success" onclick="GatePackageGenerator.exportGatePackage()">📄 Export</button>
+                    <button class="btn btn-secondary" onclick="GatePackageGenerator.closeGatePackage()">✕ Close</button>
                 </div>
             </div>
 
@@ -52,476 +55,789 @@ const GatePackageSlides = {
                 ${gatePackage.gateNumber >= 3 ? this.renderFunctionalReviewsSlide(gatePackage, opportunity) : this.renderActionItemsSlide(gatePackage, opportunity)}
             </div>
 
-            <!-- Slide 8: Summary & Decision -->
+            <!-- Slide 8: Final Decision & Sign-off -->
             <div class="gate-package-slide" data-slide="8">
-                ${this.renderSummaryDecisionSlide(gatePackage, opportunity, gateDefinition)}
+                ${this.renderDecisionSlide(gatePackage, opportunity)}
             </div>
         `;
-
+        
         content.innerHTML = slidesHTML;
-        GatePackageGenerator.totalSlides = 8;
     },
 
-    // Render Title Slide
     renderTitleSlide(gatePackage, opportunity, gateDefinition) {
         return `
             <div class="slide-header">
-                <h1>Gate ${gatePackage.gateNumber} - ${gateDefinition.name}</h1>
-                <h2><input type="text" id="title-opp-name" value="${opportunity.name || ''}" /></h2>
-                <div class="slide-date">${Utils.formatDate(gatePackage.createdDate)}</div>
-                <div class="gate-package-status">
-                    <span class="status-badge status-${gatePackage.status}">${gatePackage.status}</span>
+                <h1>${gateDefinition.name}</h1>
+                <h2>${opportunity.name}</h2>
+                <div class="opportunity-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Client:</label>
+                            <span>${opportunity.client || 'Not specified'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Value:</label>
+                            <span>$${opportunity.value ? opportunity.value.toLocaleString() : 'TBD'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Close Date:</label>
+                            <span>${Utils.formatDate(opportunity.closeDate) || 'TBD'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Progress:</label>
+                            <span>${opportunity.progress || 0}%</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Status:</label>
+                            <span class="status-badge status-${gatePackage.status}">${gatePackage.status}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Created:</label>
+                            <span>${Utils.formatDate(gatePackage.createdDate)}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="slide-content">
-                <div class="opportunity-overview-grid">
-                    <div class="overview-item">
-                        <label>Customer</label>
-                        <input type="text" id="title-opp-client" value="${opportunity.client || 'TBD'}" />
-                    </div>
-                    <div class="overview-item">
-                        <label>Contract Value</label>
-                        <input type="text" id="title-opp-value" value="${Utils.formatCurrency(opportunity.value || 0)}" />
-                    </div>
-                    <div class="overview-item">
-                        <label>Win Probability</label>
-                        <input type="text" id="title-opp-probability" value="${opportunity.probability || 'TBD'}%" />
-                    </div>
-                    <div class="overview-item">
-                        <label>Close Date</label>
-                        <input type="date" id="title-opp-closeDate" value="${opportunity.closeDate || ''}" />
-                    </div>
-                    <div class="overview-item">
-                        <label>Current Phase</label>
-                        <input type="text" id="title-opp-currentPhase" value="${opportunity.currentPhase || 'identification'}" />
-                    </div>
-                    <div class="overview-item">
-                        <label>Business Unit</label>
-                        <input type="text" id="title-opp-businessUnit" value="${opportunity.businessUnit || 'Integration & Sustainment'}" />
-                    </div>
-                </div>
+                <h3>Gate Overview</h3>
+                <p>${gateDefinition.description}</p>
                 
-                <div class="gate-description">
-                    <h3>Gate ${gatePackage.gateNumber} Purpose</h3>
-                    <textarea id="title-gate-recap">${gateDefinition.description}</textarea>
+                <h3>Executive Summary</h3>
+                <textarea id="exec-summary" rows="4" placeholder="Enter executive summary...">${gatePackage.executiveSummary?.summary || ''}</textarea>
+                
+                <h3>Key Highlights</h3>
+                <ul class="highlights-list">
+                    ${(gatePackage.executiveSummary?.keyHighlights || []).map(highlight => 
+                        `<li>${highlight}</li>`
+                    ).join('')}
+                </ul>
+                
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <h4>Required Templates</h4>
+                        <p>${gateDefinition.requiredTemplates.length} templates</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Required Actions</h4>
+                        <p>${gateDefinition.requiredActions.length} actions</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Review Status</h4>
+                        <p>${gatePackage.status}</p>
+                    </div>
                 </div>
             </div>
         `;
     },
 
-    // Render Executive Summary Slide
     renderExecutiveSummarySlide(gatePackage, opportunity) {
-        const highlightsHTML = gatePackage.executiveSummary.keyHighlights.map((h, index) => `
-            <li><input type="text" id="exec-highlight-${index}" value="${h}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
+        const summary = gatePackage.executiveSummary || {};
+        
         return `
-            <h2>Executive Summary Details</h2>
-            <textarea id="exec-summary">${gatePackage.executiveSummary.summary}</textarea>
-            <h3>Key Highlights</h3>
-            <ul id="exec-highlights-list">${highlightsHTML}</ul>
-            <button onclick="GatePackageSlides.addListItem('exec-highlights-list')">Add Highlight</button>
+            <h2>Executive Summary</h2>
+            
+            <div class="form-section">
+                <h3>Summary</h3>
+                <textarea id="exec-summary-detail" rows="5" placeholder="Provide a detailed executive summary...">${summary.summary || ''}</textarea>
+            </div>
+            
+            <div class="form-section">
+                <h3>Key Highlights</h3>
+                <div id="highlights-container">
+                    ${(summary.keyHighlights || []).map((highlight, index) => `
+                        <div class="highlight-item">
+                            <input type="text" value="${highlight}" onchange="this.dataset.changed = 'true'">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addHighlight()" class="btn btn-secondary">Add Highlight</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Gate Recap</h3>
+                <textarea id="gate-recap" rows="3" placeholder="Recap of gate activities and outcomes...">${summary.gateRecap || ''}</textarea>
+            </div>
+            
+            <div class="form-section">
+                <h3>Preliminary Decision</h3>
+                <select id="preliminary-decision">
+                    <option value="">Select decision...</option>
+                    <option value="proceed" ${summary.decision === 'proceed' ? 'selected' : ''}>Proceed to Next Gate</option>
+                    <option value="conditional" ${summary.decision === 'conditional' ? 'selected' : ''}>Conditional Proceed</option>
+                    <option value="hold" ${summary.decision === 'hold' ? 'selected' : ''}>Hold</option>
+                    <option value="stop" ${summary.decision === 'stop' ? 'selected' : ''}>Stop/No Bid</option>
+                </select>
+            </div>
         `;
     },
 
-    // Render Business Case Slide
     renderBusinessCaseSlide(gatePackage, opportunity) {
-        const strengthsHTML = gatePackage.businessCaseAnalysis.strengths.map((s, index) => `
-            <li><input type="text" id="bc-strength-${index}" value="${s}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        const weaknessesHTML = gatePackage.businessCaseAnalysis.weaknesses.map((w, index) => `
-            <li><input type="text" id="bc-weakness-${index}" value="${w}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
+        const business = gatePackage.businessCaseAnalysis || {};
+        
         return `
             <h2>Business Case Analysis</h2>
-            <label>Program Alignment</label><textarea id="bc-program-alignment">${gatePackage.businessCaseAnalysis.programAlignment}</textarea>
-            <label>Bid Position</label><input type="text" id="bc-bid-position" value="${gatePackage.businessCaseAnalysis.bidPosition}" />
-            <label>Teaming Required</label>
-            <select id="bc-teaming-required">
-                <option value="false" ${!gatePackage.businessCaseAnalysis.teamingRequired ? 'selected' : ''}>No</option>
-                <option value="true" ${gatePackage.businessCaseAnalysis.teamingRequired ? 'selected' : ''}>Yes</option>
-            </select>
-            <h3>Strengths</h3><ul id="bc-strengths-list">${strengthsHTML}</ul><button onclick="GatePackageSlides.addListItem('bc-strengths-list')">Add Strength</button>
-            <h3>Weaknesses</h3><ul id="bc-weaknesses-list">${weaknessesHTML}</ul><button onclick="GatePackageSlides.addListItem('bc-weaknesses-list')">Add Weakness</button>
-            <label>OCI Concerns</label><textarea id="bc-oci-concerns">${gatePackage.businessCaseAnalysis.ociConcerns}</textarea>
+            
+            <div class="form-grid">
+                <div class="form-section">
+                    <label for="program-alignment">Program Alignment</label>
+                    <textarea id="program-alignment" rows="3" placeholder="How does this opportunity align with our strategic programs?">${business.programAlignment || ''}</textarea>
+                </div>
+                
+                <div class="form-section">
+                    <label for="bid-position">Bid Position</label>
+                    <select id="bid-position">
+                        <option value="">Select position...</option>
+                        <option value="prime" ${business.bidPosition === 'prime' ? 'selected' : ''}>Prime Contractor</option>
+                        <option value="sub" ${business.bidPosition === 'sub' ? 'selected' : ''}>Subcontractor</option>
+                        <option value="team" ${business.bidPosition === 'team' ? 'selected' : ''}>Team Member</option>
+                        <option value="partner" ${business.bidPosition === 'partner' ? 'selected' : ''}>Joint Venture Partner</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <label>
+                    <input type="checkbox" id="teaming-required" ${business.teamingRequired ? 'checked' : ''}> 
+                    Teaming Required
+                </label>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-section">
+                    <h3>Strengths</h3>
+                    <div id="strengths-container">
+                        ${(business.strengths || []).map(strength => `
+                            <div class="list-item">
+                                <input type="text" value="${strength}">
+                                <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button onclick="GatePackageSlides.addListItem('strengths-container')" class="btn btn-secondary">Add Strength</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Weaknesses</h3>
+                    <div id="weaknesses-container">
+                        ${(business.weaknesses || []).map(weakness => `
+                            <div class="list-item">
+                                <input type="text" value="${weakness}">
+                                <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button onclick="GatePackageSlides.addListItem('weaknesses-container')" class="btn btn-secondary">Add Weakness</button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <label for="oci-concerns">OCI Concerns</label>
+                <textarea id="oci-concerns" rows="2" placeholder="Any organizational conflict of interest concerns?">${business.ociConcerns || ''}</textarea>
+            </div>
         `;
     },
 
-    // Render Requirements Slide
-    renderRequirementsSlide(gatePackage, opportunity) {
-        const requirementsHTML = gatePackage.requirements.map((r, index) => `
-            <li><textarea id="req-item-${index}">${r}</textarea> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        return `
-            <h2>Requirements Analysis</h2>
-            <ul id="req-list">${requirementsHTML}</ul>
-            <button onclick="GatePackageSlides.addListItem('req-list', true)">Add Requirement</button>
-        `;
-    },
-
-    // Render Call Plan Slide
     renderCallPlanSlide(gatePackage, opportunity) {
-        const keyDecisionMakersHTML = gatePackage.callPlan.keyDecisionMakers.map((kdm, index) => `
-            <tr>
-                <td><input type="text" id="cp-kdm-name-${index}" value="${kdm.name || ''}" /></td>
-                <td><input type="text" id="cp-kdm-role-${index}" value="${kdm.role || ''}" /></td>
-                <td><button onclick="GatePackageSlides.removeTableRow(this)">Remove</button></td>
-            </tr>
-        `).join('');
-        const customerVisitsHTML = gatePackage.callPlan.customerVisits.map((cv, index) => `
-            <tr>
-                <td><input type="date" id="cp-cv-date-${index}" value="${cv.date || ''}" /></td>
-                <td><input type="text" id="cp-cv-purpose-${index}" value="${cv.purpose || ''}" /></td>
-                <td><button onclick="GatePackageSlides.removeTableRow(this)">Remove</button></td>
-            </tr>
-        `).join('');
+        const callPlan = gatePackage.callPlan || {};
+        
         return `
             <h2>Call Plan</h2>
+            
             <div class="tabs">
-                <button onclick="GatePackageSlides.switchTab('cp-tab1')" class="active">Key Decision Makers</button>
-                <button onclick="GatePackageSlides.switchTab('cp-tab2')">Customer Visits</button>
-                <button onclick="GatePackageSlides.switchTab('cp-tab3')">Statements & Preferences</button>
+                <button onclick="GatePackageSlides.switchTab('cp-tab1')" class="tab-button active">Key Decision Makers</button>
+                <button onclick="GatePackageSlides.switchTab('cp-tab2')" class="tab-button">Customer Visits</button>
+                <button onclick="GatePackageSlides.switchTab('cp-tab3')" class="tab-button">Customer Insights</button>
             </div>
-            <div id="cp-tab1" class="tab-content" style="display: block;">
-                <table>
-                    <thead><tr><th>Name</th><th>Role</th><th>Actions</th></tr></thead>
-                    <tbody id="cp-kdm-table">${keyDecisionMakersHTML}</tbody>
+            
+            <div id="cp-tab1" class="tab-content active">
+                <h3>Key Decision Makers</h3>
+                <table id="kdm-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Influence</th>
+                            <th>Contact Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(callPlan.keyDecisionMakers || []).map((kdm, index) => `
+                            <tr>
+                                <td><input type="text" value="${kdm.name || ''}" placeholder="Name"></td>
+                                <td><input type="text" value="${kdm.role || ''}" placeholder="Role"></td>
+                                <td>
+                                    <select>
+                                        <option value="high" ${kdm.influence === 'high' ? 'selected' : ''}>High</option>
+                                        <option value="medium" ${kdm.influence === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="low" ${kdm.influence === 'low' ? 'selected' : ''}>Low</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="contacted" ${kdm.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                                        <option value="pending" ${kdm.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="not-contacted" ${kdm.status === 'not-contacted' ? 'selected' : ''}>Not Contacted</option>
+                                    </select>
+                                </td>
+                                <td><button onclick="this.closest('tr').remove()" class="btn-remove">Remove</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
                 </table>
-                <button onclick="GatePackageSlides.addTableRow('cp-kdm-table', ['name', 'role'])">Add Decision Maker</button>
+                <button onclick="GatePackageSlides.addTableRow('kdm-table')" class="btn btn-secondary">Add Decision Maker</button>
             </div>
-            <div id="cp-tab2" class="tab-content" style="display: none;">
-                <table>
-                    <thead><tr><th>Date</th><th>Purpose</th><th>Actions</th></tr></thead>
-                    <tbody id="cp-cv-table">${customerVisitsHTML}</tbody>
+            
+            <div id="cp-tab2" class="tab-content">
+                <h3>Customer Visits</h3>
+                <table id="cv-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Purpose</th>
+                            <th>Attendees</th>
+                            <th>Outcome</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(callPlan.customerVisits || []).map((visit, index) => `
+                            <tr>
+                                <td><input type="date" value="${visit.date || ''}"></td>
+                                <td><input type="text" value="${visit.purpose || ''}" placeholder="Purpose"></td>
+                                <td><input type="text" value="${visit.attendees || ''}" placeholder="Attendees"></td>
+                                <td><input type="text" value="${visit.outcome || ''}" placeholder="Outcome"></td>
+                                <td><button onclick="this.closest('tr').remove()" class="btn-remove">Remove</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
                 </table>
-                <button onclick="GatePackageSlides.addTableRow('cp-cv-table', ['date', 'purpose'])">Add Visit</button>
+                <button onclick="GatePackageSlides.addTableRow('cv-table')" class="btn btn-secondary">Add Visit</button>
             </div>
-            <div id="cp-tab3" class="tab-content" style="display: none;">
-                <label>Customer Statement</label><textarea id="cp-customer-statement">${gatePackage.callPlan.customerStatement}</textarea>
-                <label>Customer Preferences</label><textarea id="cp-customer-preferences">${gatePackage.callPlan.customerPreferences}</textarea>
-                <label>Customer Reaction</label><textarea id="cp-customer-reaction">${gatePackage.callPlan.customerReaction}</textarea>
+            
+            <div id="cp-tab3" class="tab-content">
+                <div class="form-section">
+                    <label for="customer-statement">Customer Statement</label>
+                    <textarea id="customer-statement" rows="3" placeholder="What has the customer stated about their needs?">${callPlan.customerStatement || ''}</textarea>
+                </div>
+                
+                <div class="form-section">
+                    <label for="customer-preferences">Customer Preferences</label>
+                    <textarea id="customer-preferences" rows="3" placeholder="What preferences has the customer expressed?">${callPlan.customerPreferences || ''}</textarea>
+                </div>
+                
+                <div class="form-section">
+                    <label for="customer-reaction">Customer Reaction</label>
+                    <textarea id="customer-reaction" rows="3" placeholder="How has the customer reacted to our approach?">${callPlan.customerReaction || ''}</textarea>
+                </div>
             </div>
         `;
     },
 
-    // Render Proposal Slide
-    renderProposalSlide(gatePackage, opportunity) {
-        const deliverablesHTML = gatePackage.proposal.contractDeliverables.map((d, index) => `
-            <li><input type="text" id="prop-deliv-${index}" value="${d}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        const volumesHTML = gatePackage.proposal.proposalVolumes.map((v, index) => `
-            <li><input type="text" id="prop-vol-${index}" value="${v}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        const criteriaHTML = gatePackage.proposal.selectionCriteria.map((c, index) => `
-            <li><input type="text" id="prop-crit-${index}" value="${c}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        const timelineKeys = Object.keys(gatePackage.proposal.timeline);
-        const timelineHTML = timelineKeys.map((key, index) => `
-            <div>
-                <input type="text" id="prop-tl-key-${index}" value="${key}" />
-                <input type="date" id="prop-tl-val-${index}" value="${gatePackage.proposal.timeline[key]}" />
-                <button onclick="GatePackageSlides.removeTimelineItem(this)">Remove</button>
-            </div>
-        `).join('');
-        return `
-            <h2>Proposal Information</h2>
-            <div class="tabs">
-                <button onclick="GatePackageSlides.switchTab('prop-tab1')" class="active">Deliverables</button>
-                <button onclick="GatePackageSlides.switchTab('prop-tab2')">Volumes</button>
-                <button onclick="GatePackageSlides.switchTab('prop-tab3')">Criteria</button>
-                <button onclick="GatePackageSlides.switchTab('prop-tab4')">Timeline</button>
-            </div>
-            <div id="prop-tab1" class="tab-content" style="display: block;">
-                <ul id="prop-deliv-list">${deliverablesHTML}</ul>
-                <button onclick="GatePackageSlides.addListItem('prop-deliv-list')">Add Deliverable</button>
-            </div>
-            <div id="prop-tab2" class="tab-content" style="display: none;">
-                <ul id="prop-vol-list">${volumesHTML}</ul>
-                <button onclick="GatePackageSlides.addListItem('prop-vol-list')">Add Volume</button>
-            </div>
-            <div id="prop-tab3" class="tab-content" style="display: none;">
-                <ul id="prop-crit-list">${criteriaHTML}</ul>
-                <button onclick="GatePackageSlides.addListItem('prop-crit-list')">Add Criterion</button>
-            </div>
-            <div id="prop-tab4" class="tab-content" style="display: none;">
-                <div id="prop-tl-list">${timelineHTML}</div>
-                <button onclick="GatePackageSlides.addTimelineItem('prop-tl-list')">Add Timeline Item</button>
-            </div>
-        `;
-    },
-
-    // Render Market Assessment Slide
     renderMarketAssessmentSlide(gatePackage, opportunity) {
+        const market = gatePackage.marketAssessment || {};
+        
         return `
             <h2>Market Assessment</h2>
-            <label>Market Intelligence</label><textarea id="ma-market-intel">${gatePackage.marketAssessment.marketIntelligence}</textarea>
-            <label>Competitive Analysis</label><textarea id="ma-comp-analysis">${gatePackage.marketAssessment.competitiveAnalysis}</textarea>
-            <label>Investment Details</label><textarea id="ma-invest-details">${gatePackage.marketAssessment.investmentDetails}</textarea>
+            
+            <div class="form-section">
+                <label for="market-intelligence">Market Intelligence</label>
+                <textarea id="market-intelligence" rows="4" placeholder="What market intelligence do we have about this opportunity?">${market.marketIntelligence || ''}</textarea>
+            </div>
+            
+            <div class="form-section">
+                <label for="competitive-analysis">Competitive Analysis</label>
+                <textarea id="competitive-analysis" rows="4" placeholder="Who are the likely competitors and what are their strengths/weaknesses?">${market.competitiveAnalysis || ''}</textarea>
+            </div>
+            
+            <div class="form-section">
+                <label for="investment-details">Investment Requirements</label>
+                <textarea id="investment-details" rows="3" placeholder="What investments (time, money, resources) are required?">${market.investmentDetails || ''}</textarea>
+            </div>
         `;
     },
 
-    // Render Pricing Slide
+    renderProposalSlide(gatePackage, opportunity) {
+        const proposal = gatePackage.proposal || {};
+        
+        return `
+            <h2>Proposal Planning</h2>
+            
+            <div class="form-section">
+                <h3>Contract Deliverables</h3>
+                <div id="deliverables-container">
+                    ${(proposal.contractDeliverables || []).map(deliverable => `
+                        <div class="list-item">
+                            <input type="text" value="${deliverable}" placeholder="Deliverable">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('deliverables-container')" class="btn btn-secondary">Add Deliverable</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Proposal Volumes</h3>
+                <div id="volumes-container">
+                    ${(proposal.proposalVolumes || []).map(volume => `
+                        <div class="list-item">
+                            <input type="text" value="${volume}" placeholder="Volume">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('volumes-container')" class="btn btn-secondary">Add Volume</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Selection Criteria</h3>
+                <div id="criteria-container">
+                    ${(proposal.selectionCriteria || []).map(criteria => `
+                        <div class="list-item">
+                            <input type="text" value="${criteria}" placeholder="Selection criteria">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('criteria-container')" class="btn btn-secondary">Add Criteria</button>
+            </div>
+        `;
+    },
+
+    renderRequirementsSlide(gatePackage, opportunity) {
+        return `
+            <h2>Requirements Analysis</h2>
+            
+            <div class="form-section">
+                <h3>Key Requirements</h3>
+                <table id="requirements-table">
+                    <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Our Capability</th>
+                            <th>Risk Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(gatePackage.requirements || []).map(req => `
+                            <tr>
+                                <td><input type="text" value="${req.requirement || ''}" placeholder="Requirement"></td>
+                                <td>
+                                    <select>
+                                        <option value="technical" ${req.category === 'technical' ? 'selected' : ''}>Technical</option>
+                                        <option value="functional" ${req.category === 'functional' ? 'selected' : ''}>Functional</option>
+                                        <option value="performance" ${req.category === 'performance' ? 'selected' : ''}>Performance</option>
+                                        <option value="compliance" ${req.category === 'compliance' ? 'selected' : ''}>Compliance</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="high" ${req.priority === 'high' ? 'selected' : ''}>High</option>
+                                        <option value="medium" ${req.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="low" ${req.priority === 'low' ? 'selected' : ''}>Low</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="strong" ${req.capability === 'strong' ? 'selected' : ''}>Strong</option>
+                                        <option value="adequate" ${req.capability === 'adequate' ? 'selected' : ''}>Adequate</option>
+                                        <option value="weak" ${req.capability === 'weak' ? 'selected' : ''}>Weak</option>
+                                        <option value="gap" ${req.capability === 'gap' ? 'selected' : ''}>Gap</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="low" ${req.risk === 'low' ? 'selected' : ''}>Low</option>
+                                        <option value="medium" ${req.risk === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="high" ${req.risk === 'high' ? 'selected' : ''}>High</option>
+                                    </select>
+                                </td>
+                                <td><button onclick="this.closest('tr').remove()" class="btn-remove">Remove</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <button onclick="GatePackageSlides.addTableRow('requirements-table')" class="btn btn-secondary">Add Requirement</button>
+            </div>
+        `;
+    },
+
     renderPricingSlide(gatePackage, opportunity) {
-        const risksHTML = gatePackage.pricing.risks.map((r, index) => `
-            <li><input type="text" id="price-risk-${index}" value="${r}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
-        const leversHTML = gatePackage.pricing.pricingLevers.map((l, index) => `
-            <li><input type="text" id="price-lever-${index}" value="${l}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-        `).join('');
+        const pricing = gatePackage.pricing || {};
+        
         return `
             <h2>Pricing Analysis</h2>
-            <label>Pro Forma Cost Estimate</label><textarea id="price-proforma">${JSON.stringify(gatePackage.pricing.proFormaCostEstimate)}</textarea>
-            <label>Green Team Pricing</label><textarea id="price-green">${JSON.stringify(gatePackage.pricing.greenTeamPricing)}</textarea>
-            <h3>Risks</h3><ul id="price-risks-list">${risksHTML}</ul><button onclick="GatePackageSlides.addListItem('price-risks-list')">Add Risk</button>
-            <label>Price to Win</label><input type="number" id="price-ptw" value="${gatePackage.pricing.priceToWin || ''}" />
-            <h3>Pricing Levers</h3><ul id="price-levers-list">${leversHTML}</ul><button onclick="GatePackageSlides.addListItem('price-levers-list')">Add Lever</button>
-        `;
-    },
-
-    // Render Functional Reviews Slide
-    renderFunctionalReviewsSlide(gatePackage, opportunity) {
-        const reviews = ['pricing', 'contracting', 'programManagement', 'security', 'humanResources', 'quality'];
-        const tabsHTML = reviews.map((review, index) => `
-            <button onclick="GatePackageSlides.switchTab('fr-tab${index + 1}')" ${index === 0 ? 'class="active"' : ''}>${review.charAt(0).toUpperCase() + review.slice(1)}</button>
-        `).join('');
-        const contentsHTML = reviews.map((review, index) => `
-            <div id="fr-tab${index + 1}" class="tab-content" style="${index === 0 ? 'display: block;' : 'display: none;'}">
-                <label>Reviewer</label><input type="text" id="fr-${review}-reviewer" value="${gatePackage.functionalReviews[review].reviewer}" />
-                <label>Assessment</label><textarea id="fr-${review}-assessment">${gatePackage.functionalReviews[review].assessment}</textarea>
-                <h3>Concerns</h3>
-                <ul id="fr-${review}-concerns-list">
-                    ${gatePackage.functionalReviews[review].concerns.map((c, cIndex) => `
-                        <li><input type="text" id="fr-${review}-concern-${cIndex}" value="${c}" /> <button onclick="GatePackageSlides.removeListItem(this)">Remove</button></li>
-                    `).join('')}
-                </ul>
-                <button onclick="GatePackageSlides.addListItem('fr-${review}-concerns-list')">Add Concern</button>
+            
+            <div class="form-grid">
+                <div class="form-section">
+                    <label for="price-to-win">Price to Win ($)</label>
+                    <input type="number" id="price-to-win" value="${pricing.priceToWin || ''}" placeholder="0">
+                </div>
+                
+                <div class="form-section">
+                    <label for="our-estimate">Our Cost Estimate ($)</label>
+                    <input type="number" id="our-estimate" value="${pricing.ourEstimate || ''}" placeholder="0">
+                </div>
             </div>
-        `).join('');
-        return `
-            <h2>Functional Reviews</h2>
-            <div class="tabs">${tabsHTML}</div>
-            ${contentsHTML}
+            
+            <div class="form-section">
+                <h3>Pricing Risks</h3>
+                <div id="pricing-risks-container">
+                    ${(pricing.risks || []).map(risk => `
+                        <div class="list-item">
+                            <input type="text" value="${risk}" placeholder="Pricing risk">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('pricing-risks-container')" class="btn btn-secondary">Add Risk</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Pricing Levers</h3>
+                <div id="pricing-levers-container">
+                    ${(pricing.pricingLevers || []).map(lever => `
+                        <div class="list-item">
+                            <input type="text" value="${lever}" placeholder="Pricing lever">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('pricing-levers-container')" class="btn btn-secondary">Add Lever</button>
+            </div>
         `;
     },
 
-    // Render Team Slide
     renderTeamSlide(gatePackage, opportunity) {
+        const team = gatePackage.teamAssignment || {};
+        
         return `
             <h2>Team Assignment</h2>
-            <label>Lead Investigators</label><input type="text" id="team-lead-invest" value="${gatePackage.teamAssignment.leadInvestigators.join(', ')}" />
-            <label>Proposal Manager</label><input type="text" id="team-prop-mgr" value="${gatePackage.teamAssignment.proposalManager}" />
-            <label>Program Management</label><input type="text" id="team-prog-mgt" value="${gatePackage.teamAssignment.programManagement}" />
-            <label>Contracts Lead</label><input type="text" id="team-cont-lead" value="${gatePackage.teamAssignment.contractsLead}" />
-            <label>Pricing Team Lead</label><input type="text" id="team-price-lead" value="${gatePackage.teamAssignment.pricingTeamLead}" />
-            <label>Pricing Team</label><input type="text" id="team-price-team" value="${gatePackage.teamAssignment.pricingTeam.join(', ')}" />
+            
+            <div class="form-grid">
+                <div class="form-section">
+                    <label for="proposal-manager">Proposal Manager</label>
+                    <input type="text" id="proposal-manager" value="${team.proposalManager || ''}" placeholder="Name">
+                </div>
+                
+                <div class="form-section">
+                    <label for="program-management">Program Management</label>
+                    <input type="text" id="program-management" value="${team.programManagement || ''}" placeholder="Name">
+                </div>
+                
+                <div class="form-section">
+                    <label for="contracts-lead">Contracts Lead</label>
+                    <input type="text" id="contracts-lead" value="${team.contractsLead || ''}" placeholder="Name">
+                </div>
+                
+                <div class="form-section">
+                    <label for="pricing-lead">Pricing Team Lead</label>
+                    <input type="text" id="pricing-lead" value="${team.pricingTeamLead || ''}" placeholder="Name">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Lead Investigators</h3>
+                <div id="investigators-container">
+                    ${(team.leadInvestigators || []).map(investigator => `
+                        <div class="list-item">
+                            <input type="text" value="${investigator}" placeholder="Investigator name">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('investigators-container')" class="btn btn-secondary">Add Investigator</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Pricing Team</h3>
+                <div id="pricing-team-container">
+                    ${(team.pricingTeam || []).map(member => `
+                        <div class="list-item">
+                            <input type="text" value="${member}" placeholder="Team member name">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('pricing-team-container')" class="btn btn-secondary">Add Team Member</button>
+            </div>
         `;
     },
 
-    // Render Action Items Slide
+    renderFunctionalReviewsSlide(gatePackage, opportunity) {
+        const reviews = gatePackage.functionalReviews || {};
+        const functions = ['pricing', 'contracting', 'programManagement', 'security', 'humanResources', 'quality'];
+        
+        return `
+            <h2>Functional Reviews</h2>
+            
+            ${functions.map(func => {
+                const review = reviews[func] || {};
+                const funcName = func.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                
+                return `
+                    <div class="functional-review-section">
+                        <h3>${funcName}</h3>
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <label for="${func}-reviewer">Reviewer</label>
+                                <input type="text" id="${func}-reviewer" value="${review.reviewer || ''}" placeholder="Reviewer name">
+                            </div>
+                            
+                            <div class="form-section">
+                                <label for="${func}-assessment">Assessment</label>
+                                <select id="${func}-assessment">
+                                    <option value="">Select assessment...</option>
+                                    <option value="approved" ${review.assessment === 'approved' ? 'selected' : ''}>Approved</option>
+                                    <option value="conditional" ${review.assessment === 'conditional' ? 'selected' : ''}>Conditional</option>
+                                    <option value="concerns" ${review.assessment === 'concerns' ? 'selected' : ''}>Concerns</option>
+                                    <option value="rejected" ${review.assessment === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <label for="${func}-concerns">Concerns/Comments</label>
+                            <textarea id="${func}-concerns" rows="2" placeholder="Any concerns or comments...">${(review.concerns || []).join('; ')}</textarea>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        `;
+    },
+
     renderActionItemsSlide(gatePackage, opportunity) {
-        const actionsHTML = gatePackage.actionItems.map((a, index) => `
-            <tr>
-                <td><input type="text" id="ai-title-${index}" value="${a.title}" /></td>
-                <td><input type="text" id="ai-assignee-${index}" value="${a.assignee}" /></td>
-                <td><input type="date" id="ai-due-${index}" value="${a.dueDate}" /></td>
-                <td><select id="ai-status-${index}"><option value="pending" ${a.status === 'pending' ? 'selected' : ''}>Pending</option><option value="completed" ${a.status === 'completed' ? 'selected' : ''}>Completed</option></select></td>
-                <td><select id="ai-priority-${index}"><option value="high" ${a.priority === 'high' ? 'selected' : ''}>High</option><option value="medium" ${a.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="low" ${a.priority === 'low' ? 'selected' : ''}>Low</option></select></td>
-                <td><button onclick="GatePackageSlides.removeTableRow(this)">Remove</button></td>
-            </tr>
-        `).join('');
+        const actionItems = gatePackage.actionItems || [];
+        
         return `
             <h2>Action Items</h2>
-            <table>
-                <thead><tr><th>Title</th><th>Assignee</th><th>Due Date</th><th>Status</th><th>Priority</th><th>Actions</th></tr></thead>
-                <tbody id="ai-table">${actionsHTML}</tbody>
-            </table>
-            <button onclick="GatePackageSlides.addTableRow('ai-table', ['title', 'assignee', 'due', 'status', 'priority'])">Add Action Item</button>
+            
+            <div class="form-section">
+                <h3>Outstanding Action Items</h3>
+                <table id="action-items-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Owner</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${actionItems.map(action => `
+                            <tr>
+                                <td><input type="text" value="${action.title || ''}" placeholder="Action item"></td>
+                                <td><input type="text" value="${action.owner || ''}" placeholder="Owner"></td>
+                                <td><input type="date" value="${action.dueDate || ''}"></td>
+                                <td>
+                                    <select>
+                                        <option value="high" ${action.priority === 'high' ? 'selected' : ''}>High</option>
+                                        <option value="medium" ${action.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="low" ${action.priority === 'low' ? 'selected' : ''}>Low</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="open" ${action.status === 'open' ? 'selected' : ''}>Open</option>
+                                        <option value="in-progress" ${action.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                        <option value="completed" ${action.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                    </select>
+                                </td>
+                                <td><button onclick="this.closest('tr').remove()" class="btn-remove">Remove</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <button onclick="GatePackageSlides.addTableRow('action-items-table')" class="btn btn-secondary">Add Action Item</button>
+            </div>
         `;
     },
 
-    // Render Summary & Decision Slide
-    renderSummaryDecisionSlide(gatePackage, opportunity, gateDefinition) {
+    renderDecisionSlide(gatePackage, opportunity) {
         return `
-            <h2>Summary & Decision</h2>
-            <textarea id="sum-gate-recap">${gatePackage.executiveSummary.gateRecap}</textarea>
-            <label>Decision</label>
-            <select id="sum-decision">
-                <option value="null" ${!gatePackage.executiveSummary.decision ? 'selected' : ''}>Select Decision</option>
-                <option value="approve" ${gatePackage.executiveSummary.decision === 'approve' ? 'selected' : ''}>Approve</option>
-                <option value="reject" ${gatePackage.executiveSummary.decision === 'reject' ? 'selected' : ''}>Reject</option>
-                <option value="hold" ${gatePackage.executiveSummary.decision === 'hold' ? 'selected' : ''}>Hold</option>
-            </select>
-            <label>Review Meeting Date</label><input type="date" id="sum-review-date" value="${gatePackage.reviewMeetingDate || ''}" />
-            <label>Assigned Reviewers</label><input type="text" id="sum-reviewers" value="${gatePackage.assignedReviewers.join(', ')}" />
-            <label>Attendees</label><input type="text" id="sum-attendees" value="${gatePackage.attendees.join(', ')}" />
+            <h2>Final Decision & Sign-off</h2>
+            
+            <div class="form-section">
+                <label for="final-decision">Final Gate Decision</label>
+                <select id="final-decision">
+                    <option value="">Select final decision...</option>
+                    <option value="proceed" ${gatePackage.finalDecision === 'proceed' ? 'selected' : ''}>Proceed to Next Gate</option>
+                    <option value="conditional" ${gatePackage.finalDecision === 'conditional' ? 'selected' : ''}>Conditional Proceed</option>
+                    <option value="hold" ${gatePackage.finalDecision === 'hold' ? 'selected' : ''}>Hold</option>
+                    <option value="stop" ${gatePackage.finalDecision === 'stop' ? 'selected' : ''}>Stop/No Bid</option>
+                </select>
+            </div>
+            
+            <div class="form-section">
+                <label for="decision-rationale">Decision Rationale</label>
+                <textarea id="decision-rationale" rows="4" placeholder="Explain the rationale for this decision...">${gatePackage.decisionRationale || ''}</textarea>
+            </div>
+            
+            <div class="form-section">
+                <h3>Assigned Reviewers</h3>
+                <div id="reviewers-container">
+                    ${(gatePackage.assignedReviewers || []).map(reviewer => `
+                        <div class="list-item">
+                            <input type="text" value="${reviewer}" placeholder="Reviewer name">
+                            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="GatePackageSlides.addListItem('reviewers-container')" class="btn btn-secondary">Add Reviewer</button>
+            </div>
+            
+            <div class="form-section">
+                <label for="review-meeting-date">Review Meeting Date</label>
+                <input type="date" id="review-meeting-date" value="${gatePackage.reviewMeetingDate || ''}">
+            </div>
+            
+            <div class="status-update-section">
+                <h3>Update Gate Status</h3>
+                <select id="gate-status" onchange="GatePackages.updateStatus(${gatePackage.id}, this.value)">
+                    <option value="draft" ${gatePackage.status === 'draft' ? 'selected' : ''}>Draft</option>
+                    <option value="in-progress" ${gatePackage.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="under-review" ${gatePackage.status === 'under-review' ? 'selected' : ''}>Under Review</option>
+                    <option value="approved" ${gatePackage.status === 'approved' ? 'selected' : ''}>Approved</option>
+                    <option value="rejected" ${gatePackage.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+            </div>
         `;
     },
 
-    // Dynamic helpers
+    // Utility functions for slide interactions
     switchTab(tabId) {
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.style.display = 'none');
-        document.getElementById(tabId).style.display = 'block';
-        const buttons = document.querySelectorAll('.tabs button');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-    },
-
-    addListItem(listId, isTextarea = false) {
-        const list = document.getElementById(listId);
-        const li = document.createElement('li');
-        const inputType = isTextarea ? 'textarea' : 'input';
-        const input = document.createElement(inputType);
-        if (!isTextarea) input.type = 'text';
-        li.appendChild(input);
-        li.innerHTML += ' <button onclick="GatePackageSlides.removeListItem(this)">Remove</button>';
-        list.appendChild(li);
-    },
-
-    removeListItem(btn) {
-        btn.parentElement.remove();
-    },
-
-    addTableRow(tableId, fields) {
-        const tbody = document.getElementById(tableId);
-        const tr = document.createElement('tr');
-        fields.forEach(field => {
-            const td = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = field === 'due' ? 'date' : field === 'status' || field === 'priority' ? 'text' : 'text'; // Simplify for add
-            td.appendChild(input);
-            tr.appendChild(td);
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
         });
-        const actionTd = document.createElement('td');
-        actionTd.innerHTML = '<button onclick="GatePackageSlides.removeTableRow(this)">Remove</button>';
-        tr.appendChild(actionTd);
-        tbody.appendChild(tr);
+        
+        // Remove active class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tab
+        const selectedTab = document.getElementById(tabId);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+        
+        // Activate corresponding button
+        const clickedButton = event.target;
+        if (clickedButton) {
+            clickedButton.classList.add('active');
+        }
     },
 
-    removeTableRow(btn) {
-        btn.closest('tr').remove();
-    },
-
-    addTimelineItem(listId) {
-        const list = document.getElementById(listId);
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <input type="text" value="" />
-            <input type="date" value="" />
-            <button onclick="GatePackageSlides.removeTimelineItem(this)">Remove</button>
+    addHighlight() {
+        const container = document.getElementById('highlights-container');
+        const newHighlight = document.createElement('div');
+        newHighlight.className = 'highlight-item';
+        newHighlight.innerHTML = `
+            <input type="text" placeholder="New highlight">
+            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
         `;
-        list.appendChild(div);
+        container.appendChild(newHighlight);
     },
 
-    removeTimelineItem(btn) {
-        btn.parentElement.remove();
+    addListItem(containerId) {
+        const container = document.getElementById(containerId);
+        const newItem = document.createElement('div');
+        newItem.className = 'list-item';
+        newItem.innerHTML = `
+            <input type="text" placeholder="New item">
+            <button onclick="this.parentElement.remove()" class="btn-remove">Remove</button>
+        `;
+        container.appendChild(newItem);
     },
 
-    // Collectors
-    collectExecutiveSummary(gatePackage) {
-        gatePackage.executiveSummary.summary = document.getElementById('exec-summary')?.value || '';
-        gatePackage.executiveSummary.keyHighlights = Array.from(document.querySelectorAll('#exec-highlights-list input')).map(i => i.value).filter(v => v.trim());
-    },
-
-    collectBusinessCaseAnalysis(gatePackage) {
-        gatePackage.businessCaseAnalysis.programAlignment = document.getElementById('bc-program-alignment')?.value || '';
-        gatePackage.businessCaseAnalysis.bidPosition = document.getElementById('bc-bid-position')?.value || '';
-        gatePackage.businessCaseAnalysis.teamingRequired = document.getElementById('bc-teaming-required')?.value === 'true';
-        gatePackage.businessCaseAnalysis.strengths = Array.from(document.querySelectorAll('#bc-strengths-list input')).map(i => i.value).filter(v => v.trim());
-        gatePackage.businessCaseAnalysis.weaknesses = Array.from(document.querySelectorAll('#bc-weaknesses-list input')).map(i => i.value).filter(v => v.trim());
-        gatePackage.businessCaseAnalysis.ociConcerns = document.getElementById('bc-oci-concerns')?.value || '';
-    },
-
-    collectTeamAssignment(gatePackage) {
-        gatePackage.teamAssignment.leadInvestigators = document.getElementById('team-lead-invest')?.value.split(',').map(s => s.trim()) || [];
-        gatePackage.teamAssignment.proposalManager = document.getElementById('team-prop-mgr')?.value || '';
-        gatePackage.teamAssignment.programManagement = document.getElementById('team-prog-mgt')?.value || '';
-        gatePackage.teamAssignment.contractsLead = document.getElementById('team-cont-lead')?.value || '';
-        gatePackage.teamAssignment.pricingTeamLead = document.getElementById('team-price-lead')?.value || '';
-        gatePackage.teamAssignment.pricingTeam = document.getElementById('team-price-team')?.value.split(',').map(s => s.trim()) || [];
-    },
-
-    collectActionItems(gatePackage) {
-        const rows = document.querySelectorAll('#ai-table tr');
-        gatePackage.actionItems = Array.from(rows).map(row => {
-            const inputs = row.querySelectorAll('input, select');
-            if (inputs.length < 5) return null;
-            return {
-                title: inputs[0].value,
-                assignee: inputs[1].value,
-                dueDate: inputs[2].value,
-                status: inputs[3].value,
-                priority: inputs[4].value
-            };
-        }).filter(a => a);
-    },
-
-    collectMarketAssessment(gatePackage) {
-        gatePackage.marketAssessment.marketIntelligence = document.getElementById('ma-market-intel')?.value || '';
-        gatePackage.marketAssessment.competitiveAnalysis = document.getElementById('ma-comp-analysis')?.value || '';
-        gatePackage.marketAssessment.investmentDetails = document.getElementById('ma-invest-details')?.value || '';
-    },
-
-    collectCallPlan(gatePackage) {
-        gatePackage.callPlan.keyDecisionMakers = Array.from(document.querySelectorAll('#cp-kdm-table tr')).map(tr => {
-            const inputs = tr.querySelectorAll('input');
-            return { name: inputs[0]?.value, role: inputs[1]?.value };
-        }).filter(k => k.name || k.role);
-        gatePackage.callPlan.customerVisits = Array.from(document.querySelectorAll('#cp-cv-table tr')).map(tr => {
-            const inputs = tr.querySelectorAll('input');
-            return { date: inputs[0]?.value, purpose: inputs[1]?.value };
-        }).filter(v => v.date || v.purpose);
-        gatePackage.callPlan.customerStatement = document.getElementById('cp-customer-statement')?.value || '';
-        gatePackage.callPlan.customerPreferences = document.getElementById('cp-customer-preferences')?.value || '';
-        gatePackage.callPlan.customerReaction = document.getElementById('cp-customer-reaction')?.value || '';
-    },
-
-    collectProposal(gatePackage) {
-        gatePackage.proposal.contractDeliverables = Array.from(document.querySelectorAll('#prop-deliv-list input')).map(i => i.value).filter(v => v.trim());
-        gatePackage.proposal.proposalVolumes = Array.from(document.querySelectorAll('#prop-vol-list input')).map(i => i.value).filter(v => v.trim());
-        gatePackage.proposal.selectionCriteria = Array.from(document.querySelectorAll('#prop-crit-list input')).map(i => i.value).filter(v => v.trim());
-        const tlDivs = document.querySelectorAll('#prop-tl-list div');
-        gatePackage.proposal.timeline = {};
-        tlDivs.forEach(div => {
-            const inputs = div.querySelectorAll('input');
-            if (inputs[0].value) gatePackage.proposal.timeline[inputs[0].value] = inputs[1].value;
-        });
-    },
-
-    collectPricing(gatePackage) {
-        try {
-            gatePackage.pricing.proFormaCostEstimate = JSON.parse(document.getElementById('price-proforma')?.value || '{}');
-        } catch (e) {
-            gatePackage.pricing.proFormaCostEstimate = {};
+    addTableRow(tableId) {
+        const table = document.getElementById(tableId);
+        const tbody = table.querySelector('tbody');
+        const headerCells = table.querySelectorAll('thead th');
+        
+        const newRow = document.createElement('tr');
+        
+        // Add input cells based on table structure
+        for (let i = 0; i < headerCells.length - 1; i++) { // -1 for actions column
+            const cell = document.createElement('td');
+            
+            // Determine input type based on header
+            const headerText = headerCells[i].textContent.toLowerCase();
+            if (headerText.includes('date')) {
+                cell.innerHTML = '<input type="date">';
+            } else if (headerText.includes('priority') || headerText.includes('status') || 
+                      headerText.includes('influence') || headerText.includes('assessment') || 
+                      headerText.includes('category') || headerText.includes('capability') || 
+                      headerText.includes('risk')) {
+                // Add appropriate select options based on context
+                let options = '';
+                if (headerText.includes('priority')) {
+                    options = '<option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>';
+                } else if (headerText.includes('status')) {
+                    options = '<option value="open">Open</option><option value="in-progress">In Progress</option><option value="completed">Completed</option>';
+                } else if (headerText.includes('influence')) {
+                    options = '<option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>';
+                } else if (headerText.includes('assessment')) {
+                    options = '<option value="approved">Approved</option><option value="conditional">Conditional</option><option value="concerns">Concerns</option><option value="rejected">Rejected</option>';
+                } else if (headerText.includes('category')) {
+                    options = '<option value="technical">Technical</option><option value="functional">Functional</option><option value="performance">Performance</option><option value="compliance">Compliance</option>';
+                } else if (headerText.includes('capability')) {
+                    options = '<option value="strong">Strong</option><option value="adequate">Adequate</option><option value="weak">Weak</option><option value="gap">Gap</option>';
+                } else if (headerText.includes('risk')) {
+                    options = '<option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>';
+                }
+                cell.innerHTML = `<select><option value="">Select...</option>${options}</select>`;
+            } else {
+                cell.innerHTML = '<input type="text" placeholder="Enter value">';
+            }
         }
-        try {
-            gatePackage.pricing.greenTeamPricing = JSON.parse(document.getElementById('price-green')?.value || '{}');
-        } catch (e) {
-            gatePackage.pricing.greenTeamPricing = {};
-        }
-        gatePackage.pricing.risks = Array.from(document.querySelectorAll('#price-risks-list input')).map(i => i.value).filter(v => v.trim());
-        gatePackage.pricing.priceToWin = parseFloat(document.getElementById('price-ptw')?.value) || null;
-        gatePackage.pricing.pricingLevers = Array.from(document.querySelectorAll('#price-levers-list input')).map(i => i.value).filter(v => v.trim());
-    },
-
-    collectFunctionalReviews(gatePackage) {
-        const reviews = ['pricing', 'contracting', 'programManagement', 'security', 'humanResources', 'quality'];
-        reviews.forEach(review => {
-            gatePackage.functionalReviews[review].reviewer = document.getElementById(`fr-${review}-reviewer`)?.value || '';
-            gatePackage.functionalReviews[review].assessment = document.getElementById(`fr-${review}-assessment`)?.value || '';
-            gatePackage.functionalReviews[review].concerns = Array.from(document.querySelectorAll(`#fr-${review}-concerns-list input`)).map(i => i.value).filter(v => v.trim());
-        });
-    },
-
-    collectRequirements(gatePackage) {
-        gatePackage.requirements = Array.from(document.querySelectorAll('#req-list textarea')).map(t => t.value).filter(v => v.trim());
-    },
-
-    collectSummaryDecision(gatePackage) {
-        gatePackage.executiveSummary.gateRecap = document.getElementById('sum-gate-recap')?.value || '';
-        gatePackage.executiveSummary.decision = document.getElementById('sum-decision')?.value || null;
-        gatePackage.reviewMeetingDate = document.getElementById('sum-review-date')?.value || null;
-        gatePackage.assignedReviewers = document.getElementById('sum-reviewers')?.value.split(',').map(s => s.trim()) || [];
-        gatePackage.attendees = document.getElementById('sum-attendees')?.value.split(',').map(s => s.trim()) || [];
+        
+        // Add actions column
+        const actionsCell = document.createElement('td');
+        actionsCell.innerHTML = '<button onclick="this.closest(\'tr\').remove()" class="btn-remove">Remove</button>';
+        
+        newRow.appendChild(...Array.from({ length: headerCells.length - 1 }, (_, i) => {
+            const cell = document.createElement('td');
+            const headerText = headerCells[i].textContent.toLowerCase();
+            
+            if (headerText.includes('date')) {
+                cell.innerHTML = '<input type="date">';
+            } else if (headerText.includes('priority') || headerText.includes('status') || 
+                      headerText.includes('influence') || headerText.includes('assessment') || 
+                      headerText.includes('category') || headerText.includes('capability') || 
+                      headerText.includes('risk')) {
+                let options = '';
+                if (headerText.includes('priority')) {
+                    options = '<option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>';
+                } else if (headerText.includes('status')) {
+                    options = '<option value="open">Open</option><option value="in-progress">In Progress</option><option value="completed">Completed</option>';
+                } else if (headerText.includes('influence')) {
+                    options = '<option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>';
+                } else if (headerText.includes('assessment')) {
+                    options = '<option value="approved">Approved</option><option value="conditional">Conditional</option><option value="concerns">Concerns</option><option value="rejected">Rejected</option>';
+                } else if (headerText.includes('category')) {
+                    options = '<option value="technical">Technical</option><option value="functional">Functional</option><option value="performance">Performance</option><option value="compliance">Compliance</option>';
+                } else if (headerText.includes('capability')) {
+                    options = '<option value="strong">Strong</option><option value="adequate">Adequate</option><option value="weak">Weak</option><option value="gap">Gap</option>';
+                } else if (headerText.includes('risk')) {
+                    options = '<option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>';
+                }
+                cell.innerHTML = `<select><option value="">Select...</option>${options}</select>`;
+            } else {
+                cell.innerHTML = '<input type="text" placeholder="Enter value">';
+            }
+            return cell;
+        }));
+        
+        newRow.appendChild(actionsCell);
+        tbody.appendChild(newRow);
     }
 };

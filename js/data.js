@@ -1268,21 +1268,23 @@ const DataStore = {
         }
     },
 
-    // Add the critical missing methods
+
+
+    // Core data management methods
     saveData() {
         try {
             localStorage.setItem('opportunities', JSON.stringify(this.opportunities));
             localStorage.setItem('savedTemplates', JSON.stringify(this.savedTemplates));
+            localStorage.setItem('actions', JSON.stringify(this.actions));
             localStorage.setItem('contacts', JSON.stringify(this.contacts));
             localStorage.setItem('tasks', JSON.stringify(this.tasks));
-            localStorage.setItem('actions', JSON.stringify(this.actions));
-            localStorage.setItem('gatePackages', JSON.stringify(this.gatePackages));  // ADD THIS LINE
-            console.log('Data saved successfully');
+            localStorage.setItem('gatePackages', JSON.stringify(this.gatePackages));
+            localStorage.setItem('gateReviews', JSON.stringify(this.gateReviews));
+            console.log('All data saved successfully');
         } catch (error) {
             console.error('Error saving data:', error);
         }
     },
-
 
     loadData() {
         try {
@@ -1290,27 +1292,68 @@ const DataStore = {
             const storedOpportunities = localStorage.getItem('opportunities');
             if (storedOpportunities) {
                 this.opportunities = JSON.parse(storedOpportunities);
+            } else {
+                // Use sample data for first-time users
+                this.opportunities = [...this.sampleOpportunities];
+                console.log('Loaded sample opportunities for first-time use');
+            }
+            
+            const storedActions = localStorage.getItem('actions');
+            if (storedActions) {
+                this.actions = JSON.parse(storedActions);
+            } else {
+                // Use sample data for first-time users
+                this.actions = [...this.sampleActions];
+                console.log('Loaded sample actions for first-time use');
             }
             
             this.savedTemplates = JSON.parse(localStorage.getItem('savedTemplates')) || [];
             this.contacts = JSON.parse(localStorage.getItem('contacts')) || [];
             this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
             
-            const storedActions = localStorage.getItem('actions');
-            if (storedActions) {
-                this.actions = JSON.parse(storedActions);
+            // GATE PACKAGES LOADING
+            if (!this.gatePackages) {
+                this.gatePackages = [];
             }
-            
-            // ADD THIS SECTION:
             const storedGatePackages = localStorage.getItem('gatePackages');
             if (storedGatePackages) {
-                this.gatePackages = JSON.parse(storedGatePackages);
+                try {
+                    this.gatePackages = JSON.parse(storedGatePackages);
+                    console.log('Loaded gate packages:', this.gatePackages.length);
+                } catch (error) {
+                    console.error('Error loading gate packages:', error);
+                    this.gatePackages = [];
+                }
+            }
+            
+            // GATE REVIEWS LOADING
+            if (!this.gateReviews) {
+                this.gateReviews = [];
+            }
+            const storedGateReviews = localStorage.getItem('gateReviews');
+            if (storedGateReviews) {
+                try {
+                    this.gateReviews = JSON.parse(storedGateReviews);
+                    console.log('Loaded gate reviews:', this.gateReviews.length);
+                } catch (error) {
+                    console.error('Error loading gate reviews:', error);
+                    this.gateReviews = [];
+                }
             }
             
             // Migrate existing opportunities to include status and required fields
             this.opportunities.forEach(opp => {
                 if (!opp.status) {
                     opp.status = 'capture';
+                }
+                if (!opp.completedSteps) {
+                    opp.completedSteps = [];
+                }
+                if (!opp.notes) {
+                    opp.notes = [];
+                }
+                if (!opp.completedTemplates) {
+                    opp.completedTemplates = [];
                 }
                 // Map old field names to new ones if needed
                 if (opp.pwin && !opp.probability) {
@@ -1322,12 +1365,20 @@ const DataStore = {
                 if (opp.customer && !opp.client) {
                     opp.client = opp.customer;
                 }
+                if (!opp.createdDate) {
+                    opp.createdDate = new Date().toISOString().split('T')[0];
+                }
+                if (!opp.progress) {
+                    opp.progress = 0;
+                }
             });
             
             console.log('Data loaded successfully', {
                 opportunities: this.opportunities.length,
                 actions: this.actions.length,
-                savedTemplates: this.savedTemplates.length
+                savedTemplates: this.savedTemplates.length,
+                gatePackages: this.gatePackages.length,
+                gateReviews: this.gateReviews.length
             });
         } catch (error) {
             console.error('Error loading data:', error);
@@ -1342,6 +1393,8 @@ const DataStore = {
             const opportunitiesData = data.data ? data.data.opportunities : data.opportunities;
             const templatesData = data.data ? data.data.savedTemplates : data.savedTemplates;
             const actionsData = data.data ? data.data.actions : data.actions;
+            const gatePackagesData = data.data ? data.data.gatePackages : data.gatePackages;
+            const gateReviewsData = data.data ? data.data.gateReviews : data.gateReviews;
             
             if (opportunitiesData && Array.isArray(opportunitiesData)) {
                 // Transform the imported opportunities to match our expected structure
@@ -1354,14 +1407,16 @@ const DataStore = {
                     closeDate: opp.rfpDate || opp.closeDate || new Date().toISOString().split('T')[0],
                     status: opp.status || 'capture',
                     client: opp.customer || opp.client || '',
-                    notes: opp.notes || '',
+                    notes: opp.notes || [],
+                    completedSteps: opp.completedSteps || [],
+                    completedTemplates: opp.completedTemplates || [],
                     createdDate: opp.createdDate || new Date().toISOString().split('T')[0],
                     // Keep additional fields from import
                     type: opp.type,
                     role: opp.role,
                     incumbent: opp.incumbent,
                     currentPhase: opp.currentPhase,
-                    progress: opp.progress
+                    progress: opp.progress || 0
                 }));
             }
             
@@ -1373,12 +1428,22 @@ const DataStore = {
                 this.actions = actionsData;
             }
             
+            // Import gate packages if present
+            if (gatePackagesData && Array.isArray(gatePackagesData)) {
+                this.gatePackages = gatePackagesData;
+            }
+            
+            // Import gate reviews if present
+            if (gateReviewsData && Array.isArray(gateReviewsData)) {
+                this.gateReviews = gateReviewsData;
+            }
+            
             // Save the imported data
             this.saveData();
             
             return {
                 success: true,
-                message: `Imported ${this.opportunities.length} opportunities, ${this.actions.length} actions, and ${this.savedTemplates.length} saved templates`
+                message: `Imported ${this.opportunities.length} opportunities, ${this.actions.length} actions, ${this.savedTemplates.length} saved templates, ${this.gatePackages.length} gate packages, and ${this.gateReviews.length} gate reviews`
             };
         } catch (error) {
             console.error('Import error:', error);
@@ -1391,43 +1456,230 @@ const DataStore = {
 
     exportData() {
         return {
-            version: "1.0",
+            version: "2.0",
             exportDate: new Date().toISOString(),
-            opportunities: this.opportunities,
-            savedTemplates: this.savedTemplates,
-            contacts: this.contacts,
-            tasks: this.tasks,
-            actions: this.actions,
-            gatePackages: this.gatePackages  // ADD THIS LINE
+            data: {
+                opportunities: this.opportunities,
+                savedTemplates: this.savedTemplates,
+                actions: this.actions,
+                contacts: this.contacts,
+                tasks: this.tasks,
+                gatePackages: this.gatePackages,
+                gateReviews: this.gateReviews
+            }
         };
     },
 
-    // Data manipulation methods
-    addOpportunity(opportunity) {
-        opportunity.id = Date.now();
-        opportunity.createdDate = new Date().toISOString().split('T')[0];
-        opportunity.currentPhase = 'identification';
-        opportunity.progress = 5;
-        this.opportunities.push(opportunity);
-    },
-
+    // Helper methods for opportunities
     getOpportunity(id) {
         return this.opportunities.find(opp => opp.id == id);
     },
 
-    updateOpportunity(id, updates) {
-        const opp = this.getOpportunity(id);
-        if (opp) {
-            Object.assign(opp, updates);
-        }
+    addOpportunity(opportunity) {
+        opportunity.id = Date.now();
+        opportunity.createdDate = new Date().toISOString().split('T')[0];
+        opportunity.completedSteps = opportunity.completedSteps || [];
+        opportunity.notes = opportunity.notes || [];
+        opportunity.completedTemplates = opportunity.completedTemplates || [];
+        opportunity.progress = opportunity.progress || 0;
+        
+        this.opportunities.push(opportunity);
+        this.saveData();
+        return opportunity;
     },
 
+    updateOpportunity(id, updates) {
+        const index = this.opportunities.findIndex(opp => opp.id == id);
+        if (index !== -1) {
+            this.opportunities[index] = { ...this.opportunities[index], ...updates };
+            this.saveData();
+            return this.opportunities[index];
+        }
+        return null;
+    },
+
+    deleteOpportunity(id) {
+        this.opportunities = this.opportunities.filter(opp => opp.id != id);
+        // Also remove related actions
+        this.actions = this.actions.filter(action => action.opportunityId != id);
+        // Also remove related gate packages
+        this.gatePackages = this.gatePackages.filter(gp => gp.opportunityId != id);
+        // Also remove related gate reviews
+        this.gateReviews = this.gateReviews.filter(gr => gr.opportunityId != id);
+        this.saveData();
+    },
+
+    // Helper methods for actions
     addAction(action) {
         action.id = Date.now();
+        action.createdDate = new Date().toISOString().split('T')[0];
         this.actions.push(action);
+        this.saveData();
+        return action;
     },
 
-    getAction(id) {
-        return this.actions.find(action => action.id == id);
+    updateAction(id, updates) {
+        const index = this.actions.findIndex(action => action.id == id);
+        if (index !== -1) {
+            this.actions[index] = { ...this.actions[index], ...updates };
+            this.saveData();
+            return this.actions[index];
+        }
+        return null;
+    },
+
+    deleteAction(id) {
+        this.actions = this.actions.filter(action => action.id != id);
+        this.saveData();
+    },
+
+    // Helper methods for gate packages
+    getGatePackagesForOpportunity(opportunityId) {
+        return this.gatePackages.filter(gp => gp.opportunityId == opportunityId);
+    },
+
+    addGatePackage(gatePackage) {
+        gatePackage.id = Date.now();
+        gatePackage.createdDate = new Date().toISOString().split('T')[0];
+        gatePackage.lastModified = new Date().toISOString().split('T')[0];
+        this.gatePackages.push(gatePackage);
+        this.saveData();
+        return gatePackage;
+    },
+
+    updateGatePackage(id, updates) {
+        const index = this.gatePackages.findIndex(gp => gp.id == id);
+        if (index !== -1) {
+            this.gatePackages[index] = { ...this.gatePackages[index], ...updates };
+            this.gatePackages[index].lastModified = new Date().toISOString().split('T')[0];
+            this.saveData();
+            return this.gatePackages[index];
+        }
+        return null;
+    },
+
+    deleteGatePackage(id) {
+        this.gatePackages = this.gatePackages.filter(gp => gp.id != id);
+        this.saveData();
+    },
+
+    // Helper methods for gate reviews
+    addGateReview(gateReview) {
+        gateReview.id = Date.now();
+        gateReview.createdDate = new Date().toISOString().split('T')[0];
+        this.gateReviews.push(gateReview);
+        this.saveData();
+        return gateReview;
+    },
+
+    updateGateReview(id, updates) {
+        const index = this.gateReviews.findIndex(gr => gr.id == id);
+        if (index !== -1) {
+            this.gateReviews[index] = { ...this.gateReviews[index], ...updates };
+            this.saveData();
+            return this.gateReviews[index];
+        }
+        return null;
+    },
+
+    deleteGateReview(id) {
+        this.gateReviews = this.gateReviews.filter(gr => gr.id != id);
+        this.saveData();
+    },
+
+    // Helper methods for saved templates
+    addSavedTemplate(savedTemplate) {
+        savedTemplate.id = Date.now();
+        savedTemplate.savedDate = new Date().toISOString().split('T')[0];
+        this.savedTemplates.push(savedTemplate);
+        this.saveData();
+        return savedTemplate;
+    },
+
+    updateSavedTemplate(id, updates) {
+        const index = this.savedTemplates.findIndex(st => st.id == id);
+        if (index !== -1) {
+            this.savedTemplates[index] = { ...this.savedTemplates[index], ...updates };
+            this.saveData();
+            return this.savedTemplates[index];
+        }
+        return null;
+    },
+
+    deleteSavedTemplate(id) {
+        this.savedTemplates = this.savedTemplates.filter(st => st.id != id);
+        this.saveData();
+    },
+
+    // Debug function for troubleshooting
+    debugGatePackages() {
+        console.log('=== GATE PACKAGES DEBUG ===');
+        console.log('Total gate packages:', this.gatePackages?.length || 0);
+        
+        if (this.gatePackages && this.gatePackages.length > 0) {
+            console.log('Gate packages data:');
+            this.gatePackages.forEach((gp, index) => {
+                console.log(`${index + 1}. ID: ${gp.id} (type: ${typeof gp.id}), Opportunity: ${gp.opportunityId}, Gate: ${gp.gateNumber}, Status: ${gp.status}`);
+            });
+            
+            console.log('\nOpportunities data:');
+            this.opportunities.forEach((opp, index) => {
+                console.log(`${index + 1}. ID: ${opp.id} (type: ${typeof opp.id}), Name: ${opp.name}`);
+            });
+        } else {
+            console.log('No gate packages found.');
+            
+            // Create a test gate package if none exist and opportunities exist
+            if (this.opportunities.length > 0) {
+                const testPackage = {
+                    id: Date.now(),
+                    opportunityId: this.opportunities[0].id,
+                    gateNumber: 1,
+                    status: 'draft',
+                    createdDate: new Date().toISOString().split('T')[0],
+                    lastModified: new Date().toISOString().split('T')[0],
+                    executiveSummary: {
+                        summary: 'Test gate package for debugging',
+                        keyHighlights: ['Test highlight 1', 'Test highlight 2'],
+                        gateRecap: '',
+                        decision: null
+                    }
+                };
+                
+                this.gatePackages.push(testPackage);
+                this.saveData();
+                
+                console.log('Created test gate package:', testPackage);
+            }
+        }
+        console.log('=== END DEBUG ===');
+    },
+
+    // Backup and restore functions
+    createBackup() {
+        const backup = {
+            timestamp: new Date().toISOString(),
+            data: this.exportData()
+        };
+        localStorage.setItem('captureManagerBackup', JSON.stringify(backup));
+        console.log('Backup created successfully');
+    },
+
+    restoreBackup() {
+        try {
+            const backup = localStorage.getItem('captureManagerBackup');
+            if (backup) {
+                const backupData = JSON.parse(backup);
+                const result = this.importData(backupData.data);
+                console.log('Backup restored:', result);
+                return result;
+            } else {
+                console.log('No backup found');
+                return { success: false, message: 'No backup found' };
+            }
+        } catch (error) {
+            console.error('Error restoring backup:', error);
+            return { success: false, message: 'Error restoring backup: ' + error.message };
+        }
     }
 };

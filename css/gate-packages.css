@@ -1,370 +1,854 @@
-/* Gate Packages CSS - Styles for gate package modals, slides, forms, tabs, and badges */
+/* =============================================================================
+   GATE PACKAGES CSS - Complete styling for gate package system
+   ============================================================================= */
 
-/* Base Modal Styles (extends existing .modal from main.css) */
+/* Gate Package List View Styles */
+#gate-packages-view {
+    padding: 20px !important;
+    display: block !important;
+    visibility: visible !important;
+    min-height: 400px !important;
+    background: #fff !important;
+}
+
+#gate-packages-view h2 {
+    color: #2a5298 !important;
+    font-size: 1.8rem !important;
+    margin-bottom: 1.5rem !important;
+    border-bottom: 2px solid #2a5298 !important;
+    padding-bottom: 0.5rem !important;
+}
+
+/* Gate Packages Table Styling */
+.gate-packages-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 1rem !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.gate-packages-table thead {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+}
+
+.gate-packages-table thead th {
+    padding: 1rem !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.gate-packages-table tbody tr {
+    border-bottom: 1px solid #e9ecef !important;
+    transition: background-color 0.2s ease !important;
+    background: #fff !important;
+}
+
+.gate-packages-table tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+.gate-packages-table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+.gate-packages-table tbody td {
+    padding: 1rem !important;
+    vertical-align: middle !important;
+    font-size: 0.9rem !important;
+    color: #495057 !important;
+    border: none !important;
+}
+
+/* Status Badges in Table */
+.gate-packages-table .status-badge {
+    display: inline-block !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 20px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+}
+
+.gate-packages-table .status-badge.status-draft {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .status-badge.status-in-progress {
+    background-color: #ffc107 !important;
+    color: #333 !important;
+}
+
+.gate-packages-table .status-badge.status-under-review {
+    background-color: #17a2b8 !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .status-badge.status-approved {
+    background-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .status-badge.status-rejected {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+/* Table Action Buttons */
+.gate-packages-table .btn {
+    padding: 0.5rem 1rem !important;
+    margin-right: 0.5rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+}
+
+.gate-packages-table .btn-secondary {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .btn-secondary:hover {
+    background-color: #545b62 !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .btn-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.gate-packages-table .btn-danger:hover {
+    background-color: #c82333 !important;
+    color: #fff !important;
+}
+
+/* Empty State */
+#gate-packages-view p {
+    text-align: center !important;
+    color: #6c757d !important;
+    font-size: 1.1rem !important;
+    padding: 2rem !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    border: 2px dashed #dee2e6 !important;
+    margin-top: 1rem !important;
+}
+
+/* Gate Package Selection Modal */
+#gatePackageSelectionModal .modal-content {
+    max-width: 600px !important;
+    padding: 20px !important;
+}
+
+#gate-package-selection-content {
+    text-align: center !important;
+}
+
+#gate-package-selection-content h2 {
+    color: #2a5298 !important;
+    margin-bottom: 1rem !important;
+}
+
+#gate-package-selection-content p {
+    color: #666 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.gate-selector-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    margin: 1.5rem 0 !important;
+}
+
+.gate-selector-buttons .btn {
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
+    border-radius: 8px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-weight: 600 !important;
+}
+
+.gate-selector-buttons .btn-primary {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+}
+
+.gate-selector-buttons .btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3) !important;
+}
+
+.gate-selector-buttons .btn-secondary {
+    background: #6c757d !important;
+    color: #fff !important;
+}
+
+.gate-selector-buttons .btn-secondary:hover {
+    background: #545b62 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* =============================================================================
+   GATE PACKAGE MODAL STYLING
+   ============================================================================= */
+
+/* Modal Override */
 .gate-package-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding-top: 20px;
-    transition: opacity 0.3s ease;
+    display: none !important;
+    position: fixed !important;
+    z-index: 2000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    padding: 0 !important;
+    backdrop-filter: blur(2px) !important;
 }
 
 .gate-package-modal-content {
-    background-color: #fff;
-    margin: 2% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    max-width: 1200px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden; /* For slide transitions */
+    background-color: #ffffff !important;
+    margin: 1% auto !important;
+    padding: 0 !important;
+    border: none !important;
+    width: 95% !important;
+    max-width: 1400px !important;
+    height: 95vh !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
 }
 
-/* Close Button (consistent with existing modals) */
+/* Close button styling */
 .gate-package-modal .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s;
+    color: #666 !important;
+    float: right !important;
+    font-size: 32px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    position: absolute !important;
+    top: 15px !important;
+    right: 20px !important;
+    z-index: 1000 !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 .gate-package-modal .close:hover,
 .gate-package-modal .close:focus {
-    color: #000;
-    text-decoration: none;
+    color: #dc3545 !important;
+    background: #fff !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Slide Presentation Layout */
+/* Gate package content container */
 #gate-package-content {
-    position: relative;
-    height: 80vh; /* Adjustable based on content */
-    overflow: hidden;
+    position: relative !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    padding: 0 !important;
 }
 
-.gate-slide {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    background: linear-gradient(to bottom, #f9f9f9, #fff);
-    overflow-y: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+/* Gate package navigation */
+.gate-package-nav {
+    position: sticky !important;
+    top: 0 !important;
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+    padding: 1rem 2rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    z-index: 100 !important;
+    border-radius: 12px 12px 0 0 !important;
 }
 
-.gate-slide.active {
-    display: block;
-    opacity: 1;
-    transform: translateX(0);
+.gate-package-nav .nav-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
 }
 
-.gate-slide h2 {
-    color: #2a5298;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #2a5298;
-    padding-bottom: 10px;
+.gate-package-nav .slide-counter {
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
-.gate-slide p {
-    margin-bottom: 15px;
-    line-height: 1.6;
+.gate-package-nav .gate-package-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
 }
 
-/* Slide Navigation */
-.slide-navigation {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: space-between;
-    width: 200px;
+/* Gate package slide styling */
+.gate-package-slide {
+    display: none !important;
+    padding: 2rem !important;
+    height: calc(100vh - 120px) !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    color: #333 !important;
 }
 
-.slide-navigation button {
-    background-color: #2a5298;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.gate-package-slide.active {
+    display: block !important;
+    animation: slideIn 0.3s ease-in-out !important;
 }
 
-.slide-navigation button:hover {
-    background-color: #1e3f7a;
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.slide-navigation button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+/* Gate package slide headers */
+.gate-package-slide h1 {
+    color: #2a5298 !important;
+    font-size: 2.2rem !important;
+    margin-bottom: 1rem !important;
+    border-bottom: 3px solid #2a5298 !important;
+    padding-bottom: 0.5rem !important;
+    font-weight: 700 !important;
 }
 
-/* Form Styling within Slides */
-.gate-slide form {
-    display: grid;
-    gap: 15px;
+.gate-package-slide h2 {
+    color: #2a5298 !important;
+    font-size: 1.8rem !important;
+    margin: 1.5rem 0 1rem 0 !important;
+    border-bottom: 2px solid #e9ecef !important;
+    padding-bottom: 0.5rem !important;
+    font-weight: 600 !important;
 }
 
-.gate-slide label {
-    font-weight: bold;
-    color: #333;
+.gate-package-slide h3 {
+    color: #495057 !important;
+    font-size: 1.4rem !important;
+    margin: 1.2rem 0 0.8rem 0 !important;
+    font-weight: 600 !important;
 }
 
-.gate-slide input[type="text"],
-.gate-slide input[type="number"],
-.gate-slide input[type="date"],
-.gate-slide textarea,
-.gate-slide select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
+/* Slide content sections */
+.slide-header {
+    margin-bottom: 2rem !important;
+    text-align: center !important;
 }
 
-.gate-slide input:focus,
-.gate-slide textarea:focus,
-.gate-slide select:focus {
-    border-color: #2a5298;
-    outline: none;
+.slide-content {
+    margin-top: 1.5rem !important;
 }
 
-.gate-slide textarea {
-    min-height: 100px;
-    resize: vertical;
+.opportunity-info {
+    background: #f8f9fa !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    margin: 1rem 0 !important;
 }
 
-/* Dynamic List Management (e.g., add/remove items) */
-.dynamic-list {
-    margin-top: 10px;
+.info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1rem !important;
 }
 
-.dynamic-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+.info-item {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-.dynamic-item input {
-    flex: 1;
-    margin-right: 10px;
+.info-item label {
+    font-weight: 600 !important;
+    color: #666 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.25rem !important;
 }
 
-.dynamic-item button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+.info-item span {
+    font-size: 1rem !important;
+    color: #333 !important;
 }
 
-.dynamic-item button:hover {
-    background-color: #c82333;
+.quick-stats {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1.5rem !important;
 }
 
-.add-item-btn {
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
+.stat-card {
+    background: #f8f9fa !important;
+    padding: 1rem !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    border: 1px solid #e9ecef !important;
 }
 
-.add-item-btn:hover {
-    background-color: #218838;
+.stat-card h4 {
+    margin: 0 0 0.5rem 0 !important;
+    color: #2a5298 !important;
+    font-size: 0.9rem !important;
 }
 
-/* Tab System Styles (e.g., for proposal sections) */
-.tab-container {
-    margin-bottom: 20px;
+.stat-card p {
+    margin: 0 !important;
+    font-weight: 600 !important;
+    color: #333 !important;
 }
 
-.tab-buttons {
-    display: flex;
-    border-bottom: 1px solid #ccc;
+/* Form sections */
+.form-section {
+    margin-bottom: 1.5rem !important;
+}
+
+.form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 1rem !important;
+}
+
+/* Form elements */
+.gate-package-slide input[type="text"],
+.gate-package-slide input[type="email"],
+.gate-package-slide input[type="date"],
+.gate-package-slide input[type="number"],
+.gate-package-slide textarea,
+.gate-package-slide select {
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 6px !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.gate-package-slide input:focus,
+.gate-package-slide textarea:focus,
+.gate-package-slide select:focus {
+    border-color: #2a5298 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1) !important;
+}
+
+.gate-package-slide label {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    font-size: 1rem !important;
+}
+
+.gate-package-slide textarea {
+    min-height: 80px !important;
+    resize: vertical !important;
+}
+
+/* List management */
+.highlights-list {
+    list-style: none !important;
+    padding: 0 !important;
+    background: #f8f9fa !important;
+    border-radius: 6px !important;
+    padding: 1rem !important;
+}
+
+.highlights-list li {
+    padding: 0.5rem 0 !important;
+    border-bottom: 1px solid #e9ecef !important;
+    color: #495057 !important;
+}
+
+.highlights-list li:last-child {
+    border-bottom: none !important;
+}
+
+.highlight-item,
+.list-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.highlight-item input,
+.list-item input {
+    flex: 1 !important;
+}
+
+.btn-remove {
+    background: #dc3545 !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 0.8rem !important;
+    transition: background 0.2s ease !important;
+}
+
+.btn-remove:hover {
+    background: #c82333 !important;
+}
+
+/* Table styling in slides */
+.gate-package-slide table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 1rem 0 !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.gate-package-slide table th {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+    padding: 1rem !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    border: none !important;
+    font-size: 0.9rem !important;
+}
+
+.gate-package-slide table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #e9ecef !important;
+    color: #495057 !important;
+    vertical-align: top !important;
+}
+
+.gate-package-slide table tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+.gate-package-slide table td input,
+.gate-package-slide table td select,
+.gate-package-slide table td textarea {
+    margin: 0 !important;
+    border: 1px solid #ddd !important;
+    padding: 0.5rem !important;
+}
+
+/* Button styling in slides */
+.gate-package-slide .btn,
+.gate-package-nav .btn {
+    padding: 0.75rem 1.5rem !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    text-align: center !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.gate-package-slide .btn-primary,
+.gate-package-nav .btn-primary {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+}
+
+.gate-package-slide .btn-primary:hover,
+.gate-package-nav .btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3) !important;
+}
+
+.gate-package-slide .btn-secondary,
+.gate-package-nav .btn-secondary {
+    background: #6c757d !important;
+    color: #fff !important;
+}
+
+.gate-package-slide .btn-secondary:hover,
+.gate-package-nav .btn-secondary:hover {
+    background: #545b62 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+}
+
+.gate-package-slide .btn-secondary:disabled,
+.gate-package-nav .btn-secondary:disabled {
+    background: #ccc !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+.gate-package-slide .btn-success,
+.gate-package-nav .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: #fff !important;
+}
+
+.gate-package-slide .btn-success:hover,
+.gate-package-nav .btn-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+/* Tab system */
+.tabs {
+    display: flex !important;
+    border-bottom: 2px solid #e9ecef !important;
+    margin-bottom: 1.5rem !important;
 }
 
 .tab-button {
-    background-color: #f1f1f1;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-right: -1px; /* For seamless borders */
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    border-bottom: none !important;
+    padding: 0.75rem 1.5rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+    color: #495057 !important;
+    border-radius: 6px 6px 0 0 !important;
 }
 
 .tab-button.active {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
+    background: #fff !important;
+    color: #2a5298 !important;
+    border-color: #2a5298 !important;
+    border-bottom: 2px solid #fff !important;
+    margin-bottom: -2px !important;
+    font-weight: 600 !important;
 }
 
-.tab-button:hover {
-    background-color: #e9e9e9;
+.tab-button:hover:not(.active) {
+    background: #e9ecef !important;
 }
 
 .tab-content {
-    border: 1px solid #ccc;
-    padding: 15px;
-    background-color: #fff;
+    display: none !important;
+    padding: 1.5rem 0 !important;
 }
 
-/* Status Badges and Indicators */
-.gate-status-badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    font-weight: bold;
-    margin-right: 5px;
+.tab-content.active {
+    display: block !important;
 }
 
-.gate-status-badge.completed {
-    background-color: #28a745;
-    color: #fff;
+/* Functional review sections */
+.functional-review-section {
+    background: #f8f9fa !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid #e9ecef !important;
 }
 
-.gate-status-badge.pending {
-    background-color: #ffc107;
-    color: #333;
+.functional-review-section h3 {
+    margin-top: 0 !important;
+    color: #2a5298 !important;
 }
 
-.gate-status-badge.none {
-    background-color: #dc3545;
-    color: #fff;
+/* Status update section */
+.status-update-section {
+    background: #e8f5e9 !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #c3e6cb !important;
 }
 
-/* Gate Package List View (in #gate-packages-view) */
-#gate-packages-view {
-    padding: 20px;
+.status-update-section h3 {
+    margin-top: 0 !important;
+    color: #155724 !important;
 }
 
-.gate-package-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+/* Success message */
+.success-message {
+    animation: slideInRight 0.3s ease-out !important;
 }
 
-.gate-package-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.2s;
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
-.gate-package-card:hover {
-    transform: translateY(-5px);
-}
-
-.gate-package-card h3 {
-    color: #2a5298;
-    margin-bottom: 10px;
-}
-
-.gate-package-card .status {
-    font-style: italic;
-    color: #666;
-}
-
-/* Selection Modal Styles */
-#gatePackageSelectionModal .modal-content {
-    max-width: 600px;
-    padding: 20px;
-}
-
-#gate-package-selection-content {
-    text-align: center;
-}
-
-#gate-package-selection-content select {
-    width: 100%;
-    margin: 10px 0;
-}
-
-#gate-package-selection-content button {
-    background-color: #2a5298;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#gate-package-selection-content button:hover {
-    background-color: #1e3f7a;
-}
-
-/* Responsive Adjustments */
+/* Responsive design */
 @media (max-width: 1200px) {
     .gate-package-modal-content {
-        width: 95%;
+        width: 98% !important;
+        margin: 0.5% auto !important;
+        height: 98vh !important;
+    }
+    
+    .gate-package-nav {
+        padding: 0.75rem 1rem !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .gate-package-slide {
+        padding: 1.5rem !important;
+        height: calc(100vh - 140px) !important;
+    }
+    
+    .gate-packages-table {
+        font-size: 0.8rem !important;
+    }
+    
+    .gate-packages-table thead th,
+    .gate-packages-table tbody td {
+        padding: 0.75rem !important;
     }
 }
 
 @media (max-width: 768px) {
-    .gate-slide {
-        padding: 15px;
+    .gate-package-slide {
+        padding: 1rem !important;
+        font-size: 0.9rem !important;
     }
     
-    .slide-navigation {
-        width: 100%;
-        left: 0;
-        transform: none;
-        padding: 0 20px;
-        box-sizing: border-box;
+    .gate-package-slide h1 {
+        font-size: 1.8rem !important;
     }
     
-    .slide-navigation button {
-        flex: 1;
-        margin: 0 5px;
+    .gate-package-slide h2 {
+        font-size: 1.5rem !important;
     }
     
-    .tab-buttons {
-        flex-wrap: wrap;
+    .gate-package-nav .gate-package-actions {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .gate-package-nav .btn {
+        margin: 0.25rem 0 !important;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .quick-stats {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .tabs {
+        flex-wrap: wrap !important;
     }
     
     .tab-button {
-        flex: 1;
-        margin-bottom: 5px;
+        flex: 1 !important;
+        min-width: 120px !important;
+    }
+    
+    /* Stack table on mobile */
+    .gate-packages-table {
+        font-size: 0.7rem !important;
+    }
+    
+    .gate-packages-table thead th,
+    .gate-packages-table tbody td {
+        padding: 0.5rem !important;
+    }
+    
+    /* Hide some columns on mobile */
+    .gate-packages-table thead th:nth-child(4),
+    .gate-packages-table thead th:nth-child(5),
+    .gate-packages-table tbody td:nth-child(4),
+    .gate-packages-table tbody td:nth-child(5) {
+        display: none !important;
+    }
+    
+    .gate-selector-buttons {
+        gap: 0.5rem !important;
+    }
+    
+    .gate-selector-buttons .btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
     }
 }
 
 @media (max-width: 480px) {
-    .gate-slide h2 {
-        font-size: 1.5em;
+    #gate-packages-view {
+        padding: 10px !important;
     }
     
-    .gate-slide form {
-        gap: 10px;
+    .gate-packages-table .btn {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.7rem !important;
+        margin-right: 0.25rem !important;
     }
     
-    .dynamic-item {
-        flex-direction: column;
+    .gate-package-slide h1 {
+        font-size: 1.5rem !important;
     }
     
-    .dynamic-item input {
-        margin-right: 0;
-        margin-bottom: 10px;
+    .gate-package-slide h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    .highlight-item,
+    .list-item {
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+    }
+    
+    .btn-remove {
+        align-self: flex-start !important;
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.7rem !important;
     }
 }
