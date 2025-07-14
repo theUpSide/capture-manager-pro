@@ -136,10 +136,23 @@ const GatePackageGenerator = {
             return;
         }
 
-        GatePackageSlides.renderGatePackageSlides(gatePackage, opportunity);
+        // Clear existing content and render new content
+        content.innerHTML = '';
         
-        // Show the modal
-        modal.style.display = 'block';
+        try {
+            if (typeof GatePackageSlides !== 'undefined') {
+                GatePackageSlides.renderGatePackageSlides(gatePackage, opportunity);
+            } else {
+                console.error('GatePackageSlides not found - check if gate-package-slides.js is loaded');
+                this.renderBasicContent(content, gatePackage, opportunity);
+            }
+        } catch (error) {
+            console.error('Error rendering slides:', error);
+            this.renderBasicContent(content, gatePackage, opportunity);
+        }
+        
+        // IMPROVED MODAL DISPLAY LOGIC
+        this.showModal(modal);
         
         // Update slide navigation
         this.updateSlideNavigation();
@@ -147,13 +160,190 @@ const GatePackageGenerator = {
         console.log('Gate package opened successfully');
     },
 
+    // NEW: Dedicated method to show the modal with multiple fallbacks
+    showModal(modal) {
+        // Method 1: CSS class approach
+        modal.classList.add('showing', 'active');
+        modal.classList.remove('hidden', 'hide', 'd-none');
+        
+        // Method 2: Direct style setting with specific CSS text
+        modal.style.cssText = `
+            display: block !important;
+            position: fixed !important;
+            z-index: 2000 !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            overflow: auto !important;
+        `;
+        
+        // Method 3: Individual style properties
+        modal.style.display = 'block';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.zIndex = '2000';
+        
+        // Method 4: Set data attributes for CSS targeting
+        modal.setAttribute('data-state', 'open');
+        modal.setAttribute('aria-hidden', 'false');
+        
+        // Method 5: Body class for additional CSS support
+        document.body.classList.add('modal-open', 'gate-package-open');
+        
+        // Method 6: Force reflow and ensure visibility
+        modal.offsetHeight; // Force reflow
+        modal.scrollTop = 0;
+        
+        // Method 7: Focus management for accessibility
+        modal.focus();
+        
+        // Method 8: Backup verification after short delay
+        setTimeout(() => {
+            const computedStyle = window.getComputedStyle(modal);
+            if (computedStyle.display === 'none') {
+                console.warn('Modal still hidden after display attempts, applying emergency fix');
+                this.emergencyShowModal(modal);
+            }
+        }, 50);
+    },
+
+    // Emergency method if all else fails
+    emergencyShowModal(modal) {
+        // Create a new style element with very high specificity
+        const emergencyStyle = document.createElement('style');
+        emergencyStyle.id = 'gate-package-emergency-style';
+        emergencyStyle.innerHTML = `
+            #gatePackageModal.gate-package-modal {
+                display: block !important;
+                position: fixed !important;
+                z-index: 99999 !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background-color: rgba(0, 0, 0, 0.8) !important;
+            }
+        `;
+        
+        // Remove any existing emergency style
+        const existingEmergencyStyle = document.getElementById('gate-package-emergency-style');
+        if (existingEmergencyStyle) {
+            existingEmergencyStyle.remove();
+        }
+        
+        // Add the emergency style
+        document.head.appendChild(emergencyStyle);
+        
+        console.log('Emergency modal display style applied');
+    },
+
     closeGatePackage() {
         const modal = document.getElementById('gatePackageModal');
         if (modal) {
+            // Remove all showing classes and styles
+            modal.classList.remove('showing', 'active');
             modal.style.display = 'none';
+            modal.setAttribute('data-state', 'closed');
+            modal.setAttribute('aria-hidden', 'true');
         }
+        
+        // Remove body classes
+        document.body.classList.remove('modal-open', 'gate-package-open');
+        
+        // Remove emergency styles if they exist
+        const emergencyStyle = document.getElementById('gate-package-emergency-style');
+        if (emergencyStyle) {
+            emergencyStyle.remove();
+        }
+        
+        // Reset state
         this.currentPackage = null;
         this.currentSlide = 1;
+    },
+
+    // Fallback content renderer (keep your existing renderBasicContent method here)
+    renderBasicContent(content, gatePackage, opportunity) {
+        // Your existing renderBasicContent method code here
+        console.log('Rendering basic fallback content');
+        
+        const gateDefinition = this.getGateDefinition(gatePackage.gateNumber) || {
+            name: `Gate ${gatePackage.gateNumber}`,
+            description: 'Gate review package'
+        };
+        
+        const basicHTML = `
+            <div style="padding: 2rem; background: white; color: black; min-height: 400px;">
+                <div style="background: #2a5298; color: white; padding: 1rem; margin: -2rem -2rem 2rem -2rem; border-radius: 8px 8px 0 0;">
+                    <h1 style="margin: 0; color: white;">${gateDefinition.name}</h1>
+                    <h2 style="margin: 0.5rem 0 0 0; color: #ccc; font-weight: normal;">${opportunity.name}</h2>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #2a5298; border-bottom: 2px solid #eee; padding-bottom: 0.5rem;">Package Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px;">
+                            <strong>Gate Number:</strong><br>
+                            Gate ${gatePackage.gateNumber}
+                        </div>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px;">
+                            <strong>Status:</strong><br>
+                            <span style="background: #6c757d; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.9rem;">
+                                ${gatePackage.status}
+                            </span>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px;">
+                            <strong>Created:</strong><br>
+                            ${gatePackage.createdDate}
+                        </div>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px;">
+                            <strong>Value:</strong><br>
+                            $${opportunity.value ? opportunity.value.toLocaleString() : 'TBD'}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #2a5298; border-bottom: 2px solid #eee; padding-bottom: 0.5rem;">Executive Summary</h3>
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 6px; border-left: 4px solid #2a5298;">
+                        ${gatePackage.executiveSummary?.summary || 'No executive summary available yet.'}
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid #eee; text-align: center;">
+                    <button onclick="GatePackageGenerator.closeGatePackage()" 
+                            style="background: #6c757d; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 1rem;">
+                        Close Package
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        content.innerHTML = basicHTML;
+    },
+
+
+    getGateDefinition(gateNumber) {
+        const definitions = {
+            1: {
+                name: "Gate 1: Opportunity Qualification",
+                description: "Assess opportunity viability and alignment with business strategy"
+            },
+            2: {
+                name: "Gate 2: Capture Planning", 
+                description: "Develop initial capture strategy and resource planning"
+            },
+            3: {
+                name: "Gate 3: Strategy Validation",
+                description: "Validate win strategy and solution approach"
+            },
+            4: {
+                name: "Gate 4: Proposal Readiness",
+                description: "Final pre-RFP preparation and readiness review"
+            }
+        };
+        return definitions[gateNumber];
     },
 
     saveGatePackage() {

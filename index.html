@@ -278,7 +278,7 @@
             </div>
         </div>
 
-        <!-- Gate Packages View --> <!-- ADD THIS SECTION -->
+        <!-- Gate Packages View --> 
         <div id="gate-packages-view" class="view" style="display: none;">
             <!-- Gate packages content will be populated by JavaScript -->
         </div>
@@ -396,15 +396,19 @@
         </div>
     </div>
 
-    <!-- Gate Package Modal --> <!-- ADD THIS SECTION -->
-    <div id="gatePackageModal" class="modal gate-package-modal">
-        <div class="modal-content gate-package-modal-content">
-            <span class="close" onclick="GatePackageGenerator.closeGatePackage()">×</span>
-            <div id="gate-package-content">
-                <!-- Gate package slides will be populated here -->
+    <!-- Gate Package Modal --> 
+<div id="gatePackageModal" class="modal gate-package-modal">
+    <div class="modal-content gate-package-modal-content">
+        <span class="close" onclick="GatePackageGenerator.closeGatePackage()">×</span>
+        <div id="gate-package-content" style="min-height: 500px; background: white;">
+            <!-- Gate package slides will be populated here -->
+            <div class="loading-message" style="text-align: center; padding: 2rem; color: #666;">
+                Loading gate package content...
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Gate Package Selection Modal --> <!-- ADD THIS SECTION -->
     <div id="gatePackageSelectionModal" class="modal">

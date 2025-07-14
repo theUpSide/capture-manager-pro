@@ -1,4 +1,329 @@
 /* =============================================================================
+   PERMANENT GATE PACKAGE MODAL FIX
+   Add this to the TOP of your css/gate-packages.css file to override general modal styles
+   ============================================================================= */
+
+/* CRITICAL: Gate Package Modal Override - Must come FIRST */
+.modal#gatePackageModal.gate-package-modal {
+    display: none !important; /* Will be overridden by JavaScript when needed */
+    position: fixed !important;
+    z-index: 2000 !important; /* Higher than regular modals (1000) */
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    overflow: auto !important;
+    padding: 0 !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+/* Force display when JavaScript sets style="display: block" */
+.modal#gatePackageModal.gate-package-modal[style*="display: block"],
+.modal#gatePackageModal.gate-package-modal[style*="display:block"] {
+    display: block !important;
+}
+
+/* Force visibility for specific showing states */
+.modal#gatePackageModal.gate-package-modal.showing,
+.modal#gatePackageModal.gate-package-modal.active {
+    display: block !important;
+}
+
+/* Gate Package Modal Content - Override general modal-content */
+.modal#gatePackageModal .modal-content.gate-package-modal-content {
+    background-color: #ffffff !important;
+    margin: 1% auto !important;
+    padding: 0 !important;
+    border: none !important;
+    width: 95% !important;
+    max-width: 1400px !important;
+    height: 95vh !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Gate Package Close Button - Override general close */
+.modal#gatePackageModal .close {
+    color: #666 !important;
+    float: none !important; /* Override general float: right */
+    font-size: 32px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    position: absolute !important;
+    top: 15px !important;
+    right: 20px !important;
+    z-index: 1000 !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    line-height: 1 !important;
+}
+
+.modal#gatePackageModal .close:hover,
+.modal#gatePackageModal .close:focus {
+    color: #dc3545 !important;
+    background: #fff !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Gate Package Content Container */
+.modal#gatePackageModal #gate-package-content {
+    position: relative !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    padding: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Gate Package Navigation */
+.modal#gatePackageModal .gate-package-nav {
+    position: sticky !important;
+    top: 0 !important;
+    background: linear-gradient(135deg, #2a5298 0%, #1e3f7a 100%) !important;
+    color: #fff !important;
+    padding: 1rem 2rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    z-index: 100 !important;
+    border-radius: 12px 12px 0 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .nav-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .slide-counter {
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .gate-package-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+}
+
+/* Gate Package Slide Styling */
+.modal#gatePackageModal .gate-package-slide {
+    display: none !important;
+    padding: 2rem !important;
+    height: calc(100vh - 120px) !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    color: #333 !important;
+    flex: 1 !important;
+}
+
+.modal#gatePackageModal .gate-package-slide.active {
+    display: block !important;
+    animation: slideIn 0.3s ease-in-out !important;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Gate Package Navigation Buttons */
+.modal#gatePackageModal .gate-package-nav button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.9rem !important;
+}
+
+.modal#gatePackageModal .gate-package-nav button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.modal#gatePackageModal .gate-package-nav button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .btn-primary {
+    background: #28a745 !important;
+    border: 1px solid #28a745 !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .btn-primary:hover {
+    background: #218838 !important;
+    border: 1px solid #218838 !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .btn-success {
+    background: #17a2b8 !important;
+    border: 1px solid #17a2b8 !important;
+}
+
+.modal#gatePackageModal .gate-package-nav .btn-secondary {
+    background: #6c757d !important;
+    border: 1px solid #6c757d !important;
+}
+
+/* Gate Package Content Styling */
+.modal#gatePackageModal .slide-header h1 {
+    color: #2a5298 !important;
+    font-size: 2.5rem !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 700 !important;
+}
+
+.modal#gatePackageModal .slide-header h2 {
+    color: #6c757d !important;
+    font-size: 1.8rem !important;
+    margin-bottom: 2rem !important;
+    font-weight: 400 !important;
+}
+
+.modal#gatePackageModal .info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1rem !important;
+    margin: 2rem 0 !important;
+}
+
+.modal#gatePackageModal .info-item {
+    background: #f8f9fa !important;
+    padding: 1rem !important;
+    border-radius: 6px !important;
+    border-left: 4px solid #2a5298 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+}
+
+.modal#gatePackageModal .info-item label {
+    font-weight: 600 !important;
+    color: #2a5298 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.modal#gatePackageModal .info-item span {
+    font-size: 1rem !important;
+    color: #333 !important;
+    font-weight: 500 !important;
+}
+
+.modal#gatePackageModal .status-badge {
+    background: #6c757d !important;
+    color: white !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 4px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Form Elements in Gate Package */
+.modal#gatePackageModal .form-section {
+    margin-bottom: 2rem !important;
+}
+
+.modal#gatePackageModal .form-section h3 {
+    color: #2a5298 !important;
+    border-bottom: 2px solid #e9ecef !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 1rem !important;
+    font-size: 1.3rem !important;
+}
+
+.modal#gatePackageModal .form-section label {
+    display: block !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 1rem !important;
+}
+
+.modal#gatePackageModal .form-section textarea,
+.modal#gatePackageModal .form-section input,
+.modal#gatePackageModal .form-section select {
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 1rem !important;
+    font-family: inherit !important;
+    box-sizing: border-box !important;
+    line-height: 1.5 !important;
+}
+
+.modal#gatePackageModal .form-section textarea {
+    resize: vertical !important;
+    min-height: 100px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal#gatePackageModal .gate-package-modal-content {
+        width: 98% !important;
+        height: 98vh !important;
+        margin: 1% auto !important;
+    }
+    
+    .modal#gatePackageModal .gate-package-nav {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    .modal#gatePackageModal .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .modal#gatePackageModal .gate-package-slide {
+        padding: 1rem !important;
+        height: calc(100vh - 140px) !important;
+    }
+}
+
+/* =============================================================================
+   END OF CRITICAL OVERRIDE SECTION
+   ============================================================================= */
+
+/* =============================================================================
    GATE PACKAGES CSS - Complete styling for gate package system
    ============================================================================= */
 
