@@ -131,6 +131,9 @@ const Opportunities = {
         const truncatedDescription = description.length > 120 ? 
             description.substring(0, 120) + '...' : description;
 
+        // ADD: Gate status badge integration
+        const gateStatusBadge = getGateStatusBadge(opportunity.id);
+
         return `
             <div class="opportunity-card executive-card" data-status="${opportunity.status || 'capture'}" onclick="Opportunities.openDetailModal(${opportunity.id})">
                 <div class="opportunity-card-header">
@@ -176,10 +179,17 @@ const Opportunities = {
                         <span class="status-badge status-${opportunity.status || 'capture'}">
                             ${opportunity.status || 'capture'}
                         </span>
+                        ${gateStatusBadge}  <!-- ADD: Gate status badge -->
                     </div>
                     <div class="opportunity-actions" onclick="event.stopPropagation()">
                         <button class="btn btn-secondary btn-small" onclick="Opportunities.edit(${opportunity.id})">
                             Edit
+                        </button>
+                        <button class="btn btn-primary btn-small" onclick="GatePackages.openGatePackageSelector(${opportunity.id})">  <!-- ADD: Gate Reviews button -->
+                            Gate Reviews
+                        </button>
+                        <button class="btn btn-small" onclick="Presentation.openPresentation(${opportunity.id})">  <!-- ADD: Present button -->
+                            📊 Present
                         </button>
                     </div>
                 </div>

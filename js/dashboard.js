@@ -18,6 +18,7 @@ const Dashboard = {
         this.renderSmartRecommendations();
         this.renderActivityFeed();
         this.renderQuickStats();
+        this.renderGatePackageMetrics();  // ADD: Gate package metrics
     },
 
     // Helper function to format values as millions
@@ -420,6 +421,29 @@ const Dashboard = {
                         <div class="stat-label">Win Rate</div>
                     </div>
                 </div>
+            </div>
+        `;
+    },
+
+    // ADD: Gate package metrics (from Phase 5)
+    renderGatePackageMetrics() {
+        const container = document.getElementById('gate-package-metrics');
+        if (!container) {
+            // If no dedicated container, append to quick-stats or another section; for now, assume it's added to index.html
+            return;
+        }
+
+        const { approved, pending } = getGatePackageMetrics();
+
+        container.innerHTML = `
+            <div class="metric-card">
+                <div class="metric-header">
+                    <h3>Gate Reviews</h3>
+                    <span class="metric-icon">🚪</span>
+                </div>
+                <div class="metric-value">${approved}</div>
+                <div class="metric-label">Approved Gates</div>
+                <div class="metric-detail">${pending} pending review</div>
             </div>
         `;
     },

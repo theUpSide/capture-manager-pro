@@ -13,9 +13,9 @@
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/reports.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/gate-packages.css">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/apple-icon-180.png">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px)">
+
 </head>
 <body>
     <header>
@@ -28,6 +28,7 @@
                 <a href="#" onclick="Navigation.showActions()">Action Items</a>
                 <a href="#" onclick="Navigation.showTemplates()">Templates</a>
                 <a href="#" onclick="Navigation.showGateReviews()">Gate Reviews</a>
+                <a href="#" onclick="Navigation.showGatePackages()">Gate Packages</a> <!-- ADD THIS LINE -->
                 <a href="#" onclick="Navigation.showReports()">Reports</a>
             </nav>
         </div>
@@ -276,13 +277,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- Gate Packages View --> <!-- ADD THIS SECTION -->
+        <div id="gate-packages-view" class="view" style="display: none;">
+            <!-- Gate packages content will be populated by JavaScript -->
+        </div>
     </div>
 
     <!-- Modals -->
     <!-- Opportunity Modal -->
     <div id="opportunityModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="Opportunities.closeModal()">&times;</span>
+            <span class="close" onclick="Opportunities.closeModal()">×</span>
             <div id="opportunity-form-content">
                 <!-- Form content will be populated by JavaScript -->
             </div>
@@ -292,7 +298,7 @@
     <!-- Opportunity Detail Modal -->
     <div id="opportunityDetailModal" class="modal">
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-            <span class="close" onclick="Opportunities.closeDetailModal()">&times;</span>
+            <span class="close" onclick="Opportunities.closeDetailModal()">×</span>
             <div id="opportunity-detail-content">
                 <!-- Opportunity detail content will be populated here -->
             </div>
@@ -302,7 +308,7 @@
     <!-- Action Modal -->
     <div id="actionModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="Actions.closeModal()">&times;</span>
+            <span class="close" onclick="Actions.closeModal()">×</span>
             <h2>Add Action Item</h2>
             <form id="actionForm" onsubmit="Actions.save(event)">
                 <div class="form-row">
@@ -344,7 +350,7 @@
     <!-- Phase Detail Modal -->
     <div id="phaseDetailModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="Roadmap.closePhaseModal()">&times;</span>
+            <span class="close" onclick="Roadmap.closePhaseModal()">×</span>
             <div id="phase-detail-content">
                 <!-- Phase details will be populated here -->
             </div>
@@ -354,7 +360,7 @@
     <!-- Template Detail Modal -->
     <div id="templateDetailModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="Templates.closeModal()">&times;</span>
+            <span class="close" onclick="Templates.closeModal()">×</span>
             <div id="template-detail-content">
                 <!-- Template form will be populated here -->
             </div>
@@ -364,7 +370,7 @@
     <!-- Gate Review Modal -->
     <div id="gateReviewModal" class="modal">
         <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
-            <span class="close" onclick="GateReviews.closeReviewModal()">&times;</span>
+            <span class="close" onclick="GateReviews.closeReviewModal()">×</span>
             <div id="gate-review-content">
                 <!-- Gate review content will be populated here -->
             </div>
@@ -374,7 +380,7 @@
     <!-- Phase Steps Modal -->
     <div id="phase-steps-modal" style="display:none;">
         <div class="modal-content">
-            <span class="close" onclick="Roadmap.closeStepsModal()">&times;</span>
+            <span class="close" onclick="Roadmap.closeStepsModal()">×</span>
             <div id="phase-steps-content">
                 <!-- Phase steps content will be populated here -->
             </div>
@@ -382,27 +388,51 @@
     </div>
 
     <div id="presentationModal" class="modal presentation-modal">
-    <div class="modal-content presentation-modal-content">
-        <span class="close" onclick="Presentation.closePresentation()">&times;</span>
-        <div id="presentation-content">
-            <!-- Presentation slides will be populated here by presentation.js -->
+        <div class="modal-content presentation-modal-content">
+            <span class="close" onclick="Presentation.closePresentation()">×</span>
+            <div id="presentation-content">
+                <!-- Presentation slides will be populated here by presentation.js -->
+            </div>
         </div>
     </div>
-</div>
+
+    <!-- Gate Package Modal --> <!-- ADD THIS SECTION -->
+    <div id="gatePackageModal" class="modal gate-package-modal">
+        <div class="modal-content gate-package-modal-content">
+            <span class="close" onclick="GatePackageGenerator.closeGatePackage()">×</span>
+            <div id="gate-package-content">
+                <!-- Gate package slides will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Gate Package Selection Modal --> <!-- ADD THIS SECTION -->
+    <div id="gatePackageSelectionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="GatePackages.closeGatePackageSelectionModal()">×</span>
+            <div id="gate-package-selection-content">
+                <!-- Selection content will be populated here -->
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript files -->
-<script src="js/utils.js"></script>
-<script src="js/data.js"></script>
-<script src="js/data-manager.js"></script>
-<script src="js/dashboard.js"></script>
-<script src="js/opportunities.js"></script>
-<script src="js/presentation.js"></script>  <!-- ADD THIS LINE -->
-<script src="js/roadmap.js"></script>
-<script src="js/templates.js"></script>
-<script src="js/actions.js"></script>
-<script src="js/reports.js"></script>
-<script src="js/gate-reviews.js"></script>
-<script src="js/app.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/opportunities.js"></script>
+    <script src="js/presentation.js"></script>
+    <script src="js/roadmap.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/actions.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/gate-reviews.js"></script>
+    <script src="js/gate-package-generator.js"></script> <!-- ADD THIS LINE -->
+    <script src="js/gate-package-slides.js"></script> <!-- ADD THIS LINE -->
+    <script src="js/gate-packages.js"></script> <!-- ADD THIS LINE -->
+    <script src="js/gate-package-integration.js"></script> <!-- ADD THIS LINE -->
+    <script src="js/app.js"></script>
 
 </body>
 </html>

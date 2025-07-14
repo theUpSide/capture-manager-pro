@@ -56,6 +56,7 @@ const DataStore = {
     savedTemplates: [],
     contacts: [],
     tasks: [],
+    gatePackages: [],  // ADD THIS LINE
 
 
     templates: [
@@ -1275,6 +1276,7 @@ const DataStore = {
             localStorage.setItem('contacts', JSON.stringify(this.contacts));
             localStorage.setItem('tasks', JSON.stringify(this.tasks));
             localStorage.setItem('actions', JSON.stringify(this.actions));
+            localStorage.setItem('gatePackages', JSON.stringify(this.gatePackages));  // ADD THIS LINE
             console.log('Data saved successfully');
         } catch (error) {
             console.error('Error saving data:', error);
@@ -1297,6 +1299,12 @@ const DataStore = {
             const storedActions = localStorage.getItem('actions');
             if (storedActions) {
                 this.actions = JSON.parse(storedActions);
+            }
+            
+            // ADD THIS SECTION:
+            const storedGatePackages = localStorage.getItem('gatePackages');
+            if (storedGatePackages) {
+                this.gatePackages = JSON.parse(storedGatePackages);
             }
             
             // Migrate existing opportunities to include status and required fields
@@ -1389,7 +1397,8 @@ const DataStore = {
             savedTemplates: this.savedTemplates,
             contacts: this.contacts,
             tasks: this.tasks,
-            actions: this.actions
+            actions: this.actions,
+            gatePackages: this.gatePackages  // ADD THIS LINE
         };
     },
 

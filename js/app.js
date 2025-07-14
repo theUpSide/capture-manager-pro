@@ -48,12 +48,17 @@ const Navigation = {
     },
 
     showGateReviews() {
+        // Hide all views first
         this.hideAllViews();
+        
+        // Show gate reviews view
         document.getElementById('gate-reviews-view').style.display = 'block';
-        this.updateActiveNav('Gate Reviews');
-        if (typeof GateReviews !== 'undefined') {
-            GateReviews.render();
-        }
+        
+        // Update navigation
+        this.updateActiveNav('gate-reviews');
+        
+        // FIXED: Only render gate reviews when actually showing the page
+        GateReviews.render();
     },
 
     showReports() {
@@ -65,6 +70,13 @@ const Navigation = {
         }
     },
 
+    showGatePackages() {
+        this.hideAllViews();
+        document.getElementById('gate-packages-view').style.display = 'block';
+        document.title = 'Gate Packages - Capture Manager Pro';
+        GatePackages.render();
+    },
+
     hideAllViews() {
         const views = [
             'dashboard-view',
@@ -74,13 +86,14 @@ const Navigation = {
             'templates-view',
             'saved-templates-view',
             'gate-reviews-view',
-            'reports-view'
+            'reports-view',
+            'gate-packages-view'  // ADD THIS
         ];
         
         views.forEach(viewId => {
-            const view = document.getElementById(viewId);
-            if (view) {
-                view.style.display = 'none';
+            const element = document.getElementById(viewId);
+            if (element) {
+                element.style.display = 'none';
             }
         });
     },
@@ -149,27 +162,14 @@ function loadData() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    // Load data from localStorage
+    // Initialize the application
     DataStore.loadData();
-    
-    // Load presentation CSS if not already loaded
-    if (!document.querySelector('link[href="css/presentation.css"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'css/presentation.css';
-        document.head.appendChild(link);
-    }
-
-    // Initialize all modules
-    Dashboard.init();
-    
-    // Initialize unified cards if available
-    if (window.UnifiedCards) {
-        UnifiedCards.initializeUnifiedCards();
-    }
     
     // Show dashboard by default
     Navigation.showDashboard();
+    
+    // DON'T automatically render gate reviews here
+    // GateReviews.render(); // <-- REMOVE THIS LINE
 });
 
 if ('serviceWorker' in navigator) {
